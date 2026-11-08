@@ -65,6 +65,7 @@ jobs:
             if [ $n = 10 ]; then sleep 35; else sleep 15; fi
             T 60 xcrun simctl io "$UDID" screenshot "revisar/$(printf %02d $n)_iphone.png" || true
           done
+          cp revisar/10_iphone.png fastlane/screenshots/es-ES/06_iphone.png || true
           sips -g pixelWidth -g pixelHeight fastlane/screenshots/es-ES/*.png
       - name: Guardar las capturas en la rama «capturas»
         run: |

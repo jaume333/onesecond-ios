@@ -6,6 +6,10 @@ HOW TO TEST
    https://onesecond.es/rally/api/p/v3sc5wq3bchs
 3. Tap EMITIR (Send) and allow location "While Using the App". The app sends the GPS position to the organisers' server until you tap PARAR (Stop).
 4. AVISOS (Alerts) sends an incident alert to the organisers; MENSAJES shows messages from the organisers.
+5. One Second Navigator (main screen): tap "Abrir un GPX del móvil" or choose a route published by the organisers, then EMPEZAR to follow it on the map with voice guidance.
+
+ACCOUNT (OPTIONAL)
+The app works without an account. Riders can optionally sign in with their onesecond.es account (email and password, Sign in with Apple or Google) to see their entries and results. Accounts can be deleted from "Mi cuenta" on onesecond.es.
 
 BACKGROUND LOCATION
 Location is only used while the rider has tapped EMITIR during an event (the blue location indicator is shown). It is needed so that the organisers can time the rider's passage through hidden checkpoints and locate them if they report an incident or accident. Location is never used when not sending and is never shared with third parties.
