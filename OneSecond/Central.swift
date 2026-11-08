@@ -182,6 +182,7 @@ final class Central: NSObject, ObservableObject, CLLocationManagerDelegate {
     /// Tras un aviso: 3 minutos de GPS cada segundo y envío cada 10 s, para que la organización vea dónde está.
     func rafaga() { rafagaHasta = Date().addingTimeInterval(180); enviarYa = true; ponerPrecision() }
 
+    func gpsActual(_ p: Prueba) -> Int { gpsAhora(p) }
     private func gpsAhora(_ p: Prueba) -> Int {
         let g = Date() < rafagaHasta ? 1 : aj(p).gpsSeg
         return max(1, min(g, gpsPunto))
@@ -297,11 +298,12 @@ final class Central: NSObject, ObservableObject, CLLocationManagerDelegate {
 
     /// Capturas de la App Store: Ronda la Llana vinculada y emitiendo, con puntos, mensajes y un aviso de ejemplo.
     private func cargarDemo() {
-        let p = Prueba.ronda
+        let p = Demo.pantalla == 12 ? Prueba.rider : Prueba.ronda
         for o in Prueba.todas { aj(o).url = "" }
-        aj(p).url = "https://onesecond.es/ronda/api/p/ABCDEFGH2345"
+        aj(p).url = p.id == "rider" ? "https://onesecond.es/rider1000/api/p/ABCDEFGH2345" : "https://onesecond.es/ronda/api/p/ABCDEFGH2345"
         aj(p).telOrg = "+34 600 000 000"
-        if Demo.pantalla != 5 { emitiendo = p.id }
+        aj(p).dorsal = "27"; aj(p).nombrePiloto = "Jaume Garcia"
+        if Demo.pantalla != 5 && Demo.pantalla != 12 { emitiendo = p.id }
         enviadas = 1287; ultimaPos = Date(); ultimaPrec = 4
         puntos(p).cargarDemo(); mensajes(p).cargarDemo(); avisos(p).cargarDemo()
     }

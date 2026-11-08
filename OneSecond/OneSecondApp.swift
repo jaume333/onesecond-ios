@@ -15,9 +15,17 @@ struct OneSecondApp: App {
                 .preferredColorScheme(.dark)
                 .onAppear {
                     if Demo.activo {
-                        switch Demo.pantalla { case 2, 3, 4: abierta = .ronda; case 5: abierta = .rally; default: break }
+                        switch Demo.pantalla { case 2, 3, 4: abierta = .ronda; case 5: abierta = .rally; case 12: abierta = .rider; default: break }
                     }
                 }
+                // «Navegar este tramo» (fichas de la Ronda): abre el Navigator con la ruta
+                .onReceive(NotificationCenter.default.publisher(for: .abrirRuta)) { n in
+                    guard let a = n.object as? String else { return }
+                    abierta = nil
+                    navAbierto = true
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { NotificationCenter.default.post(name: .gpxRecibido, object: a) }
+                }
+                .onAppear { Telemetria.autoEmitir(central) }
                 // botón «Configurar la app» de la web: onesecondgps://configurar?u=<dirección del piloto>
                 .onOpenURL { url in
                     // un GPX compartido (WhatsApp, Archivos...): se guarda en el Navigator y se abre
