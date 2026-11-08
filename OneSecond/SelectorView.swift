@@ -17,13 +17,14 @@ struct SelectorView: View {
     @AppStorage("navigator_visto") private var navVisto = false
 
     enum Hoja: Identifiable {
-        case info(String, String, String, [UInt32]), entrar, web(String), navigator
+        case info(String, String, String, [UInt32]), entrar, web(String), navigator, inscribir(Int)
         var id: String {
             switch self {
             case .info(let i, _, _, _): return "info_" + i
             case .entrar: return "entrar"
             case .web(let u): return "web_" + u
             case .navigator: return "navigator"
+            case .inscribir(let i): return "inscribir_\(i)"
             }
         }
     }
@@ -89,6 +90,9 @@ struct SelectorView: View {
             .navigationBarHidden(true)
         }
         .navigationViewStyle(.stack)
+        .onReceive(NotificationCenter.default.publisher(for: .abrirInscribir)) { n in
+            if let i = n.object as? Int { abierta = nil; navAbierto = false; hoja = .inscribir(i) }
+        }
         .sheet(item: $hoja) { h in
             Group {
                 switch h {
@@ -96,6 +100,7 @@ struct SelectorView: View {
                 case .entrar: EntrarView()
                 case .web(let u): WebCuentaView(url: u)
                 case .navigator: NavigatorPronto()
+                case .inscribir(let i): InscribirView(evId: i) { p in abierta = p }
                 }
             }
             .environmentObject(central).environmentObject(cuenta).preferredColorScheme(.dark)
@@ -512,7 +517,10 @@ struct WebCuentaView: View {
     let url: String
     var body: some View {
         NavigationView {
-            Web(url: url, token: cuenta.token)
+            Web(url: url, token: cuenta.token) { u in
+                cerrar()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { UIApplication.shared.open(u) }
+            }
                 .ignoresSafeArea(edges: .bottom)
                 .navigationTitle("onesecond.es").navigationBarTitleDisplayMode(.inline)
                 .toolbar { ToolbarItem(placement: .confirmationAction) { Button(t("Cerrar", "Tancar", "Close")) { cerrar() } } }
@@ -524,10 +532,37 @@ struct WebCuentaView: View {
 struct Web: UIViewRepresentable {
     let url: String
     let token: String
+    /// Un enlace «Configurar la app» de la web (onesecondgps://, rider1000gps://, rondagps://): lo trata la app.
+    var alEnlaceApp: ((URL) -> Void)? = nil
+
+    func makeCoordinator() -> Coord { Coord(self) }
+    final class Coord: NSObject, WKNavigationDelegate, WKUIDelegate {
+        let w: Web
+        init(_ w: Web) { self.w = w }
+        func webView(_ v: WKWebView, decidePolicyFor a: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+            guard let u = a.request.url, let e = u.scheme?.lowercased() else { decisionHandler(.allow); return }
+            if Prueba.deEsquema(e) != nil {
+                decisionHandler(.cancel)
+                if let f = w.alEnlaceApp { f(u) } else { UIApplication.shared.open(u) }
+                return
+            }
+            if ["tel", "mailto", "sms", "maps", "whatsapp"].contains(e) { decisionHandler(.cancel); UIApplication.shared.open(u); return }
+            decisionHandler(.allow)
+        }
+        /// Los enlaces que abren otra ventana (target=_blank, el pago de Stripe...) se abren en la misma.
+        func webView(_ v: WKWebView, createWebViewWith c: WKWebViewConfiguration, for a: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
+            if a.targetFrame == nil { v.load(a.request) }
+            return nil
+        }
+    }
+
     func makeUIView(context: Context) -> WKWebView {
         let w = WKWebView(frame: .zero, configuration: WKWebViewConfiguration())
         w.isOpaque = false
         w.backgroundColor = UIColor(Color.fondo)
+        w.navigationDelegate = context.coordinator
+        w.uiDelegate = context.coordinator
+        w.allowsBackForwardNavigationGestures = true
         let cargar = { if let u = URL(string: url) { w.load(URLRequest(url: u)) } }
         if !token.isEmpty, let c = HTTPCookie(properties: [.domain: "onesecond.es", .path: "/", .name: Cuenta.cookie, .value: token, .secure: "TRUE"]) {
             w.configuration.websiteDataStore.httpCookieStore.setCookie(c) { cargar() }

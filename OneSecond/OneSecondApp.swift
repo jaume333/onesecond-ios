@@ -2,6 +2,7 @@ import SwiftUI
 
 @main
 struct OneSecondApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegado.self) private var delegado
     @StateObject private var central = Central.shared
     @StateObject private var cuenta = Cuenta.shared
     @State private var abierta: Prueba? = nil
@@ -26,6 +27,10 @@ struct OneSecondApp: App {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { NotificationCenter.default.post(name: .gpxRecibido, object: a) }
                 }
                 .onAppear { Telemetria.autoEmitir(central) }
+                // aviso de una prueba en la que ya estás inscrito: se abre esa prueba
+                .onReceive(NotificationCenter.default.publisher(for: .abrirPruebaDe)) { n in
+                    if let a = n.object as? String, let p = Prueba.deCuentas(a) { navAbierto = false; abierta = p }
+                }
                 // botón «Configurar la app» de la web: onesecondgps://configurar?u=<dirección del piloto>
                 .onOpenURL { url in
                     // un GPX compartido (WhatsApp, Archivos...): se guarda en el Navigator y se abre

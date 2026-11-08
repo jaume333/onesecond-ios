@@ -17,7 +17,8 @@ final class Cuenta: ObservableObject {
     @Published var avisosActivos: Bool = UserDefaults.standard.object(forKey: "avisos_pruebas") as? Bool ?? true {
         didSet { UserDefaults.standard.set(avisosActivos, forKey: "avisos_pruebas"); programarAvisos() }
     }
-    private var inscritas: Set<Int> = []
+    private(set) var inscritas: Set<Int> = []
+    func marcarInscrita(_ id: Int) { inscritas.insert(id); programarAvisos() }
     private var ultimaAuto = Date.distantPast
 
     var conectado: Bool { !token.isEmpty }
@@ -225,6 +226,7 @@ final class Cuenta: ObservableObject {
                     txt = sal + " " + t("Aún puedes inscribirte en la telemetría: es gratis.", "Encara et pots inscriure a la telemetria: és gratuït.", "You can still sign up for the telemetry: it's free.")
                 } else { continue }
                 let co = UNMutableNotificationContent(); co.title = tit; co.body = txt; co.sound = .default
+                co.userInfo = ["evento": id, "inscribir": !dentro && puede, "app": ev.str("app")]
                 let comp = cal.dateComponents([.year, .month, .day, .hour, .minute], from: cuando)
                 c.add(UNNotificationRequest(identifier: "tel_\(id)_\(tipo)", content: co, trigger: UNCalendarNotificationTrigger(dateMatching: comp, repeats: false)))
             }
