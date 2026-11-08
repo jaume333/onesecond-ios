@@ -43,3 +43,4 @@ targets:
           - CFBundleURLName: es.onesecond.rallygps
             CFBundleURLSchemes: [onesecondgps, rider1000gps, rondagps]
         LSApplicationQueriesSchemes: [tel]
+        UIAppFonts: [pagella_negrita.otf]

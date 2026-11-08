@@ -3,12 +3,14 @@ import SwiftUI
 @main
 struct OneSecondApp: App {
     @StateObject private var central = Central.shared
+    @StateObject private var cuenta = Cuenta.shared
     @State private var abierta: Prueba? = nil
 
     var body: some Scene {
         WindowGroup {
             SelectorView(abierta: $abierta)
                 .environmentObject(central)
+                .environmentObject(cuenta)
                 .preferredColorScheme(.dark)
                 .onAppear {
                     if Demo.activo {

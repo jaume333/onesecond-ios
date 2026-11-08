@@ -55,6 +55,7 @@ struct PruebaView: View {
                 }
             }
             .environmentObject(central)
+            .environmentObject(Cuenta.shared)
             .preferredColorScheme(.dark)
         }
     }

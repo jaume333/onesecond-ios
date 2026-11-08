@@ -90,7 +90,17 @@ final class Central: NSObject, ObservableObject, CLLocationManagerDelegate {
         if emitiendo == p.id { return t("Pulsa PARAR antes de cambiar la vinculación.", "Prem ATURAR abans de canviar la vinculació.", "Press STOP before changing the link.") }
         for o in Prueba.todas where o.id != p.id { aj(o).url = "" }   // solo una vinculada
         aj(p).url = u
+        aj(p).dorsal = ""; aj(p).nombrePiloto = ""
+        Cuenta.shared.marcarVista(u)
         tick += 1
+        // el dorsal y el nombre del piloto, para enseñarlos en la pantalla de inicio (GET a su dirección)
+        Task {
+            let (c, d) = await Red.pedir(u)
+            let o = Red.objeto(d)
+            if c == 200, !o.str("dorsal").isEmpty, aj(p).url == u {
+                aj(p).dorsal = o.str("dorsal"); aj(p).nombrePiloto = o.str("nombre"); tick += 1
+            }
+        }
         return nil
     }
 
@@ -114,6 +124,7 @@ final class Central: NSObject, ObservableObject, CLLocationManagerDelegate {
     func desvincular(_ p: Prueba) {
         if emitiendo == p.id { return }
         aj(p).url = ""
+        aj(p).dorsal = ""; aj(p).nombrePiloto = ""
         tick += 1
     }
 
