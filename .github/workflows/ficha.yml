@@ -33,9 +33,9 @@ jobs:
           UDID=$(xcrun simctl list devices available | grep "$NOMBRE (" | head -1 | grep -oE "[0-9A-F-]{36}")
           echo "Simulador: $NOMBRE $UDID"
           echo "UDID=$UDID" >> $GITHUB_ENV
-          xcrun simctl boot "$UDID" || true
-          for i in $(seq 1 60); do xcrun simctl list devices | grep "$UDID" | grep -q Booted && break; sleep 5; done
-          sleep 20
+          T() { perl -e 'alarm shift; exec @ARGV' "$@"; }
+          T 120 xcrun simctl boot "$UDID" || true
+          T 400 xcrun simctl bootstatus "$UDID" -b || echo "bootstatus no terminó; sigo"
           xcrun simctl status_bar "$UDID" override --time "9:41" --batteryState charged --batteryLevel 100 --cellularBars 4 --wifiBars 3 --operatorName ""
       - name: Compilar para el simulador
         run: |
@@ -44,12 +44,18 @@ jobs:
             -derivedDataPath build CODE_SIGNING_ALLOWED=NO build 2>&1 | tail -5
           xcrun simctl install "$UDID" "build/Build/Products/Debug-iphonesimulator/One Second.app"
       - name: Capturas
+        timeout-minutes: 15
         run: |
           mkdir -p fastlane/screenshots/es-ES
+          T() { perl -e 'alarm shift; exec @ARGV' "$@"; }
+          T 180 xcrun simctl launch "$UDID" es.onesecond.rallygps -demo -pantalla 1 || true
+          sleep 15
           for n in 1 2 3 4 5; do
-            xcrun simctl launch --terminate-running-process "$UDID" es.onesecond.rallygps -demo -pantalla $n -AppleLanguages "(es)" -AppleLocale es_ES
+            echo "== pantalla $n"
+            T 30 xcrun simctl terminate "$UDID" es.onesecond.rallygps || true
+            T 120 xcrun simctl launch "$UDID" es.onesecond.rallygps -demo -pantalla $n -AppleLanguages "(es)" -AppleLocale es_ES || echo "launch falló"
             sleep 8
-            xcrun simctl io "$UDID" screenshot "fastlane/screenshots/es-ES/0${n}_iphone.png"
+            T 60 xcrun simctl io "$UDID" screenshot "fastlane/screenshots/es-ES/0${n}_iphone.png" || echo "captura falló"
           done
           sips -g pixelWidth -g pixelHeight fastlane/screenshots/es-ES/*.png
       - name: Guardar las capturas en la rama «capturas»
