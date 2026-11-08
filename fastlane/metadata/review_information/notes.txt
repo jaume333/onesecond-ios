@@ -3,7 +3,7 @@ One Second is the companion app for participants of motorsport events (regularit
 HOW TO TEST
 1. Open the app and tap "One Second Rally".
 2. Tap VINCULAR (Link) > paste this test rider address and tap GUARDAR (Save):
-   [DIRECCIÓN DE PILOTO DE PRUEBA]
+   https://onesecond.es/rally/api/p/v3sc5wq3bchs
 3. Tap EMITIR (Send) and allow location "While Using the App". The app sends the GPS position to the organisers' server until you tap PARAR (Stop).
 4. AVISOS (Alerts) sends an incident alert to the organisers; MENSAJES shows messages from the organisers.
 
