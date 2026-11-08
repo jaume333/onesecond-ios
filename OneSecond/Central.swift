@@ -11,6 +11,7 @@ final class Central: NSObject, ObservableObject, CLLocationManagerDelegate {
     @Published var tick = 0                       // para refrescar las pantallas
     @Published private(set) var emitiendo: String? = nil
     @Published var mensajeBreve: (String, Bool)? = nil   // texto, ¿error?
+    @Published var cartelTrafico: [String: Any]? = nil    // aviso de tráfico en grande
 
     // estado de la emisión (para la pantalla)
     private(set) var enviadas = 0
@@ -48,6 +49,7 @@ final class Central: NSObject, ObservableObject, CLLocationManagerDelegate {
         lm.pausesLocationUpdatesAutomatically = false
         autorizacion = lm.authorizationStatus
         UIDevice.current.isBatteryMonitoringEnabled = true
+        _ = RedActual.shared
         if Demo.activo { cargarDemo(); return }
         timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
             Task { @MainActor in self?.cadaSegundo() }
@@ -236,6 +238,7 @@ final class Central: NSObject, ObservableObject, CLLocationManagerDelegate {
             let cargando = dev.batteryState == .charging || dev.batteryState == .full
             extra = String(format: ",\"bat\":%d,\"chg\":%d", Int((dev.batteryLevel * 100).rounded()), cargando ? 1 : 0)
         }
+        extra += RedActual.shared.json
         let linea = String(format: "{\"time\":%lld,\"lat\":%.7f,\"lon\":%.7f,\"acc\":%.1f,\"spd\":%.2f,\"mock\":%d%@}",
                            Int64(l.timestamp.timeIntervalSince1970 * 1000), l.coordinate.latitude, l.coordinate.longitude,
                            l.horizontalAccuracy, l.speed >= 0 ? l.speed : -1.0, mock ? 1 : 0, extra)
@@ -286,6 +289,10 @@ final class Central: NSObject, ObservableObject, CLLocationManagerDelegate {
                 if j["pv"] != nil { pvServidor = j.str("pv") }
                 ponerPrecision()
                 await mensajes(p).llegados(j["msgs"] as? [[String: Any]])
+                if p.id == "ronda" {
+                    Trafico.recibidos(j["trf"] as? [[String: Any]], self)       // tráfico DGT por delante
+                    if let fa = j["fa"] as? NSNumber { FichasDatos.desdeEmision(fa.intValue) }   // ¿ficha nueva?
+                }
             } else if c == 404 {
                 codigoMal = true; break
             } else {

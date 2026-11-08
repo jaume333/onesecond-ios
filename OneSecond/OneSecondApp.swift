@@ -11,6 +11,7 @@ struct OneSecondApp: App {
     var body: some Scene {
         WindowGroup {
             SelectorView(abierta: $abierta, navAbierto: $navAbierto)
+                .overlay(CartelTrafico())
                 .environmentObject(central)
                 .environmentObject(cuenta)
                 .preferredColorScheme(.dark)

@@ -186,6 +186,7 @@ struct AjustesView: View {
     @Environment(\.dismiss) var cerrar
     let p: Prueba
     let vincular: () -> Void
+    @State private var vozTrafico = Trafico.conVoz
 
     var body: some View {
         let aj = central.aj(p)
@@ -202,6 +203,16 @@ struct AjustesView: View {
                     if aj.vinculada {
                         Button(t("Desvincular", "Desvincular", "Unlink"), role: .destructive) { central.desvincular(p); cerrar() }
                             .disabled(central.emitiendo(p))
+                    }
+                }
+                if p.id == "ronda" {
+                    Section(t("Tráfico (DGT)", "Trànsit (DGT)", "Traffic (DGT)")) {
+                        Toggle(t("Avisos de tráfico por voz", "Avisos de trànsit per veu", "Spoken traffic alerts"), isOn: $vozTrafico)
+                            .onChange(of: vozTrafico) { Trafico.conVoz = $0 }
+                        Text(t("Accidentes, cortes, vehículos parados y retenciones por delante en tu tramo. Se oyen por el intercomunicador del casco si está conectado por Bluetooth.",
+                               "Accidents, talls, vehicles aturats i retencions per davant al teu tram. Se senten per l'intercomunicador del casc si està connectat per Bluetooth.",
+                               "Accidents, closures, stopped vehicles and queues ahead on your stage. Heard through your helmet intercom if connected by Bluetooth."))
+                            .font(.footnote).foregroundColor(.suave)
                     }
                 }
                 if !aj.telOrg.isEmpty {
