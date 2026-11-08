@@ -214,8 +214,7 @@ struct RallyView: View {
         let aj = central.aj(p)
         if central.emitiendo(p) {
             BotonMantener(arriba: "■  " + TxRally.t("parar_b"), abajo: TxRally.t("mantener"), alAcabar: { central.parar() },
-                          antes: { central.breve(TxRally.t("mantener_aviso"), error: true) }, dura: 1.5)
-                .frame(maxWidth: .infinity).frame(height: 56)
+                          antes: { central.breve(TxRally.t("mantener_aviso"), error: true) }, dura: 1.5, ancho: true, alto: 56)
         } else {
             VStack(spacing: 10) {
                 Text(TxRally.t("parado_desc")).font(.system(size: 13)).foregroundColor(TC.suave).multilineTextAlignment(.center)
@@ -353,7 +352,7 @@ struct RallyView: View {
     /// Lo mismo que «Ver mis tiempos» de la web pública; como mucho una vez por minuto.
     private func pedirPosicion() {
         let aj = central.aj(p)
-        guard aj.vinculada, !aj.dorsal.isEmpty, Date().timeIntervalSince(posPedida) > 60 else { return }
+        guard !Demo.activo, aj.vinculada, !aj.dorsal.isEmpty, Date().timeIntervalSince(posPedida) > 60 else { return }
         posPedida = Date()
         let dor = aj.dorsal.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? ""
         let u = "https://onesecond.es" + web + "api/public/live/participante?d=" + dor
@@ -364,6 +363,7 @@ struct RallyView: View {
     }
 
     private func cargarClas() async {
+        if Demo.activo { return }
         let (c, d) = await Red.pedir("https://onesecond.es" + web + "api/public/live?v=" + Self.idVisita)
         clasCodigo = c
         if c >= 200 && c < 300 { clas = Red.objeto(d) }

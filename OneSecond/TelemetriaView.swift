@@ -512,6 +512,8 @@ struct BotonMantener: View {
     let alAcabar: () -> Void
     let antes: () -> Void
     var dura: Double = 2
+    var ancho = false
+    var alto: CGFloat = 48
     @State private var hecho: CGFloat = 0
     @State private var desde = Date.distantPast
 
@@ -520,7 +522,7 @@ struct BotonMantener: View {
             Text(arriba).font(.system(size: 15, weight: .bold)).foregroundColor(TC.texto)
             Text(abajo).font(.system(size: 11, weight: .medium)).foregroundColor(TC.suave)
         }
-        .padding(.horizontal, 16).frame(height: 48)
+        .padding(.horizontal, 16).frame(maxWidth: ancho ? .infinity : nil).frame(height: alto)
         .background(GeometryReader { g in
             RoundedRectangle(cornerRadius: 8).fill(Color(red: 227 / 255, green: 19 / 255, blue: 47 / 255).opacity(0.59))
                 .frame(width: g.size.width * hecho)
