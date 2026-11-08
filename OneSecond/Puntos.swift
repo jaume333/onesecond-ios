@@ -129,6 +129,17 @@ final class Puntos {
         }
     }
 
+    func cargarDemo() {
+        lista = [P(id: 1, lat: 41.60, lon: 2.10, r: 150, n: "Salida · Sabadell"), P(id: 2, lat: 41.70, lon: 2.00, r: 150, n: "Coll de Pradell"),
+                 P(id: 3, lat: 41.80, lon: 1.90, r: 150, n: "Montserrat"), P(id: 4, lat: 41.90, lon: 1.80, r: 150, n: "Cardona"),
+                 P(id: 5, lat: 42.00, lon: 1.70, r: 150, n: "Solsona"), P(id: 6, lat: 41.60, lon: 2.11, r: 150, n: "Llegada · Sabadell")]
+        pasados = [1, 2, 3]
+        let ahora = Date().timeIntervalSince1970
+        muestras = [(ahora - 600, 24400), (ahora, 12400)]
+        muestrasDe = 3
+        distSig = 12400
+    }
+
     // ---------- para la pantalla ----------
     var total: Int { lista.count }
     var hechos: Int { lista.filter { pasados.contains($0.id) }.count }

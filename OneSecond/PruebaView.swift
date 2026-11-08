@@ -34,6 +34,17 @@ struct PruebaView: View {
                 Button { hoja = .ajustes } label: { Image(systemName: "gearshape") }
             }
         }
+        .onAppear {
+            guard Demo.activo else { return }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+                switch (p.id, Demo.pantalla) {
+                case ("ronda", 3): hoja = .avisos
+                case ("ronda", 4): hoja = .chat
+                case ("rally", 5): hoja = .vincular
+                default: break
+                }
+            }
+        }
         .sheet(item: $hoja) { h in
             Group {
                 switch h {

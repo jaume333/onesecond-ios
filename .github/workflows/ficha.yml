@@ -1,0 +1,64 @@
+name: Ficha App Store (capturas y textos)
+# Saca las capturas en el simulador con datos de ejemplo y, si se marca «subir», sube capturas y textos a
+# App Store Connect. NUNCA envía la app a revisión ni la publica.
+on:
+  workflow_dispatch:
+    inputs:
+      subir:
+        description: "Subir capturas y textos a App Store Connect"
+        type: boolean
+        default: false
+jobs:
+  ficha:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Usar Xcode 26
+        run: |
+          X=$(ls -d /Applications/Xcode_26*.app | sort -V | tail -1)
+          sudo xcode-select -s "$X"
+          xcodebuild -version
+      - name: Generar el proyecto
+        run: |
+          brew install xcodegen
+          xcodegen generate
+      - name: Simulador de iPhone grande (6,9")
+        run: |
+          xcrun simctl list devices available | grep -E "iPhone" | head -30
+          NOMBRE=$(xcrun simctl list devices available | grep -oE "iPhone [0-9]+ Pro Max" | sort -V | tail -1)
+          UDID=$(xcrun simctl list devices available | grep "$NOMBRE (" | head -1 | grep -oE "[0-9A-F-]{36}")
+          echo "Simulador: $NOMBRE $UDID"
+          echo "UDID=$UDID" >> $GITHUB_ENV
+          xcrun simctl boot "$UDID"
+          xcrun simctl bootstatus "$UDID" -b
+          xcrun simctl status_bar "$UDID" override --time "9:41" --batteryState charged --batteryLevel 100 --cellularBars 4 --wifiBars 3 --operatorName ""
+      - name: Compilar para el simulador
+        run: |
+          set -o pipefail
+          xcodebuild -project OneSecond.xcodeproj -scheme OneSecond -sdk iphonesimulator -destination "id=$UDID" \
+            -derivedDataPath build CODE_SIGNING_ALLOWED=NO build 2>&1 | tail -5
+          xcrun simctl install "$UDID" "build/Build/Products/Debug-iphonesimulator/One Second.app"
+      - name: Capturas
+        run: |
+          mkdir -p fastlane/screenshots/es-ES
+          for n in 1 2 3 4 5; do
+            xcrun simctl launch --terminate-running-process "$UDID" es.onesecond.rallygps -demo -pantalla $n -AppleLanguages "(es)" -AppleLocale es_ES
+            sleep 8
+            xcrun simctl io "$UDID" screenshot "fastlane/screenshots/es-ES/0${n}_iphone.png"
+          done
+          sips -g pixelWidth -g pixelHeight fastlane/screenshots/es-ES/*.png
+      - uses: actions/upload-artifact@v4
+        with:
+          name: capturas
+          path: fastlane/screenshots/es-ES/*.png
+      - name: Subir textos y capturas (sin enviar a revisión)
+        if: ${{ inputs.subir }}
+        env:
+          P8: ${{ secrets.APPSTORE_KEY_P8 }}
+        run: |
+          python3 -c "import json,os;json.dump({'key_id':'LQFB8QADZB','issuer_id':'a406dc4b-3c03-421b-8bb2-e10b20505f94','key':os.environ['P8'],'in_house':False},open('api_key.json','w'))"
+          sudo gem install fastlane --no-document >/dev/null
+          fastlane deliver --api_key_path api_key.json --app_identifier es.onesecond.rallygps --app_version 1.57 \
+            --platform ios --skip_binary_upload true --submit_for_review false --automatic_release false \
+            --force true --overwrite_screenshots true --run_precheck_before_submit false \
+            --metadata_path fastlane/metadata --screenshots_path fastlane/screenshots

@@ -10,6 +10,11 @@ struct OneSecondApp: App {
             SelectorView(abierta: $abierta)
                 .environmentObject(central)
                 .preferredColorScheme(.dark)
+                .onAppear {
+                    if Demo.activo {
+                        switch Demo.pantalla { case 2, 3, 4: abierta = .ronda; case 5: abierta = .rally; default: break }
+                    }
+                }
                 // botón «Configurar la app» de la web: onesecondgps://configurar?u=<dirección del piloto>
                 .onOpenURL { url in
                     guard let p = Prueba.deEsquema(url.scheme ?? ""),

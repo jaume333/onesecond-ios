@@ -1,0 +1,1 @@
+rally,regularidad,moto,GPS,cronometraje,ruta,motociclismo,Rider 1000,Ronda,control,puntos

@@ -55,6 +55,11 @@ final class Avisos {
 
     private func guardar() { aj.guardarJson("avisos", lista) }
 
+    func cargarDemo() {
+        lista = [["id": "demo1", "tipo": "pinchazo", "texto": "Rueda trasera, estoy en el arcén", "time": ahoraMs() - 1_200_000,
+                  "enviado": true, "estado": "atendido", "respuesta": "Recibido. La asistencia llega en 15 minutos."]]
+    }
+
     func nuevo(tipo: String, texto: String, pos: (Double, Double, Double)?) {
         var o: [String: Any] = ["id": String(UUID().uuidString.replacingOccurrences(of: "-", with: "").lowercased().prefix(18)),
                                 "tipo": tipo, "texto": texto.trimmingCharacters(in: .whitespacesAndNewlines),

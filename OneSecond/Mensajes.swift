@@ -23,6 +23,13 @@ final class Mensajes {
         aj.guardarJson("resp_pend", pendientes)
     }
 
+    func cargarDemo() {
+        let ahora = ahoraMs()
+        recibidos = [["id": 1, "t": ahora - 3_600_000, "texto": "¡Buenos días! Salida a las 8:00. Buena ruta a todos.", "todos": true, "leido": true],
+                     ["id": 2, "t": ahora - 900_000, "texto": "Te vemos en el mapa pasando por Montserrat. ¿Todo bien?", "todos": false, "leido": false]]
+        mios = [["uid": "a", "texto": "Todo perfecto, gracias. Paro a repostar en Cardona.", "t": ahora - 600_000, "enviada": true]]
+    }
+
     var sinLeer: Int { recibidos.filter { !$0.bool("leido") }.count }
 
     var lineas: [Linea] {

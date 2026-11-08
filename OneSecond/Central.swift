@@ -48,6 +48,7 @@ final class Central: NSObject, ObservableObject, CLLocationManagerDelegate {
         lm.pausesLocationUpdatesAutomatically = false
         autorizacion = lm.authorizationStatus
         UIDevice.current.isBatteryMonitoringEnabled = true
+        if Demo.activo { cargarDemo(); return }
         timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
             Task { @MainActor in self?.cadaSegundo() }
         }
@@ -281,6 +282,17 @@ final class Central: NSObject, ObservableObject, CLLocationManagerDelegate {
             vueltas += 1
         } while cola(p).tamano >= 300 && vueltas < 10
         tick += 1
+    }
+
+    /// Capturas de la App Store: Ronda la Llana vinculada y emitiendo, con puntos, mensajes y un aviso de ejemplo.
+    private func cargarDemo() {
+        let p = Prueba.ronda
+        for o in Prueba.todas { aj(o).url = "" }
+        aj(p).url = "https://onesecond.es/ronda/api/p/ABCDEFGH2345"
+        aj(p).telOrg = "+34 600 000 000"
+        if Demo.pantalla != 5 { emitiendo = p.id }
+        enviadas = 1287; ultimaPos = Date(); ultimaPrec = 4
+        puntos(p).cargarDemo(); mensajes(p).cargarDemo(); avisos(p).cargarDemo()
     }
 
     var pendientes: Int { emitiendo.flatMap { Prueba.de($0) }.map { cola($0).tamano } ?? 0 }

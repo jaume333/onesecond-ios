@@ -101,3 +101,14 @@ extension Color {
     static let rojo = Color(hex: 0xE53935)
     static let naranja = Color(hex: 0xF39C12)
 }
+
+/// Modo demostración: solo para sacar las capturas de la App Store en el simulador (argumentos -demo -pantalla N).
+/// Datos de ejemplo, sin GPS ni servidor. Nunca se activa en un iPhone normal.
+enum Demo {
+    static let args = ProcessInfo.processInfo.arguments
+    static var activo: Bool { args.contains("-demo") }
+    static var pantalla: Int {
+        if let i = args.firstIndex(of: "-pantalla"), i + 1 < args.count { return Int(args[i + 1]) ?? 1 }
+        return 1
+    }
+}

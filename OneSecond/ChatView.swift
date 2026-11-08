@@ -51,7 +51,7 @@ struct ChatView: View {
             .navigationTitle(t("Mensajes", "Missatges", "Messages"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar { ToolbarItem(placement: .confirmationAction) { Button(t("Cerrar", "Tancar", "Close")) { cerrar() } } }
-            .task { await m.consultar(); await m.marcarLeidos(); central.tick += 1 }
+            .task { if Demo.activo { return }; await m.consultar(); await m.marcarLeidos(); central.tick += 1 }
         }
     }
 }

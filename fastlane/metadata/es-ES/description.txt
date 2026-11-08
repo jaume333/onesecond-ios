@@ -1,0 +1,31 @@
+One Second es la app oficial para los participantes de los eventos de motor organizados con One Second (onesecond.es). En una sola app tienes todas las pruebas:
+
+• ONE SECOND RALLY: rally de regularidad. Tu móvil cronometra con GPS, con décimas de segundo, tu paso por cada control del recorrido, incluso por los controles escondidos que nadie conoce.
+• RIDER 1000: ruta de varios días. La app registra tu paso por los puntos de control y la organización te sigue en el mapa por seguridad.
+• RONDA LA LLANA: ruta con puntos de control, seguimiento por GPS, avisos y mensajes con la organización.
+
+CÓMO FUNCIONA
+• Inscríbete en el evento en onesecond.es.
+• Abre la app y elige tu prueba.
+• Vincúlala con tu inscripción: escanea tu QR o pega tu dirección de piloto (en Rider 1000 y Ronda la Llana, también con tu dorsal y tu teléfono).
+• Antes de salir, pulsa EMITIR. La app sigue funcionando con la pantalla apagada.
+• Al terminar, pulsa PARAR.
+
+QUÉ PUEDES HACER
+• Registro automático de tu paso por los controles con el GPS del iPhone.
+• Funciona sin cobertura: guarda las posiciones y las envía en cuanto vuelve la señal.
+• Avisos rápidos a la organización: pinchazo, avería, gasolina, perdido, abandono o caída/accidente, con tu ubicación y llamada directa al 112 o a la organización.
+• Mensajes con la organización durante la prueba.
+• Disponible en español, catalán e inglés.
+
+TU PRIVACIDAD
+• La ubicación solo se usa mientras estás emitiendo, y el iPhone lo indica con el icono de ubicación.
+• Solo la organización del evento ve tu posición, en un panel privado. Tu posición nunca se publica.
+• Las posiciones se borran solas al cabo de pocos días.
+• Sin publicidad y sin herramientas de seguimiento de terceros.
+
+IMPORTANTE
+• Necesitas una inscripción en un evento de One Second para usar la app.
+• Lleva el iPhone enchufado durante la prueba: el GPS gasta batería.
+
+Contacto: info@onesecond.es
