@@ -7,6 +7,12 @@ jobs:
     runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
+      - name: Usar Xcode 26 (Apple lo exige para subir apps)
+        run: |
+          ls -d /Applications/Xcode*.app
+          X=$(ls -d /Applications/Xcode_26*.app | sort -V | tail -1)
+          sudo xcode-select -s "$X"
+          xcodebuild -version
       - name: Generar el proyecto de Xcode
         run: |
           brew install xcodegen

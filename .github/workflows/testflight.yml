@@ -10,6 +10,12 @@ jobs:
       ISSUER_ID: a406dc4b-3c03-421b-8bb2-e10b20505f94   # ID del emisor (no es secreto)
     steps:
       - uses: actions/checkout@v4
+      - name: Usar Xcode 26 (Apple lo exige para subir apps)
+        run: |
+          ls -d /Applications/Xcode*.app
+          X=$(ls -d /Applications/Xcode_26*.app | sort -V | tail -1)
+          sudo xcode-select -s "$X"
+          xcodebuild -version
       - name: Clave de App Store Connect
         env:
           P8: ${{ secrets.APPSTORE_KEY_P8 }}
