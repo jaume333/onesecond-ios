@@ -11,7 +11,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Clave de App Store Connect
+        env:
+          P8: ${{ secrets.APPSTORE_KEY_P8 }}
         run: |
+          falta=0
+          [ -z "$KEY_ID" ] && echo "::error::Falta el secreto APPSTORE_KEY_ID" && falta=1
+          [ -z "$ISSUER_ID" ] && echo "::error::Falta el secreto APPSTORE_ISSUER_ID" && falta=1
+          [ -z "$P8" ] && echo "::error::Falta el secreto APPSTORE_KEY_P8" && falta=1
+          [ $falta = 1 ] && exit 1
           mkdir -p "$RUNNER_TEMP/keys"
           echo "${{ secrets.APPSTORE_KEY_P8 }}" > "$RUNNER_TEMP/keys/AuthKey.p8"
       - name: Generar el proyecto
