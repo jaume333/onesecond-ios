@@ -23,7 +23,7 @@ jobs:
         run: |
           brew install xcodegen
           xcodegen generate
-      - name: Archivar (sin firmar: se firma para distribución al exportar, con los certificados de Apple en la nube)
+      - name: "Archivar (sin firmar; se firma para distribución al exportar)"
         run: |
           set -o pipefail
           xcodebuild -project OneSecond.xcodeproj -scheme OneSecond -sdk iphoneos -configuration Release \
