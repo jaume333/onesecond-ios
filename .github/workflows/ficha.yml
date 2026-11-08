@@ -8,6 +8,8 @@ on:
         description: "Subir capturas y textos a App Store Connect"
         type: boolean
         default: false
+permissions:
+  contents: write
 jobs:
   ficha:
     runs-on: macos-15
@@ -47,6 +49,16 @@ jobs:
             xcrun simctl io "$UDID" screenshot "fastlane/screenshots/es-ES/0${n}_iphone.png"
           done
           sips -g pixelWidth -g pixelHeight fastlane/screenshots/es-ES/*.png
+      - name: Guardar las capturas en la rama «capturas»
+        run: |
+          D=$(mktemp -d); cp fastlane/screenshots/es-ES/*.png "$D"/
+          git config user.name "github-actions"; git config user.email "actions@github.com"
+          git checkout --orphan capturas-tmp
+          git rm -rfq . >/dev/null
+          cp "$D"/*.png .
+          git add *.png && git commit -qm "Capturas App Store ${{ github.run_number }}"
+          git push -f origin HEAD:capturas
+          git checkout -q -f main
       - uses: actions/upload-artifact@v4
         with:
           name: capturas
