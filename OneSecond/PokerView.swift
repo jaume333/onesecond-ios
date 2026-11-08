@@ -464,7 +464,7 @@ struct FichaPoker: View {
                             else if detError { Texto(t("No se han podido cargar sus tiempos.", "No s'han pogut carregar els seus temps.", "Couldn't load the times."), 13.5, .naranja) }
                             else { Texto(t("Cargando sus tiempos…", "Carregant els seus temps…", "Loading times…"), 14, .suave) }
                         }.padding(.top, 14)
-                        Texto(t("SUS CARTAS", "LES SEVES CARTES", "CARDS"), 11, .suave, .medium).tracking(1.6).padding(.top, 18)
+                        Text(t("SUS CARTAS", "LES SEVES CARTES", "CARDS")).font(.system(size: 11, weight: .medium)).tracking(1.6).foregroundColor(.suave).padding(.top, 18)
                     }
                     if m.d.id == "holdemrun" { holdem(est: est, nPuntos: nPuntos, total: total) }
                     else { poker(nPuntos: nPuntos, total: total, fin: fin) }
@@ -634,7 +634,7 @@ struct TiemposVista: View {
                 Texto(est + (pm.isEmpty ? "" : " · " + t("penalización manual ", "penalització manual ", "manual penalty ") + pm), 12, .suave)
                     .frame(maxWidth: .infinity).multilineTextAlignment(.center).padding(.top, 6)
             }
-            Texto(t("TIEMPOS EN CADA CONTROL", "TEMPS A CADA CONTROL", "TIMES AT EACH CHECKPOINT"), 11, .suave, .medium).tracking(1.6).padding(.top, 12)
+            Text(t("TIEMPOS EN CADA CONTROL", "TEMPS A CADA CONTROL", "TIMES AT EACH CHECKPOINT")).font(.system(size: 11, weight: .medium)).tracking(1.6).foregroundColor(.suave).padding(.top, 12)
             let cs = (det["controles"] as? [[String: Any]] ?? []).filter { !$0.bool("oculto") }
             if cs.isEmpty {
                 Texto(t("Aún no ha pasado por ningún control.", "Encara no ha passat per cap control.", "No checkpoints passed yet."), 13, .suave).padding(.top, 6)

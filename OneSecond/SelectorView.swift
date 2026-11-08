@@ -12,6 +12,7 @@ struct SelectorView: View {
     @State private var hoja: Hoja? = nil
     @State private var elegir: [Cuenta.Insc] = []
     @State private var mensaje: (String, String)? = nil
+    @State private var poker: PruebaWeb? = nil
     @AppStorage("navigator_visto") private var navVisto = false
 
     enum Hoja: Identifiable {
@@ -36,6 +37,9 @@ struct SelectorView: View {
                 Color.fondo.ignoresSafeArea()
                 ForEach(Prueba.todas) { p in
                     NavigationLink(tag: p, selection: $abierta) { PruebaView(p: p) } label: { EmptyView() }.hidden()
+                }
+                ForEach(PruebaWeb.todas) { w in
+                    NavigationLink(tag: w, selection: $poker) { PokerView(d: w) } label: { EmptyView() }.hidden()
                 }
                 ScrollView {
                     VStack(spacing: 0) {
@@ -67,7 +71,7 @@ struct SelectorView: View {
                             ForEach(PruebaWeb.todas) { w in
                                 Banda(id: w.id, nombre: w.nombre, sub: w.subtitulo, icono: w.icono, metal: w.metal, alto: alto,
                                       abierta: cuenta.abiertas.contains(w.id),
-                                      abrir: { hoja = .web("https://onesecond.es" + w.web) }, info: { hoja = .info(w.id, w.nombre, w.icono, w.metal) })
+                                      abrir: { poker = w }, info: { hoja = .info(w.id, w.nombre, w.icono, w.metal) })
                             }
                         }.padding(.top, 20)
 
