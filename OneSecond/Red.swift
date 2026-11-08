@@ -39,6 +39,8 @@ enum Red {
 extension Dictionary where Key == String, Value == Any {
     func int(_ k: String, _ def: Int = 0) -> Int {
         if let v = self[k] as? Int { return v }
+        if let v = self[k] as? Int64 { return Int(v) }
+        if let v = self[k] as? NSNumber { return v.intValue }
         if let v = self[k] as? Double { return Int(v) }
         if let v = self[k] as? String, let i = Int(v) { return i }
         return def
