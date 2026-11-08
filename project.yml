@@ -1,0 +1,45 @@
+name: OneSecond
+options:
+  bundleIdPrefix: es.onesecond
+  deploymentTarget:
+    iOS: "15.0"
+settings:
+  base:
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    SWIFT_VERSION: "5.0"
+targets:
+  OneSecond:
+    type: application
+    platform: iOS
+    sources:
+      - OneSecond
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: es.onesecond.rallygps
+        PRODUCT_NAME: One Second
+        TARGETED_DEVICE_FAMILY: "1"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_FILE: OneSecond/Info.plist
+    info:
+      path: OneSecond/Info.plist
+      properties:
+        CFBundleDisplayName: One Second
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        LSRequiresIPhoneOS: true
+        ITSAppUsesNonExemptEncryption: false
+        UILaunchScreen:
+          UIColorName: ""
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        UIRequiredDeviceCapabilities: [location-services, gps]
+        UIBackgroundModes: [location]
+        NSLocationWhenInUseUsageDescription: "One Second usa el GPS solo mientras pulsas EMITIR durante una prueba, para que la organización calcule tus pasos por los puntos de control y pueda localizarte si das un aviso de incidencia."
+        NSCameraUsageDescription: "La cámara se usa solo para escanear el QR que te da la organización para vincular la app con tu inscripción."
+        CFBundleLocalizations: [es, ca, en]
+        CFBundleDevelopmentRegion: es
+        CFBundleURLTypes:
+          - CFBundleURLName: es.onesecond.rallygps
+            CFBundleURLSchemes: [onesecondgps, rider1000gps, rondagps]
+        LSApplicationQueriesSchemes: [tel]

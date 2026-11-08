@@ -1,0 +1,19 @@
+name: Compilar iOS
+on:
+  push:
+  workflow_dispatch:
+jobs:
+  compilar:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generar el proyecto de Xcode
+        run: |
+          brew install xcodegen
+          xcodegen generate
+      - name: Compilar (simulador, sin firmar)
+        run: |
+          set -o pipefail
+          xcodebuild -project OneSecond.xcodeproj -scheme OneSecond -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build 2>&1 | tee build.log | grep -E "error:|warning: .*deprecated|BUILD" || true
+          grep -q "BUILD SUCCEEDED" build.log
