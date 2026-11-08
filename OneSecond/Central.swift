@@ -298,9 +298,10 @@ final class Central: NSObject, ObservableObject, CLLocationManagerDelegate {
 
     /// Capturas de la App Store: Ronda la Llana vinculada y emitiendo, con puntos, mensajes y un aviso de ejemplo.
     private func cargarDemo() {
-        let p = Demo.pantalla == 12 ? Prueba.rider : Prueba.ronda
+        let p = Demo.pantalla == 12 ? Prueba.rider : Demo.pantalla == 13 ? Prueba.rally : Prueba.ronda
         for o in Prueba.todas { aj(o).url = "" }
-        aj(p).url = p.id == "rider" ? "https://onesecond.es/rider1000/api/p/ABCDEFGH2345" : "https://onesecond.es/ronda/api/p/ABCDEFGH2345"
+        aj(p).url = p.id == "rider" ? "https://onesecond.es/rider1000/api/p/ABCDEFGH2345"
+            : p.id == "rally" ? "https://onesecond.es/rally/api/p/ABCDEFGH2345" : "https://onesecond.es/ronda/api/p/ABCDEFGH2345"
         aj(p).telOrg = "+34 600 000 000"
         aj(p).dorsal = "27"; aj(p).nombrePiloto = "Jaume Garcia"
         if Demo.pantalla != 5 && Demo.pantalla != 12 { emitiendo = p.id }

@@ -29,7 +29,7 @@ struct EstiloTelemetria {
     }
 }
 
-private enum TC {
+enum TC {
     static let fondo = Color(hex: 0x0B0F15), panel = Color(hex: 0x121822), borde = Color(hex: 0x253042)
     static let texto = Color(hex: 0xE9EEF5), suave = Color(hex: 0x8D9BB0), gris = Color(hex: 0x5E6B80)
     static let azul = Color(hex: 0x4A90E2), rojo = Color(hex: 0xE05555), verde = Color(hex: 0x3FBF7F)
@@ -128,7 +128,7 @@ struct TelemetriaView: View {
     private var cabecera: some View {
         let aj = central.aj(p)
         return ZStack(alignment: .top) {
-            Bandera().frame(height: 140)
+            BanderaCuadros().frame(height: 140)
             VStack(spacing: 0) {
                 Image(e.logo).resizable().scaledToFit().frame(width: 124, height: 124)
                     .clipShape(RoundedRectangle(cornerRadius: 124 * 0.22, style: .continuous))
@@ -374,86 +374,11 @@ struct TelemetriaView: View {
         return l
     }
 
-    // ---------- mensajes de la organización (los últimos, y el chat entero al tocar) ----------
     private var mensajes: some View {
-        let m = central.mensajes(p)
-        let conv = m.lineas
-        return VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                Text("✉  " + e.tx("chat_org")).font(.system(size: 15, weight: .bold)).foregroundColor(TC.texto)
-                Spacer()
-                if m.sinLeer > 0 {
-                    Text("\(m.sinLeer)").font(.system(size: 12, weight: .bold)).foregroundColor(.white)
-                        .padding(.horizontal, 8).padding(.vertical, 1).background(Capsule().fill(TC.rojo))
-                }
-            }
-            if conv.isEmpty {
-                Text(e.tx("chat_vacio")).font(.system(size: 13.5, weight: .medium)).foregroundColor(TC.suave)
-            } else {
-                ForEach(conv.suffix(4)) { x in burbuja(x) }
-            }
-            Button { hoja = .chat } label: {
-                Text("✎  " + e.tx(conv.isEmpty ? "chat_escribir" : "chat_abrir")).font(.system(size: 15, weight: .bold)).foregroundColor(TC.fondo)
-                    .frame(maxWidth: .infinity).frame(height: 46).background(RoundedRectangle(cornerRadius: 8).fill(e.acento))
-            }.padding(.top, 4)
-        }
-        .padding(.horizontal, 12).padding(.top, 10).padding(.bottom, 12)
-        .background(RoundedRectangle(cornerRadius: 10).fill(TC.panel))
-        .overlay(RoundedRectangle(cornerRadius: 10).stroke(TC.borde, lineWidth: 1.5))
-        .contentShape(Rectangle()).onTapGesture { hoja = .chat }
+        MensajesCaja(p: p, tx: e.tx, acento: e.acento, boton: e.acento, botonTexto: TC.fondo, burbuja: e.burbuja, burbujaB: e.burbujaB) { hoja = .chat }
     }
 
-    private func burbuja(_ x: Mensajes.Linea) -> some View {
-        HStack {
-            if x.yo { Spacer(minLength: 50) }
-            VStack(alignment: .leading, spacing: 2) {
-                if !x.yo {
-                    Text(e.tx("organizacion") + (x.todos ? " · " + e.tx("chat_todos") : "")).font(.system(size: 11, weight: .bold)).foregroundColor(e.acento)
-                }
-                Text(x.texto).font(.system(size: 15.5, weight: .medium)).foregroundColor(TC.texto)
-                Text(Self.hora(Date(timeIntervalSince1970: Double(x.t) / 1000)) + (x.yo ? "  ·  " + (x.enviada ? "✓ " + e.tx("resp_enviada") : "⏳ " + e.tx("resp_enviando")) : ""))
-                    .font(.system(size: 11, weight: .medium)).foregroundColor(x.yo ? (x.enviada ? TC.verde : TC.naranja) : TC.suave)
-                    .frame(maxWidth: x.yo ? .infinity : nil, alignment: .trailing)
-            }
-            .padding(.horizontal, 12).padding(.top, 8).padding(.bottom, 7)
-            .background(Burbuja(yo: x.yo).fill(x.yo ? e.burbuja : TC.msg))
-            .overlay(Burbuja(yo: x.yo).stroke(x.yo ? e.burbujaB : TC.borde, style: StrokeStyle(lineWidth: 1, dash: !x.yo && x.todos ? [5, 4] : [])))
-            if !x.yo { Spacer(minLength: 50) }
-        }
-    }
-
-    // ---------- mis avisos ----------
-    @ViewBuilder private var misAvisos: some View {
-        let av = central.avisos(p)
-        if !av.lista.isEmpty {
-            VStack(spacing: 8) {
-                ForEach(Array(av.lista.reversed().enumerated()), id: \.offset) { _, o in
-                    VStack(alignment: .leading, spacing: 4) {
-                        HStack {
-                            Text(Avisos.icono(o.str("tipo")) + "  " + Avisos.nombre(o.str("tipo"))).font(.system(size: 15, weight: .bold)).foregroundColor(TC.texto)
-                            Spacer()
-                            Text(Self.hora(Date(timeIntervalSince1970: Double(o.int("time")) / 1000))).font(.system(size: 12)).foregroundColor(TC.suave)
-                        }
-                        if !o.str("texto").isEmpty { Text(o.str("texto")).font(.system(size: 13)).foregroundColor(TC.suave) }
-                        Text(o.bool("borrar") ? t("Cancelando…", "Cancel·lant…", "Cancelling…") : Avisos.estadoTexto(o.bool("enviado") ? o.str("estado") : ""))
-                            .font(.system(size: 13, weight: .semibold)).foregroundColor(o.bool("enviado") ? TC.verde : TC.naranja)
-                        if !o.str("respuesta").isEmpty {
-                            Text("💬 " + o.str("respuesta")).font(.system(size: 14)).foregroundColor(TC.texto)
-                                .padding(8).frame(maxWidth: .infinity, alignment: .leading)
-                                .background(RoundedRectangle(cornerRadius: 8).fill(TC.verde.opacity(0.18)))
-                        }
-                        if !Avisos.cerrado(o) && !o.bool("borrar") {
-                            Button(t("Quitar el aviso", "Treure l'avís", "Remove alert"), role: .destructive) { av.quitar(o.str("id")); central.tick += 1 }
-                                .font(.system(size: 13))
-                        }
-                    }
-                    .padding(12).frame(maxWidth: .infinity, alignment: .leading)
-                    .background(RoundedRectangle(cornerRadius: 10).fill(TC.panel))
-                    .overlay(HStack { Rectangle().fill(o.bool("enviado") ? TC.verde : TC.naranja).frame(width: 4); Spacer() }.clipShape(RoundedRectangle(cornerRadius: 10)))
-                }
-            }
-        }
-    }
+    private var misAvisos: some View { MisAvisos(p: p) }
 
     private func enviarAviso(_ tipo: String, _ texto: String) {
         var pos: (Double, Double, Double)? = nil
@@ -519,7 +444,7 @@ struct PanelAviso: View {
 }
 
 /// Bandera a cuadros que se funde con el fondo (la de One Second Rally).
-struct Bandera: View {
+struct BanderaCuadros: View {
     var body: some View {
         Canvas { c, s in
             let lado: CGFloat = 15
@@ -583,8 +508,9 @@ struct BotonMantener: View {
     let abajo: String
     let alAcabar: () -> Void
     let antes: () -> Void
+    var dura: Double = 2
     @State private var hecho: CGFloat = 0
-    @State private var pulsando = false
+    @State private var desde = Date.distantPast
 
     var body: some View {
         VStack(spacing: 0) {
@@ -599,21 +525,19 @@ struct BotonMantener: View {
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .overlay(RoundedRectangle(cornerRadius: 8).stroke(hecho > 0 ? TC.rojo : TC.gris, lineWidth: 1.5))
         .contentShape(Rectangle())
-        .onLongPressGesture(minimumDuration: 2, maximumDistance: 40, pressing: { p in
-            pulsando = p
+        .onLongPressGesture(minimumDuration: dura, maximumDistance: 40, pressing: { p in
             if p {
+                desde = Date()
                 hecho = 0
-                withAnimation(.linear(duration: 2)) { hecho = 1 }
+                withAnimation(.linear(duration: dura)) { hecho = 1 }
             } else {
-                if hecho < 1 || true {
-                    withAnimation(.easeOut(duration: 0.15)) { hecho = 0 }
-                }
+                withAnimation(.easeOut(duration: 0.15)) { hecho = 0 }
+                if Date().timeIntervalSince(desde) < dura - 0.05 { antes() }
             }
         }, perform: {
             hecho = 0
             alAcabar()
         })
-        .simultaneousGesture(TapGesture().onEnded { antes() })
     }
 }
 
@@ -633,6 +557,97 @@ struct Burbuja: Shape {
             a.addArc(tangent1End: CGPoint(x: r.minX, y: r.maxY), tangent2End: CGPoint(x: r.minX, y: r.maxY - bl), radius: bl)
             a.addLine(to: CGPoint(x: r.minX, y: r.minY + tl))
             a.addArc(tangent1End: CGPoint(x: r.minX, y: r.minY), tangent2End: CGPoint(x: r.minX + tl, y: r.minY), radius: tl)
+        }
+    }
+}
+
+/// Los últimos mensajes de la conversación con la organización y el botón para abrir el chat entero.
+struct MensajesCaja: View {
+    @EnvironmentObject var central: Central
+    let p: Prueba
+    let tx: (String) -> String
+    let acento: Color, boton: Color, botonTexto: Color, burbuja: Color, burbujaB: Color
+    let abrir: () -> Void
+
+    var body: some View {
+        let m = central.mensajes(p)
+        let conv = m.lineas
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text("✉  " + tx("chat_org")).font(.system(size: 15, weight: .bold)).foregroundColor(TC.texto)
+                Spacer()
+                if m.sinLeer > 0 {
+                    Text("\(m.sinLeer)").font(.system(size: 12, weight: .bold)).foregroundColor(.white)
+                        .padding(.horizontal, 8).padding(.vertical, 1).background(Capsule().fill(TC.rojo))
+                }
+            }
+            if conv.isEmpty {
+                Text(tx("chat_vacio")).font(.system(size: 13.5, weight: .medium)).foregroundColor(TC.suave)
+            } else {
+                ForEach(conv.suffix(4)) { x in fila(x) }
+            }
+            Button(action: abrir) {
+                Text("✎  " + tx(conv.isEmpty ? "chat_escribir" : "chat_abrir")).font(.system(size: 15, weight: .bold)).foregroundColor(botonTexto)
+                    .frame(maxWidth: .infinity).frame(height: 46).background(RoundedRectangle(cornerRadius: 8).fill(boton))
+            }.padding(.top, 4)
+        }
+        .padding(.horizontal, 12).padding(.top, 10).padding(.bottom, 12)
+        .background(RoundedRectangle(cornerRadius: 10).fill(TC.panel))
+        .overlay(RoundedRectangle(cornerRadius: 10).stroke(TC.borde, lineWidth: 1.5))
+        .contentShape(Rectangle()).onTapGesture(perform: abrir)
+    }
+
+    private func fila(_ x: Mensajes.Linea) -> some View {
+        HStack {
+            if x.yo { Spacer(minLength: 50) }
+            VStack(alignment: .leading, spacing: 2) {
+                if !x.yo {
+                    Text(tx("organizacion") + (x.todos ? " · " + tx("chat_todos") : "")).font(.system(size: 11, weight: .bold)).foregroundColor(acento)
+                }
+                Text(x.texto).font(.system(size: 15.5, weight: .medium)).foregroundColor(TC.texto)
+                Text(TelemetriaView.hora(Date(timeIntervalSince1970: Double(x.t) / 1000)) + (x.yo ? "  ·  " + (x.enviada ? "✓ " + tx("resp_enviada") : "⏳ " + tx("resp_enviando")) : ""))
+                    .font(.system(size: 11, weight: .medium)).foregroundColor(x.yo ? (x.enviada ? TC.verde : TC.naranja) : TC.suave)
+                    .frame(maxWidth: x.yo ? .infinity : nil, alignment: .trailing)
+            }
+            .padding(.horizontal, 12).padding(.top, 8).padding(.bottom, 7)
+            .background(Burbuja(yo: x.yo).fill(x.yo ? burbuja : TC.msg))
+            .overlay(Burbuja(yo: x.yo).stroke(x.yo ? burbujaB : TC.borde, style: StrokeStyle(lineWidth: 1, dash: !x.yo && x.todos ? [5, 4] : [])))
+            if !x.yo { Spacer(minLength: 50) }
+        }
+    }
+}
+
+/// Mis avisos: cada aviso con su estado y la respuesta de la organización.
+struct MisAvisos: View {
+    @EnvironmentObject var central: Central
+    let p: Prueba
+    var body: some View {
+        let av = central.avisos(p)
+        VStack(spacing: 8) {
+            ForEach(Array(av.lista.reversed().enumerated()), id: \.offset) { _, o in
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack {
+                        Text(Avisos.icono(o.str("tipo")) + "  " + Avisos.nombre(o.str("tipo"))).font(.system(size: 15, weight: .bold)).foregroundColor(TC.texto)
+                        Spacer()
+                        Text(TelemetriaView.hora(Date(timeIntervalSince1970: Double(o.int("time")) / 1000))).font(.system(size: 12)).foregroundColor(TC.suave)
+                    }
+                    if !o.str("texto").isEmpty { Text(o.str("texto")).font(.system(size: 13)).foregroundColor(TC.suave) }
+                    Text(o.bool("borrar") ? t("Cancelando…", "Cancel·lant…", "Cancelling…") : Avisos.estadoTexto(o.bool("enviado") ? o.str("estado") : ""))
+                        .font(.system(size: 13, weight: .semibold)).foregroundColor(o.bool("enviado") ? TC.verde : TC.naranja)
+                    if !o.str("respuesta").isEmpty {
+                        Text("💬 " + o.str("respuesta")).font(.system(size: 14)).foregroundColor(TC.texto)
+                            .padding(8).frame(maxWidth: .infinity, alignment: .leading)
+                            .background(RoundedRectangle(cornerRadius: 8).fill(TC.verde.opacity(0.18)))
+                    }
+                    if !Avisos.cerrado(o) && !o.bool("borrar") {
+                        Button(t("Quitar el aviso", "Treure l'avís", "Remove alert"), role: .destructive) { av.quitar(o.str("id")); central.tick += 1 }
+                            .font(.system(size: 13))
+                    }
+                }
+                .padding(12).padding(.leading, 4).frame(maxWidth: .infinity, alignment: .leading)
+                .background(RoundedRectangle(cornerRadius: 10).fill(TC.panel))
+                .overlay(HStack { Rectangle().fill(o.bool("enviado") ? TC.verde : TC.naranja).frame(width: 4); Spacer() }.clipShape(RoundedRectangle(cornerRadius: 10)))
+            }
         }
     }
 }

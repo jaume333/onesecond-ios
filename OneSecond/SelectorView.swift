@@ -37,7 +37,7 @@ struct SelectorView: View {
             ZStack {
                 Color.fondo.ignoresSafeArea()
                 ForEach(Prueba.todas) { p in
-                    NavigationLink(tag: p, selection: $abierta) { if Telemetria.esDeTelemetria(p) { TelemetriaView(p: p) } else { PruebaView(p: p) } } label: { EmptyView() }.hidden()
+                    NavigationLink(tag: p, selection: $abierta) { if Telemetria.esDeTelemetria(p) { TelemetriaView(p: p) } else { RallyView(p: p) } } label: { EmptyView() }.hidden()
                 }
                 NavigationLink(isActive: $navAbierto) { NavigatorView() } label: { EmptyView() }.hidden()
                 ForEach(PruebaWeb.todas) { w in
