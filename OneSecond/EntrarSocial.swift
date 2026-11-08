@@ -21,7 +21,7 @@ extension Cuenta {
     /// Entra con el resultado de Google o Apple. Devuelve nil si ha entrado, o el error para enseñar.
     func entrarCon(_ ruta: String, cuerpo: [String: Any]) async -> String? {
         var c = cuerpo
-        c["idioma"] = Idioma.actual.codigo
+        c["idioma"] = Idioma.codigo
         let r = await Cuenta.pedir("POST", ruta, cuerpo: c)
         if r.codigo == 200, let tk = r.token, !tk.isEmpty {
             let u = r.json["usuario"] as? [String: Any]
