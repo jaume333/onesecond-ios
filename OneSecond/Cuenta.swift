@@ -66,6 +66,9 @@ final class Cuenta: ObservableObject {
         UserDefaults.standard.set(em, forKey: "cuenta_email")
     }
 
+    /// Después de entrar con Google o Apple.
+    func entrarConToken(_ tk: String, email em: String) { guardar(token: tk, email: em) }
+
     /// Devuelve nil si ha entrado, o el error para enseñar.
     func entrar(email em: String, clave: String) async -> String? {
         let r = await Cuenta.pedir("POST", "/api/entrar", cuerpo: ["email": em, "clave": clave])

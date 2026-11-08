@@ -465,6 +465,9 @@ struct EntrarView: View {
             ZStack {
                 Color.fondo.ignoresSafeArea()
                 VStack(alignment: .leading, spacing: 12) {
+                    BotonesSociales(ayuda: $ayuda, entrando: $entrando) { cerrar() }
+                    Text(t("o con tu correo", "o amb el teu correu", "or with your email")).font(.footnote).foregroundColor(.suave)
+                        .frame(maxWidth: .infinity)
                     TextField(t("Correo electrónico", "Correu electrònic", "Email"), text: $email)
                         .keyboardType(.emailAddress).textInputAutocapitalization(.never).disableAutocorrection(true).textContentType(.username)
                         .padding(12).background(Color.panel).cornerRadius(10).foregroundColor(.white)

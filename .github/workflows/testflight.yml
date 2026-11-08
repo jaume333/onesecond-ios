@@ -2,6 +2,11 @@ name: Subir a TestFlight
 # Solo se lanza a mano (Actions › «Subir a TestFlight» › Run workflow). No envía nada a revisión de la App Store.
 on:
   workflow_dispatch:
+    inputs:
+      subir:
+        description: "Subir a TestFlight (si no, solo comprueba que se firma bien)"
+        type: boolean
+        default: true
 jobs:
   testflight:
     runs-on: macos-15
@@ -36,9 +41,23 @@ jobs:
             -destination 'generic/platform=iOS' -archivePath build/OneSecond.xcarchive archive \
             DEVELOPMENT_TEAM=HFR3795974 CODE_SIGN_STYLE=Automatic CURRENT_PROJECT_VERSION=${{ github.run_number }} \
             CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" 2>&1 | tail -40
-      - name: Subir a TestFlight
+      - name: "Poner los permisos de la app (Iniciar sesión con Apple) en lo archivado"
+        run: |
+          APP=$(ls -d build/OneSecond.xcarchive/Products/Applications/*.app)
+          codesign -f -s - --entitlements OneSecond/OneSecond.entitlements "$APP"
+          codesign -d --entitlements - "$APP"
+      - name: "Subir a TestFlight (o solo exportar para comprobar)"
         run: |
           set -o pipefail
-          xcodebuild -exportArchive -archivePath build/OneSecond.xcarchive -exportOptionsPlist ExportOptions.plist \
+          cp ExportOptions.plist build/Opciones.plist
+          if [ "${{ inputs.subir }}" != "true" ]; then
+            /usr/libexec/PlistBuddy -c "Set :destination export" build/Opciones.plist
+          fi
+          xcodebuild -exportArchive -archivePath build/OneSecond.xcarchive -exportOptionsPlist build/Opciones.plist \
             -exportPath build/export -allowProvisioningUpdates -authenticationKeyPath "$RUNNER_TEMP/keys/AuthKey.p8" \
             -authenticationKeyID "$KEY_ID" -authenticationKeyIssuerID "$ISSUER_ID" 2>&1 | tail -40
+      - name: Comprobar los permisos de la app firmada
+        if: ${{ inputs.subir != true }}
+        run: |
+          cd build/export && unzip -oq *.ipa
+          codesign -d --entitlements - Payload/*.app

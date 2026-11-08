@@ -22,6 +22,7 @@ targets:
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         GENERATE_INFOPLIST_FILE: NO
         INFOPLIST_FILE: OneSecond/Info.plist
+        CODE_SIGN_ENTITLEMENTS: OneSecond/OneSecond.entitlements
     info:
       path: OneSecond/Info.plist
       properties:
