@@ -53,6 +53,7 @@ final class Navegacion: NSObject, ObservableObject, CLLocationManagerDelegate {
         fueraSeguidos = 0; dichos = []; anterior = nil; pos = nil
         UserDefaults.standard.set(a, forKey: "nav_navegando")
         Rutas.tocar(a)
+        if Demo.activo { return true }
         let st = lm.authorizationStatus
         if st == .notDetermined { lm.requestWhenInUseAuthorization() }
         if st == .authorizedWhenInUse || st == .authorizedAlways || st == .notDetermined {
@@ -64,6 +65,26 @@ final class Navegacion: NSObject, ObservableObject, CLLocationManagerDelegate {
         try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .voicePrompt, options: [.duckOthers, .interruptSpokenAudioAndMixWithOthers, .allowBluetoothA2DP])
         emite = emitirVinculada()
         return true
+    }
+
+    /// Capturas: una ruta de ejemplo por Montserrat y una posición simulada a mitad de camino.
+    func cargarDemo() -> String? {
+        var pts = ""
+        for i in 0...400 {
+            let f = Double(i) / 400
+            let la = 41.560 + 0.05 * f + 0.004 * sin(f * 40), lo = 1.780 + 0.06 * f + 0.003 * cos(f * 33)
+            pts += String(format: "<trkpt lat=\"%.6f\" lon=\"%.6f\"><ele>%.0f</ele></trkpt>", la, lo, 400 + 600 * sin(f * .pi) + 40 * sin(f * 25))
+        }
+        let gpx = "<?xml version=\"1.0\"?><gpx version=\"1.1\"><trk><name>Ronda 2026 · CP3-CP4</name><trkseg>\(pts)</trkseg></trk></gpx>"
+        guard let g = try? Rutas.guardar(Data(gpx.utf8), nombreArchivo: "Ronda_2026_CP3-CP4.gpx", origen: "One Second", carpetaSrv: "ronda", remoto: "Ronda_2026_CP3-CP4.gpx"),
+              empezar(g.archivo), let r = ruta else { return nil }
+        let i = r.indice(r.total * 0.42)
+        estuvoEnRuta = true
+        let l = CLLocation(coordinate: CLLocationCoordinate2D(latitude: r.lat[i], longitude: r.lon[i]), altitude: r.ele[i], horizontalAccuracy: 4, verticalAccuracy: 5,
+                           course: Gpx.rumbo(r.lat[i], r.lon[i], r.lat[i + 3], r.lon[i + 3]), speed: 14, timestamp: Date())
+        nueva(l)
+        emite = "Ronda la Llana"
+        return g.archivo
     }
 
     /// La prueba vinculada empieza a emitir la posición (devuelve su nombre, o nil).

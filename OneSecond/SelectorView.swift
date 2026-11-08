@@ -115,6 +115,11 @@ struct SelectorView: View {
             if Demo.activo, Demo.pantalla >= 6, Demo.pantalla - 6 < PruebaWeb.todas.count {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { poker = PruebaWeb.todas[Demo.pantalla - 6] }
             }
+            if Demo.activo, Demo.pantalla == 9 || Demo.pantalla == 10 {
+                let a = Demo.pantalla == 10 ? Navegacion.shared.cargarDemo() : nil
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { navAbierto = true }
+                if let a = a { DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { NotificationCenter.default.post(name: .gpxRecibido, object: a) } }
+            }
         }
         .task {
             if Demo.activo { return }
