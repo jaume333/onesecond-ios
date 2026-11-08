@@ -149,9 +149,9 @@ struct RallyView: View {
         let aj = central.aj(p)
         let on = central.emitiendo(p)
         let hace = central.ultimaPos.map { Int(Date().timeIntervalSince($0)) } ?? -1
-        let (est, colorEst): (String, Color) = !on ? (TxRally.t("st_parado"), Color(hex: 0x3A4558))
-            : hace < 0 ? (TxRally.t("st_gps"), TC.naranja)
-            : (TxRally.t("st_emitiendo"), hace <= central.gpsActual(p) + 5 ? TC.verde : TC.naranja)
+        var est = TxRally.t("st_parado"), colorEst = Color(hex: 0x3A4558)
+        if on && hace < 0 { est = TxRally.t("st_gps"); colorEst = TC.naranja }
+        else if on { est = TxRally.t("st_emitiendo"); colorEst = hace <= central.gpsActual(p) + 5 ? TC.verde : TC.naranja }
         var pos = "—", pen = "—", nombre = aj.nombrePiloto, meta = false
         var sub = aj.dorsal.isEmpty ? "" : TxRally.f("sin_pasos", aj.dorsal)
         if let o = posJson, o["pos"] is NSNumber {

@@ -492,10 +492,13 @@ struct LineaPuntos: View {
                 let aro = Path(ellipseIn: CGRect(x: x - r + borde / 2, y: y - r + borde / 2, width: 2 * r - borde, height: 2 * r - borde))
                 c.stroke(aro, with: .color(hecho || prox ? ac : Color(hex: 0x3A4558)), lineWidth: borde)
                 if grande {
-                    c.draw(Text(hecho ? "✓" : "\(i + 1)").font(.system(size: 11, weight: .bold)).foregroundColor(hecho ? (on ? Color(hex: 0x1A1203) : TC.fondo) : prox ? .white : TC.suave), at: CGPoint(x: x, y: y))
+                    let num: String = hecho ? "✓" : "\(i + 1)"
+                    let col: Color = hecho ? (on ? Color(hex: 0x1A1203) : TC.fondo) : (prox ? Color.white : TC.suave)
+                    c.draw(Text(num).font(.system(size: 11, weight: .bold)).foregroundColor(col), at: CGPoint(x: x, y: y))
                 }
                 if grande || prox || i == 0 || i == n - 1 {
-                    c.draw(Text("P\(i + 1)").font(.system(size: 10, weight: .bold)).foregroundColor(prox ? .white : TC.suave), at: CGPoint(x: x, y: y + r + 9))
+                    let col: Color = prox ? Color.white : TC.suave
+                    c.draw(Text("P\(i + 1)").font(.system(size: 10, weight: .bold)).foregroundColor(col), at: CGPoint(x: x, y: y + r + 9))
                 }
             }
         }
@@ -597,6 +600,13 @@ struct MensajesCaja: View {
         .contentShape(Rectangle()).onTapGesture(perform: abrir)
     }
 
+    private func pie(_ x: Mensajes.Linea) -> String {
+        let h = TelemetriaView.hora(Date(timeIntervalSince1970: Double(x.t) / 1000))
+        if !x.yo { return h }
+        return h + "  ·  " + (x.enviada ? "✓ " + tx("resp_enviada") : "⏳ " + tx("resp_enviando"))
+    }
+    private func colorPie(_ x: Mensajes.Linea) -> Color { x.yo ? (x.enviada ? TC.verde : TC.naranja) : TC.suave }
+
     private func fila(_ x: Mensajes.Linea) -> some View {
         HStack {
             if x.yo { Spacer(minLength: 50) }
@@ -605,8 +615,8 @@ struct MensajesCaja: View {
                     Text(tx("organizacion") + (x.todos ? " · " + tx("chat_todos") : "")).font(.system(size: 11, weight: .bold)).foregroundColor(acento)
                 }
                 Text(x.texto).font(.system(size: 15.5, weight: .medium)).foregroundColor(TC.texto)
-                Text(TelemetriaView.hora(Date(timeIntervalSince1970: Double(x.t) / 1000)) + (x.yo ? "  ·  " + (x.enviada ? "✓ " + tx("resp_enviada") : "⏳ " + tx("resp_enviando")) : ""))
-                    .font(.system(size: 11, weight: .medium)).foregroundColor(x.yo ? (x.enviada ? TC.verde : TC.naranja) : TC.suave)
+                Text(pie(x))
+                    .font(.system(size: 11, weight: .medium)).foregroundColor(colorPie(x))
                     .frame(maxWidth: x.yo ? .infinity : nil, alignment: .trailing)
             }
             .padding(.horizontal, 12).padding(.top, 8).padding(.bottom, 7)

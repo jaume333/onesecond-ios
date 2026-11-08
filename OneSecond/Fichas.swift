@@ -264,8 +264,7 @@ struct FichasView: View {
                 Image("ic_ronda").resizable().frame(width: 44, height: 44).clipShape(RoundedRectangle(cornerRadius: 10))
                 VStack(alignment: .leading, spacing: 1) {
                     Text(TxRonda.t("fi_titulo")).font(.custom("TeXGyrePagella-Bold", size: 21)).foregroundColor(FC.texto)
-                    Text((ev.isEmpty ? "Ronda la Llana" : ev) + (aj.dorsal.isEmpty ? "" : " · " + TxRonda.t("dorsal") + " " + aj.dorsal)
-                         + (aj.nombrePiloto.isEmpty ? "" : " · " + aj.nombrePiloto)).font(.system(size: 12.5)).foregroundColor(FC.suave)
+                    Text(Self.subtitulo(ev, aj.dorsal, aj.nombrePiloto)).font(.system(size: 12.5)).foregroundColor(FC.suave)
                 }.padding(.leading, 12)
                 Spacer()
             }
@@ -323,16 +322,26 @@ struct FichasView: View {
 
     private func tarjetaAbierta(_ f: FichasDatos.Ficha, actual: Bool, esUltima: Bool) -> some View {
         let dorada = actual && esUltima
-        var sub = actual ? TxRonda.t("fi_abierta") + " · " + Self.km(f.km) + (f.cierre.isEmpty ? "" : " · " + TxRonda.f("fi_cierra_a", f.cierre))
-            : (f.t > 0 ? TxRonda.f("fi_abierta_a", Self.hora(f.t)) : TxRonda.t("fi_abierta")) + " · " + Self.km(f.km)
+        let fondo: Color = dorada ? Color(hex: 0x221D0E) : actual ? Color(hex: 0x1D1712) : FC.panel
+        let borde: Color = dorada ? FC.oroMeta : actual ? FC.cobre : FC.borde
+        let colorSub: Color = dorada ? FC.oroMeta : actual ? FC.cobreClaro : FC.suave
+        let titulo = TxRonda.t("fi_ficha") + " \(f.n)" + (f.tramo.isEmpty ? "" : " · " + f.tramo)
+        var sub: String
+        if actual {
+            sub = TxRonda.t("fi_abierta") + " · " + Self.km(f.km)
+            if !f.cierre.isEmpty { sub += " · " + TxRonda.f("fi_cierra_a", f.cierre) }
+        } else {
+            let a: String = f.t > 0 ? TxRonda.f("fi_abierta_a", Self.hora(f.t)) : TxRonda.t("fi_abierta")
+            sub = a + " · " + Self.km(f.km)
+        }
         if f.local { sub += " · " + TxRonda.t("fi_con_qr") }
         if esUltima { sub = TxRonda.t("fi_ultima") + "\n" + sub }
         return Button { ver = f } label: {
-            fila(fondo: dorada ? Color(hex: 0x221D0E) : actual ? Color(hex: 0x1D1712) : FC.panel, borde: dorada ? FC.oroMeta : actual ? FC.cobre : FC.borde, grosor: actual ? 2 : 1) {
+            fila(fondo: fondo, borde: borde, grosor: actual ? 2 : 1) {
                 if dorada { insignia("\(f.n)", fondo: FC.oroMeta, color: Color(hex: 0x2A1D08), borde: nil, lado: 42, tam: 20) }
                 else if actual { insignia("\(f.n)", fondo: FC.cobre, color: .white, borde: nil, lado: 42, tam: 20) }
                 else { insignia("✓", fondo: Color(hex: 0x173326), color: Color(hex: 0x7FE0AD), borde: FC.verde, lado: 42, tam: 18) }
-                textos(TxRonda.t("fi_ficha") + " \(f.n)" + (f.tramo.isEmpty ? "" : " · " + f.tramo), sub, dorada ? FC.oroMeta : actual ? FC.cobreClaro : FC.suave)
+                textos(titulo, sub, colorSub)
                 Text("›").font(.system(size: 24)).foregroundColor(actual ? FC.cobreClaro : FC.suave)
             }
         }
@@ -393,6 +402,13 @@ struct FichasView: View {
             comprobarNuevas()
             Task { await FichasDatos.sincronizarQr(p) }
         } else { central.breve(TxRonda.t("fi_qr_mal"), error: true) }
+    }
+
+    static func subtitulo(_ ev: String, _ dorsal: String, _ nombre: String) -> String {
+        var s = ev.isEmpty ? "Ronda la Llana" : ev
+        if !dorsal.isEmpty { s += " · " + TxRonda.t("dorsal") + " " + dorsal }
+        if !nombre.isEmpty { s += " · " + nombre }
+        return s
     }
 
     static func km(_ km: Double) -> String { String(format: km >= 100 ? "%.0f km" : "%.1f km", locale: Idioma.locale, km) }
