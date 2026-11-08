@@ -108,6 +108,11 @@ struct SelectorView: View {
         .alert(mensaje?.0 ?? "", isPresented: Binding(get: { mensaje != nil }, set: { if !$0 { mensaje = nil } })) {
             Button("OK") {}
         } message: { Text(mensaje?.1 ?? "") }
+        .onAppear {
+            if Demo.activo, Demo.pantalla >= 6, Demo.pantalla - 6 < PruebaWeb.todas.count {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { poker = PruebaWeb.todas[Demo.pantalla - 6] }
+            }
+        }
         .task {
             if Demo.activo { return }
             await cuenta.actualizar()
