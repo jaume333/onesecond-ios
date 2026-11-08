@@ -70,8 +70,7 @@ struct SelectorView: View {
                                       vinc: aj.vinculada, emi: central.emitiendo(p), abierta: cuenta.abiertas.contains(p.appCuentas),
                                       abrir: { abierta = p }, info: { hoja = .info(p.id, p.nombre, p.icono, p.metal) })
                             }
-                            NavigationLink(isActive: $navAbierto) { NavigatorView() } label: { EmptyView() }.hidden()
-                ForEach(PruebaWeb.todas) { w in
+                            ForEach(PruebaWeb.todas) { w in
                                 Banda(id: w.id, nombre: w.nombre, sub: w.subtitulo, icono: w.icono, metal: w.metal, alto: alto,
                                       abierta: cuenta.abiertas.contains(w.id),
                                       abrir: { poker = w }, info: { hoja = .info(w.id, w.nombre, w.icono, w.metal) })
@@ -114,6 +113,9 @@ struct SelectorView: View {
         .onAppear {
             if Demo.activo, Demo.pantalla >= 6, Demo.pantalla - 6 < PruebaWeb.todas.count {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { poker = PruebaWeb.todas[Demo.pantalla - 6] }
+            }
+            if Demo.activo, Demo.pantalla == 11 {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { hoja = .entrar }
             }
             if Demo.activo, Demo.pantalla == 9 || Demo.pantalla == 10 {
                 let a = Demo.pantalla == 10 ? Navegacion.shared.cargarDemo() : nil

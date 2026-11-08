@@ -59,10 +59,10 @@ jobs:
           done
           # pantallas para revisar (no van a la App Store): Rally Poker, Poker Run y Hold'em Run con datos reales
           mkdir -p revisar
-          for n in 6 7 8 9 10; do
+          for n in 6 7 8 9 10 11; do
             T 30 xcrun simctl terminate "$UDID" es.onesecond.rallygps || true
             T 120 xcrun simctl launch "$UDID" es.onesecond.rallygps -demo -pantalla $n -AppleLanguages "(es)" -AppleLocale es_ES || true
-            sleep 15
+            if [ $n = 10 ]; then sleep 35; else sleep 15; fi
             T 60 xcrun simctl io "$UDID" screenshot "revisar/$(printf %02d $n)_iphone.png" || true
           done
           sips -g pixelWidth -g pixelHeight fastlane/screenshots/es-ES/*.png
