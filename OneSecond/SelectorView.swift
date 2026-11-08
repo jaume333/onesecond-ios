@@ -9,6 +9,7 @@ struct SelectorView: View {
     @EnvironmentObject var central: Central
     @EnvironmentObject var cuenta: Cuenta
     @Binding var abierta: Prueba?
+    @Binding var navAbierto: Bool
     @State private var hoja: Hoja? = nil
     @State private var elegir: [Cuenta.Insc] = []
     @State private var mensaje: (String, String)? = nil
@@ -38,6 +39,7 @@ struct SelectorView: View {
                 ForEach(Prueba.todas) { p in
                     NavigationLink(tag: p, selection: $abierta) { PruebaView(p: p) } label: { EmptyView() }.hidden()
                 }
+                NavigationLink(isActive: $navAbierto) { NavigatorView() } label: { EmptyView() }.hidden()
                 ForEach(PruebaWeb.todas) { w in
                     NavigationLink(tag: w, selection: $poker) { PokerView(d: w) } label: { EmptyView() }.hidden()
                 }
@@ -60,7 +62,7 @@ struct SelectorView: View {
                             Banda(id: "navigator", nombre: "One Second Navigator",
                                   sub: t("Navega con las rutas GPX", "Navega amb les rutes GPX", "Navigate GPX routes"),
                                   icono: "ic_navigator", metal: SelectorView.navMetal, alto: alto, nuevo: !navVisto,
-                                  abrir: { navVisto = true; hoja = .navigator },
+                                  abrir: { navVisto = true; navAbierto = true },
                                   info: { hoja = .info("navigator", "One Second Navigator", "ic_navigator", SelectorView.navMetal) })
                             ForEach(Prueba.todas.filter { $0.id != "ronda" }) { p in
                                 let aj = central.aj(p)
@@ -68,7 +70,8 @@ struct SelectorView: View {
                                       vinc: aj.vinculada, emi: central.emitiendo(p), abierta: cuenta.abiertas.contains(p.appCuentas),
                                       abrir: { abierta = p }, info: { hoja = .info(p.id, p.nombre, p.icono, p.metal) })
                             }
-                            ForEach(PruebaWeb.todas) { w in
+                            NavigationLink(isActive: $navAbierto) { NavigatorView() } label: { EmptyView() }.hidden()
+                ForEach(PruebaWeb.todas) { w in
                                 Banda(id: w.id, nombre: w.nombre, sub: w.subtitulo, icono: w.icono, metal: w.metal, alto: alto,
                                       abierta: cuenta.abiertas.contains(w.id),
                                       abrir: { poker = w }, info: { hoja = .info(w.id, w.nombre, w.icono, w.metal) })

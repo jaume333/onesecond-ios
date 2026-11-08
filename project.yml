@@ -44,3 +44,16 @@ targets:
             CFBundleURLSchemes: [onesecondgps, rider1000gps, rondagps]
         LSApplicationQueriesSchemes: [tel]
         UIAppFonts: [pagella_negrita.otf]
+        LSSupportsOpeningDocumentsInPlace: false
+        CFBundleDocumentTypes:
+          - CFBundleTypeName: GPX
+            CFBundleTypeRole: Viewer
+            LSHandlerRank: Alternate
+            LSItemContentTypes: [com.topografix.gpx]
+        UTImportedTypeDeclarations:
+          - UTTypeIdentifier: com.topografix.gpx
+            UTTypeDescription: GPS Exchange Format
+            UTTypeConformsTo: [public.xml]
+            UTTypeTagSpecification:
+              public.filename-extension: [gpx, GPX]
+              public.mime-type: [application/gpx+xml]

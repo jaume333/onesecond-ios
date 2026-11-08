@@ -1,0 +1,142 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<!-- One Second Navigator para iPhone: el mapa (MapLibre GL JS) con los mismos estilos que Android: oscuro, claro,
+     satélite, topográfico, relieve, híbrido, 3D y primera persona. Las teselas se piden con tesela:// y la app las
+     guarda en el iPhone, así el mapa guardado se ve sin cobertura. La app llama a iniciar(), estilo(), pos(),
+     centrar(), verTodo() y rumboArriba(); el mapa avisa a la app («listo», «movido») por window.webkit. -->
+<link rel="stylesheet" href="maplibre-gl.css">
+<script src="maplibre-gl.js"></script>
+<style>
+html,body{margin:0;height:100%;overflow:hidden;background:#1a2230}
+#m{position:absolute;inset:0;background:#1a2230}
+#m.cielo{background:linear-gradient(#6fa6dc 0%,#c4d6e8 38%,#b9c8d2 55%,#9fb0a8 100%)}
+.yo{width:var(--t,38px);height:var(--t,38px);border-radius:50%;background:#fff;box-shadow:0 0 0 12px rgba(74,144,226,.28),0 2px 8px rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center}
+.yo svg{display:block;transition:transform .4s}
+.paso{width:12px;height:12px;border-radius:50%;background:#ffd257;border:2px solid #1b1400}
+.maplibregl-ctrl-attrib{display:none}
+</style></head><body><div id="m"></div>
+<script>
+var map, listo = false, RUTA = [], DIST = [], PASOS = [], EST = "oscuro", CAT = false, GIRA = true, SEGUIR = true;
+var yo = null, flecha = null, ultimo = null, porMi = false;
+
+function T(k) { return "tesela://t/" + k + "/{z}/{x}/{y}"; }
+function es3d(e) { return e === "3d" || e === "fp"; }
+
+/** Las capas de cada estilo (las mismas fuentes que Android: OpenStreetMap, IGN, IDEE e ICGC). */
+function estiloMapa(e) {
+  var s = {version: 8, sources: {}, layers: [{id: "fondo", type: "background", paint: {"background-color": e === "oscuro" ? "#1a2230" : "#a9b9b4"}}]};
+  function capa(id, k, max, paint) {
+    s.sources[id] = {type: "raster", tiles: [T(k)], tileSize: 256, maxzoom: max};
+    s.layers.push({id: id, type: "raster", source: id, paint: paint || {}});
+  }
+  if (e === "satelite") capa("base", "pnoa", 19);
+  else if (e === "topo") capa("base", CAT ? "icgctopo" : "mtn", CAT ? 18 : 17);
+  else if (e === "relieve") { capa("base", "relieve", 17); capa("encima", "ignbase", 18); }
+  else if (e === "hibrido") { if (CAT) capa("base", "icgchibrida", 18); else { capa("base", "pnoa", 19); capa("encima", "ignnombres", 18, {"raster-opacity": 0.9}); } }
+  else if (es3d(e)) {
+    capa("base", "pnoa", 19); capa("encima", "ignnombres", 18, {"raster-opacity": 0.9});
+    s.sources.dem = {type: "raster-dem", tiles: [T("dem")], encoding: "terrarium", tileSize: 256, maxzoom: 14};
+    s.terrain = {source: "dem", exaggeration: 1.35};
+  }
+  // oscuro: OpenStreetMap con los colores invertidos y el tono girado 180° (como el filtro de Android)
+  else if (e === "oscuro") capa("base", "osm", 19, {"raster-brightness-min": 0.92, "raster-brightness-max": 0.06, "raster-hue-rotate": 180, "raster-saturation": -0.15, "raster-contrast": 0.05});
+  else capa("base", "osm", 19);
+  return s;
+}
+
+function avisar(q) { try { window.webkit.messageHandlers.Nav.postMessage(q); } catch (e) {} }
+
+function iniciar(coords, pasos, est, cat, gira) {
+  RUTA = coords || []; PASOS = pasos || []; EST = est; CAT = cat; GIRA = gira;
+  DIST = [0];
+  for (var i = 1; i < RUTA.length; i++) {
+    var a = RUTA[i - 1], b = RUTA[i], dx = (b[0] - a[0]) * Math.cos(a[1] * Math.PI / 180), dy = b[1] - a[1];
+    DIST.push(DIST[i - 1] + Math.sqrt(dx * dx + dy * dy) * 111195);
+  }
+  document.getElementById("m").className = es3d(EST) ? "cielo" : "";
+  map = new maplibregl.Map({container: "m", style: estiloMapa(EST), center: RUTA.length ? RUTA[0] : [2.1, 41.8], zoom: 13,
+    pitch: es3d(EST) ? 60 : 0, maxPitch: 85, attributionControl: false, fadeDuration: 150, antialias: true, dragRotate: true});
+  map.on("style.load", capasRuta);
+  map.on("load", function () { verTodoYa(0); listo = true; avisar("listo"); });
+  // el piloto mueve el mapa con el dedo: se deja de seguir la posición (la app enseña el botón de centrar)
+  ["dragstart", "rotatestart", "pitchstart", "zoomstart"].forEach(function (ev) {
+    map.on(ev, function (e) { if (e.originalEvent && !porMi) { SEGUIR = false; avisar("movido"); } });
+  });
+}
+
+function capasRuta() {
+  if (es3d(EST)) { try { map.setSky({"sky-color": "#6fa6dc", "horizon-color": "#d4e2ef", "fog-color": "#c9d6e3", "sky-horizon-blend": 0.7, "horizon-fog-blend": 0.8, "fog-ground-blend": 0.35}); } catch (e) {} }
+  if (!map.getSource("hecha")) map.addSource("hecha", {type: "geojson", data: linea([])});
+  if (!map.getSource("falta")) map.addSource("falta", {type: "geojson", data: linea(RUTA)});
+  map.addLayer({id: "hecha", type: "line", source: "hecha", layout: {"line-cap": "round", "line-join": "round"}, paint: {"line-color": "#8a96a8", "line-width": 5, "line-dasharray": [0.4, 2]}});
+  map.addLayer({id: "borde", type: "line", source: "falta", layout: {"line-cap": "round", "line-join": "round"}, paint: {"line-color": "#06213f", "line-width": 11, "line-opacity": 0.7}});
+  map.addLayer({id: "falta", type: "line", source: "falta", layout: {"line-cap": "round", "line-join": "round"}, paint: {"line-color": "#3aa6ff", "line-width": 6.5}});
+  PASOS.forEach(function (p) {
+    if (p.m) return;
+    var el = document.createElement("div"); el.className = "paso"; el.title = p.n || "";
+    p.m = new maplibregl.Marker({element: el}).setLngLat([p.lon, p.lat]).addTo(map);
+  });
+  if (ultimo) partir(ultimo[0], ultimo[1], ultimo[3]);
+}
+
+function linea(c) { return {type: "Feature", geometry: {type: "LineString", coordinates: c.length > 1 ? c : []}}; }
+
+/** Cambia el estilo del mapa sin perder la ruta ni la posición. */
+function estilo(e, cat) {
+  EST = e; CAT = cat;
+  document.getElementById("m").className = es3d(e) ? "cielo" : "";
+  if (yo) yo.getElement().style.setProperty("--t", e === "fp" ? "54px" : "38px");
+  map.setStyle(estiloMapa(e));
+  if (!es3d(e)) { map.setPitch(0); }
+  SEGUIR = true;
+  if (ultimo) pos(ultimo[0], ultimo[1], ultimo[2], ultimo[3], true);
+}
+
+function rumboArriba(si) { GIRA = si; if (!si && !es3d(EST)) map.easeTo({bearing: 0, duration: 500}); if (ultimo) pos(ultimo[0], ultimo[1], ultimo[2], ultimo[3], true); }
+function centrar() { SEGUIR = true; if (ultimo) pos(ultimo[0], ultimo[1], ultimo[2], ultimo[3], true); }
+
+function partir(lon, lat, enRuta) {
+  if (!map.getSource("hecha") || RUTA.length < 2) return;
+  if (enRuta < 0) { map.getSource("hecha").setData(linea([])); map.getSource("falta").setData(linea(RUTA)); return; }
+  var i = 0; while (i < DIST.length - 1 && DIST[i + 1] <= enRuta) i++;
+  var a = RUTA.slice(0, i + 1), z = RUTA.slice(i + 1);
+  a.push([lon, lat]); z.unshift([lon, lat]);
+  map.getSource("hecha").setData(linea(a));
+  map.getSource("falta").setData(linea(z));
+}
+
+/** Posición nueva: [lon, lat], rumbo (grados, o null), metros recorridos sobre la ruta (o -1). */
+function pos(lon, lat, rumbo, enRuta, ya) {
+  if (!listo) return;
+  ultimo = [lon, lat, rumbo, enRuta];
+  if (!yo) {
+    var el = document.createElement("div");
+    el.className = "yo";
+    el.innerHTML = '<svg width="24" height="24" viewBox="-12 -12 24 24"><path d="M0 -10 L8 8 L0 3.5 L-8 8Z" fill="#1e6fd9"/></svg>';
+    flecha = el.firstChild;
+    yo = new maplibregl.Marker({element: el, pitchAlignment: "map", rotationAlignment: "map"}).setLngLat([lon, lat]).addTo(map);
+    if (EST === "fp") el.style.setProperty("--t", "54px");
+  }
+  yo.setLngLat([lon, lat]);
+  flecha.style.transform = "rotate(" + (rumbo == null ? 0 : rumbo) + "deg)";
+  partir(lon, lat, enRuta);
+  if (!SEGUIR) return;
+  var alto = map.getCanvas().clientHeight, tres = es3d(EST), fp = EST === "fp", gira = tres || (GIRA && rumbo != null);
+  porMi = true;
+  map.easeTo({center: [lon, lat], bearing: gira ? (rumbo == null ? map.getBearing() : rumbo) : 0,
+    pitch: tres ? (fp ? 80 : 60) : 0, zoom: tres ? (fp ? 17.2 : 15.3) : Math.max(map.getZoom() < 13 ? 16 : map.getZoom(), 13),
+    padding: {top: tres ? alto * (fp ? 0.58 : 0.36) : (gira ? alto * 0.4 : 0), bottom: 0, left: 0, right: 0},
+    duration: ya ? 700 : 950, easing: function (t) { return t; }});
+  setTimeout(function () { porMi = false; }, ya ? 750 : 1000);
+}
+
+function verTodoYa(ms) {
+  if (!RUTA.length) return;
+  var b = RUTA.reduce(function (m, p) { return [Math.min(m[0], p[0]), Math.min(m[1], p[1]), Math.max(m[2], p[0]), Math.max(m[3], p[1])]; }, [180, 90, -180, -90]);
+  porMi = true;
+  map.fitBounds([[b[0], b[1]], [b[2], b[3]]], {padding: {top: 130, bottom: 230, left: 50, right: 70}, pitch: es3d(EST) ? 55 : 0, bearing: 0, duration: ms});
+  setTimeout(function () { porMi = false; }, ms + 100);
+}
+function verTodo() { SEGUIR = false; verTodoYa(800); }
+</script></body></html>
