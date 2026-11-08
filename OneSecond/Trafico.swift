@@ -13,7 +13,7 @@ import CoreTelephony
 enum Trafico {
     private static let voz = AVSpeechSynthesizer()
 
-    static func titulo(_ cat: String) -> String {
+    nonisolated static func titulo(_ cat: String) -> String {
         switch cat {
         case "accidente": return t("Accidente", "Accident", "Accident")
         case "cortada": return t("Carretera cortada", "Carretera tallada", "Road closed")
@@ -23,7 +23,7 @@ enum Trafico {
         default: return t("Incidencia", "Incidència", "Incident")
         }
     }
-    static func icono(_ cat: String) -> String {
+    nonisolated static func icono(_ cat: String) -> String {
         switch cat {
         case "accidente": return "💥"
         case "cortada": return "⛔"
