@@ -5,6 +5,7 @@
      satélite, topográfico, relieve, híbrido, 3D y primera persona. Las teselas se piden con tesela:// y la app las
      guarda en el iPhone, así el mapa guardado se ve sin cobertura. La app llama a iniciar(), estilo(), pos(),
      centrar(), verTodo() y rumboArriba(); el mapa avisa a la app («listo», «movido») por window.webkit. -->
+<script>window.onerror=function(m,f,l){try{window.webkit.messageHandlers.Nav.postMessage("error:"+m+" ("+(f||"").split("/").pop()+":"+l+")");}catch(e){}};</script>
 <link rel="stylesheet" href="maplibre-gl.css">
 <script src="maplibre-gl.js"></script>
 <style>

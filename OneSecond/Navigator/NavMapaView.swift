@@ -29,6 +29,9 @@ struct NavMapaView: View {
             Color(hex: 0x1A2230).ignoresSafeArea()
             if let r = ruta {
                 MapaVista(mapa: mapa).ignoresSafeArea()
+                    .overlay(alignment: .center) {
+                        if Demo.activo && !mapa.fallo.isEmpty { Text(mapa.fallo).font(.caption).foregroundColor(.red).padding().background(Color.black) }
+                    }
                     .onAppear { mapa.iniciar(r, estilo: estilo, cat: cat, rumboArriba: rumboArriba) }
                 VStack(spacing: 0) {
                     cartelVista(r).padding(.horizontal, 12).padding(.top, 10)
@@ -357,6 +360,7 @@ struct Perfil: View {
 final class MapaWeb: NSObject, ObservableObject, WKScriptMessageHandler {
     @Published var listo = false
     @Published var seguir = true
+    @Published var fallo = ""
     let web: WKWebView
     private var inicio: String? = nil
 
@@ -393,13 +397,26 @@ final class MapaWeb: NSObject, ObservableObject, WKScriptMessageHandler {
         Task { @MainActor in
             if q == "listo" { self.listo = true }
             if q == "movido" { self.seguir = false }
+            if let q = q, q.hasPrefix("error:") { NSLog("[mapa] %@", q); if self.fallo.isEmpty { self.fallo = q } }
         }
     }
 }
 
 extension MapaWeb: WKNavigationDelegate {
+    nonisolated func webView(_ w: WKWebView, didFail navigation: WKNavigation!, withError e: Error) {
+        Task { @MainActor in self.fallo = "error:carga " + e.localizedDescription }
+    }
+    nonisolated func webView(_ w: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError e: Error) {
+        Task { @MainActor in self.fallo = "error:carga " + e.localizedDescription }
+    }
     nonisolated func webView(_ w: WKWebView, didFinish navigation: WKNavigation!) {
-        Task { @MainActor in if let i = self.inicio { self.js(i) } }
+        Task { @MainActor in
+            if let i = self.inicio {
+                self.web.evaluateJavaScript(i) { _, e in
+                    if let e = e { Task { @MainActor in self.fallo = "error:iniciar " + String(describing: e).prefix(300) } }
+                }
+            }
+        }
     }
 }
 
