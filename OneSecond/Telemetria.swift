@@ -3,6 +3,7 @@ import Foundation
 /// Telemetría gratuita de Ronda la Llana y Rider 1000 (como Telemetria.java de Android 1.57):
 /// el día de la prueba, 2 h antes de la salida, la app empieza a emitir sola al abrirla (si está vinculada
 /// y no se ha parado a mano ese día). Antes de ese día dice cuándo empezará.
+@MainActor
 enum Telemetria {
     private static var d: UserDefaults { .standard }
 
@@ -63,14 +64,14 @@ enum Telemetria {
     static func autoHoy(_ p: Prueba) -> Bool { d.bool(forKey: "tel_auto_\(p.id)_\(hoy())") }
 
     /// ¿Toca empezar a emitir sola ahora? (día de la prueba, 2 h antes de la salida, vinculada, sin parar a mano)
-    @MainActor static func tocaEmitir(_ p: Prueba, _ central: Central) -> Bool {
+    static func tocaEmitir(_ p: Prueba, _ central: Central) -> Bool {
         guard esDeTelemetria(p), central.emitiendo == nil, central.aj(p).vinculada, !paradoHoy(p),
               let ev = eventoDeHoy(p), let s = Cuenta.salida(ev) else { return false }
         return Date() >= s.addingTimeInterval(-2 * 3600)
     }
 
     /// Al abrir la app o la pantalla de la prueba: si toca, empieza a emitir sola. Devuelve true si ha empezado.
-    @MainActor @discardableResult static func autoEmitir(_ central: Central) -> Bool {
+    @discardableResult static func autoEmitir(_ central: Central) -> Bool {
         if Demo.activo { return false }
         for p in Prueba.todas where tocaEmitir(p, central) {
             marcarAuto(p)
