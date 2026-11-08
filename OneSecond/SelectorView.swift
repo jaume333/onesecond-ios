@@ -381,10 +381,10 @@ struct Bandera: View {
                         for i in 0..<4 { rect(0, h * CGFloat(2 * i + 1) / 9, w, h / 9, Color(red: 218 / 255, green: 18 / 255, blue: 26 / 255)) }
                     }
                 }
-                .frame(width: 33, height: 22).clipShape(RoundedRectangle(cornerRadius: 4))
-                Text(["ES", "CA", "EN"][idioma]).font(.system(size: 12, weight: .medium)).foregroundColor(.white)
+                .frame(width: 29, height: 19).clipShape(RoundedRectangle(cornerRadius: 4))
+                Text(["ES", "CA", "EN"][idioma]).font(.system(size: 11, weight: .medium)).foregroundColor(.white)
             }
-            .padding(.leading, 8).padding(.trailing, 12).padding(.vertical, 9).frame(minHeight: 44)
+            .padding(.leading, 7).padding(.trailing, 10).padding(.vertical, 8).frame(minHeight: 44)
             .background(Capsule().fill(activa ? Color.white.opacity(31 / 255) : .clear))
             .overlay(Capsule().stroke(activa ? Color.white.opacity(140 / 255) : .clear, lineWidth: 1))
             .opacity(activa ? 1 : 0.55)
@@ -428,7 +428,11 @@ final class RelojGPS: NSObject, ObservableObject, CLLocationManagerDelegate {
 struct RelojGPSView: View {
     @StateObject private var r = RelojGPS()
     var body: some View {
-        Text(r.texto).font(.system(size: 19, weight: .bold, design: .monospaced)).foregroundColor(Color(hex: 0xC9D3DF))
+        // 1.58: el reloj, un poco más pequeño y en un marco cuadrado (como Android 1.58)
+        Text(r.texto).font(.system(size: 15, weight: .bold, design: .monospaced)).foregroundColor(Color(hex: 0xC9D3DF))
+            .padding(.horizontal, 8).padding(.vertical, 5)
+            .background(RoundedRectangle(cornerRadius: 3).fill(Color.white.opacity(28 / 255)))
+            .overlay(RoundedRectangle(cornerRadius: 3).stroke(Color(hex: 0xC9D3DF).opacity(110 / 255), lineWidth: 1))
             .onAppear { r.empezar() }.onDisappear { r.parar() }
     }
 }
