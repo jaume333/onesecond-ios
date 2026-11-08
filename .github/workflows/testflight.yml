@@ -6,8 +6,8 @@ jobs:
   testflight:
     runs-on: macos-15
     env:
-      KEY_ID: ${{ secrets.APPSTORE_KEY_ID }}
-      ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
+      KEY_ID: LQFB8QADZB          # ID de la clave «GitHub» (no es secreto)
+      ISSUER_ID: a406dc4b-3c03-421b-8bb2-e10b20505f94   # ID del emisor (no es secreto)
     steps:
       - uses: actions/checkout@v4
       - name: Clave de App Store Connect
@@ -15,8 +15,6 @@ jobs:
           P8: ${{ secrets.APPSTORE_KEY_P8 }}
         run: |
           falta=0
-          [ -z "$KEY_ID" ] && echo "::error::Falta el secreto APPSTORE_KEY_ID" && falta=1
-          [ -z "$ISSUER_ID" ] && echo "::error::Falta el secreto APPSTORE_ISSUER_ID" && falta=1
           [ -z "$P8" ] && echo "::error::Falta el secreto APPSTORE_KEY_P8" && falta=1
           [ $falta = 1 ] && exit 1
           mkdir -p "$RUNNER_TEMP/keys"
