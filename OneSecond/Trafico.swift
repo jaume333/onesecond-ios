@@ -2,6 +2,7 @@ import SwiftUI
 import AVFoundation
 import Network
 import UserNotifications
+import CoreTelephony
 
 /// AVISOS DE TRÁFICO de la DGT y del Servei Català de Trànsit (como ronda/Trafico.java de Android 1.57).
 /// El servidor mira, con cada envío de posiciones, si en el tramo hay por delante un accidente, un corte, un vehículo
@@ -129,18 +130,58 @@ struct CartelTrafico: View {
     }
 }
 
-/// La red (datos móviles, wifi o sin conexión) que se añade a cada posición, para el mapa de cobertura del recorrido.
+/// La red de cada posición, para el mapa de cobertura del recorrido: "red" (m datos móviles, w wifi, n sin conexión),
+/// "tec" (5G, 4G, 3G, 2G) y "cob" (0-4). El iPhone no deja a las apps leer las rayas de cobertura, así que «cob» es
+/// una ESTIMACIÓN: sale de la tecnología de la red móvil y de cómo han ido de verdad los últimos envíos al servidor
+/// (si fallan o tardan mucho, baja). Va marcada con "cobe":1 para que el servidor sepa que es estimada.
 final class RedActual {
     static let shared = RedActual()
     private let m = NWPathMonitor()
+    private let tel = CTTelephonyNetworkInfo()
     private(set) var tipo = ""
+    private var ultimoEnvio: (ok: Bool, segundos: Double, cuando: Date)? = nil
+
     private init() {
         m.pathUpdateHandler = { [weak self] p in
             self?.tipo = p.status != .satisfied ? "n" : p.usesInterfaceType(.wifi) ? "w" : "m"
         }
         m.start(queue: DispatchQueue(label: "red"))
     }
-    var json: String { tipo.isEmpty ? "" : ",\"red\":\"" + tipo + "\"" }
+
+    /// Lo que ha pasado con el último envío de posiciones (para afinar la estimación).
+    func envio(ok: Bool, segundos: Double) { ultimoEnvio = (ok, segundos, Date()) }
+
+    var tecnologia: String {
+        guard let r = tel.serviceCurrentRadioAccessTechnology?.values.first else { return "" }
+        if #available(iOS 14.1, *), r == CTRadioAccessTechnologyNR || r == CTRadioAccessTechnologyNRNSA { return "5G" }
+        switch r {
+        case CTRadioAccessTechnologyLTE: return "4G"
+        case CTRadioAccessTechnologyWCDMA, CTRadioAccessTechnologyHSDPA, CTRadioAccessTechnologyHSUPA,
+             CTRadioAccessTechnologyCDMAEVDORev0, CTRadioAccessTechnologyCDMAEVDORevA, CTRadioAccessTechnologyCDMAEVDORevB, CTRadioAccessTechnologyeHRPD: return "3G"
+        case CTRadioAccessTechnologyGPRS, CTRadioAccessTechnologyEdge, CTRadioAccessTechnologyCDMA1x: return "2G"
+        default: return ""
+        }
+    }
+
+    /// 0-4 estimado (nil si va por wifi o no se sabe).
+    var cobertura: Int? {
+        if tipo == "n" { return 0 }
+        if tipo != "m" { return nil }
+        let tec = tecnologia
+        guard var c = ["5G": 4, "4G": 3, "3G": 2, "2G": 1][tec] else { return nil }
+        if let e = ultimoEnvio, Date().timeIntervalSince(e.cuando) < 300 {
+            if !e.ok { c -= 2 } else if e.segundos > 6 { c -= 2 } else if e.segundos > 2.5 { c -= 1 } else if e.segundos < 0.8 && tec == "4G" { c += 1 }
+        }
+        return max(0, min(4, c))
+    }
+
+    var json: String {
+        var s = tipo.isEmpty ? "" : ",\"red\":\"" + tipo + "\""
+        let tec = tecnologia
+        if tipo == "m" && !tec.isEmpty { s += ",\"tec\":\"" + tec + "\"" }
+        if let c = cobertura { s += ",\"cob\":\(c),\"cobe\":1" }
+        return s
+    }
 }
 
 extension FichasDatos {
@@ -157,5 +198,57 @@ extension FichasDatos {
         c.sound = .default
         c.userInfo = ["fichas": true]
         UNUserNotificationCenter.current().add(UNNotificationRequest(identifier: "ficha_\(abiertas)", content: c, trigger: nil))
+    }
+}
+
+/// Incidencias de tráfico en el mapa (Navigator y mapa de la ficha). Las manda el servidor de la Ronda con cada envío
+/// de posiciones ({"trfm": [...]}): solo las del tramo que el piloto está haciendo y que aún tiene por delante.
+/// Si la app deja de recibirlas (parada, sin cobertura mucho rato), a los 15 minutos dejan de pintarse.
+enum TraficoMapa {
+    private static var d: UserDefaults { .standard }
+    private(set) static var version = 0
+
+    static func guardar(_ a: [[String: Any]]?) {
+        guard let a = a, let datos = try? JSONSerialization.data(withJSONObject: a) else { return }
+        d.set(Date().timeIntervalSince1970, forKey: "trfm_t")
+        if datos != d.data(forKey: "trfm") { d.set(datos, forKey: "trfm"); version += 1 }
+    }
+
+    /// Las que valen ahora (ficha < 0: todas).
+    static func items(ficha: Int = -1) -> [[String: Any]] {
+        if Date().timeIntervalSince1970 - d.double(forKey: "trfm_t") > 15 * 60 { return [] }
+        let a = (try? JSONSerialization.jsonObject(with: d.data(forKey: "trfm") ?? Data())) as? [[String: Any]] ?? []
+        return ficha < 0 ? a : a.filter { ($0["ficha"] as? NSNumber)?.intValue == ficha }
+    }
+
+    static func colorHex(_ cat: String) -> String {
+        switch cat {
+        case "accidente": return "#E0404D"
+        case "cortada": return "#8B1E2B"
+        case "retencion": return "#D4A017"
+        case "obstaculo": return "#C9821B"
+        default: return "#E8730C"
+        }
+    }
+
+    static func texto(_ x: [String: Any]) -> String {
+        var s = Trafico.icono(x.str("cat")) + "  " + Trafico.titulo(x.str("cat"))
+        let car = x.str("carretera")
+        if !car.isEmpty && car != "null" { s += "\n" + car }
+        if let pk = x["pk"] as? NSNumber { s += " · km " + String(format: "%.1f", locale: Idioma.locale, pk.doubleValue) }
+        let mu = x.str("municipio")
+        if !mu.isEmpty && mu != "null" { s += " · " + mu }
+        let tp = x.str("tipo")
+        if !tp.isEmpty && tp != "null" { s += "\n" + tp }
+        return s + "\n" + t("DGT / Servei Català de Trànsit", "DGT / Servei Català de Trànsit", "DGT / Catalan Traffic Service")
+    }
+
+    /// Para el mapa del Navigator: [{lat, lon, c (color), i (icono), t (texto)}]
+    static func json() -> String {
+        let l: [[String: Any]] = items().map { x in
+            ["lat": x.dbl("lat"), "lon": x.dbl("lon"), "c": colorHex(x.str("cat")), "i": Trafico.icono(x.str("cat")), "t": texto(x)]
+        }
+        guard let datos = try? JSONSerialization.data(withJSONObject: l), let s = String(data: datos, encoding: .utf8) else { return "[]" }
+        return s
     }
 }

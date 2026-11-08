@@ -502,6 +502,8 @@ struct FichaVerView: View {
     }
 }
 
+final class MarcaTrafico: MKPointAnnotation {}
+
 extension Notification.Name { static let abrirRuta = Notification.Name("abrirRuta") }
 
 /// El mapa de la ficha (Apple Maps): el tramo, la salida en verde, los puntos GPS en rojo y el punto de paso.
@@ -516,7 +518,12 @@ struct MapaFicha: UIViewRepresentable {
         }
         func mapView(_ m: MKMapView, viewFor a: MKAnnotation) -> MKAnnotationView? {
             let v = MKMarkerAnnotationView(annotation: a, reuseIdentifier: nil)
-            switch (a.subtitle ?? nil) ?? "" {
+            let sub = (a.subtitle ?? nil) ?? ""
+            if a is MarcaTrafico {
+                v.markerTintColor = UIColor(red: 0.91, green: 0.45, blue: 0.05, alpha: 1); v.glyphText = "⚠️"
+                return v
+            }
+            switch sub {
             case "salida": v.markerTintColor = .systemGreen
             case "paso": v.markerTintColor = UIColor(red: 0.72, green: 0.41, blue: 0.23, alpha: 1); v.glyphText = "🏁"
             default: v.markerTintColor = .systemRed
@@ -543,6 +550,12 @@ struct MapaFicha: UIViewRepresentable {
         if f.tienePunto {
             let a = MKPointAnnotation(); a.coordinate = .init(latitude: f.punto?.dbl("lat") ?? 0, longitude: f.punto?.dbl("lon") ?? 0)
             a.title = f.nombrePunto; a.subtitle = "paso"; m.addAnnotation(a)
+        }
+        // incidencias de tráfico (DGT / Trànsit) del tramo de esta ficha
+        for x in TraficoMapa.items(ficha: f.n) {
+            let a = MarcaTrafico(); a.coordinate = .init(latitude: x.dbl("lat"), longitude: x.dbl("lon"))
+            a.title = Trafico.icono(x.str("cat")) + " " + Trafico.titulo(x.str("cat"))
+            let car = x.str("carretera"); a.subtitle = car == "null" ? "" : car; m.addAnnotation(a)
         }
         DispatchQueue.main.async {
             if !coords.isEmpty, let o = m.overlays.first { m.setVisibleMapRect(o.boundingMapRect, edgePadding: .init(top: 30, left: 30, bottom: 30, right: 30), animated: false) }

@@ -86,6 +86,12 @@ struct NavMapaView: View {
         guard mapa.listo, let p = nav.pos, nav.archivo == archivo else { return }
         let r = nav.rumbo.isNaN ? "null" : String(format: "%.1f", nav.rumbo)
         mapa.js(String(format: "pos(%.7f,%.7f,%@,%.1f,false)", p.coordinate.longitude, p.coordinate.latitude, r, nav.estuvoEnRuta ? nav.enRuta : -1))
+        // incidencias de tráfico de la Ronda (DGT / Trànsit) en el mapa
+        if mapa.traficoVersion != TraficoMapa.version || Date().timeIntervalSince(mapa.traficoT) > 30 {
+            mapa.traficoVersion = TraficoMapa.version
+            mapa.traficoT = Date()
+            mapa.js("trafico(" + TraficoMapa.json() + ")")
+        }
     }
 
     private func mostrar(_ s: String) {
@@ -361,6 +367,8 @@ final class MapaWeb: NSObject, ObservableObject, WKScriptMessageHandler {
     @Published var listo = false
     @Published var seguir = true
     @Published var fallo = ""
+    var traficoVersion = -1
+    var traficoT = Date.distantPast
     let web: WKWebView
     private var inicio: String? = nil
 

@@ -277,7 +277,9 @@ final class Central: NSObject, ObservableObject, CLLocationManagerDelegate {
         repeat {
             let lote = cola(p).primeras(300)
             if lote.isEmpty { break }
+            let t0 = Date()
             let (c, d) = await Red.pedir(aj(p).url, texto: "[" + lote.joined(separator: ",") + "]")
+            RedActual.shared.envio(ok: c == 200, segundos: Date().timeIntervalSince(t0) / max(1, Double(lote.count) / 60))
             if c == 200 {
                 cola(p).quitar(lote.count)
                 enviadas += lote.count
@@ -291,6 +293,7 @@ final class Central: NSObject, ObservableObject, CLLocationManagerDelegate {
                 await mensajes(p).llegados(j["msgs"] as? [[String: Any]])
                 if p.id == "ronda" {
                     Trafico.recibidos(j["trf"] as? [[String: Any]], self)       // tráfico DGT por delante
+                    if j["trfm"] != nil { TraficoMapa.guardar(j["trfm"] as? [[String: Any]]) }   // y en el mapa
                     if let fa = j["fa"] as? NSNumber { FichasDatos.desdeEmision(fa.intValue) }   // ¿ficha nueva?
                 }
             } else if c == 404 {

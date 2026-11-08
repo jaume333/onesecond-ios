@@ -139,5 +139,20 @@ function verTodoYa(ms) {
   map.fitBounds([[b[0], b[1]], [b[2], b[3]]], {padding: {top: 130, bottom: 230, left: 50, right: 70}, pitch: es3d(EST) ? 55 : 0, bearing: 0, duration: ms});
   setTimeout(function () { porMi = false; }, ms + 100);
 }
+/** Incidencias de tráfico de la Ronda (DGT / Trànsit): bolas de color con su icono; al tocarlas, el detalle. */
+var TRF = [];
+function trafico(l) {
+  if (!map) return;
+  TRF.forEach(function (m) { m.remove(); });
+  TRF = [];
+  (l || []).forEach(function (x) {
+    var el = document.createElement("div");
+    el.style.cssText = "width:28px;height:28px;border-radius:50%;background:" + x.c + ";border:2.5px solid #fff;display:flex;align-items:center;justify-content:center;font-size:15px;box-shadow:0 2px 6px rgba(0,0,0,.5)";
+    el.textContent = x.i;
+    var pop = new maplibregl.Popup({offset: 18, closeButton: false}).setHTML('<div style="font:13px -apple-system;color:#111;white-space:pre-line">' +
+      String(x.t).replace(/&/g, "&amp;").replace(/</g, "&lt;") + '</div>');
+    TRF.push(new maplibregl.Marker({element: el}).setLngLat([x.lon, x.lat]).setPopup(pop).addTo(map));
+  });
+}
 function verTodo() { SEGUIR = false; verTodoYa(800); }
 </script></body></html>
