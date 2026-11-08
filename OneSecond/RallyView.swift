@@ -410,12 +410,19 @@ struct FichaTiemposRally: View {
     @State private var det: [String: Any]? = nil
     @State private var error = false
 
+    private var datos: String {
+        var s = "Dorsal " + RallyView.sinCeros(x.str("dorsal"))
+        let mc = x.str("motoclub"), mo = x.str("moto")
+        if !mc.isEmpty { s += " · " + mc }
+        if !mo.isEmpty { s += " · " + mo }
+        return s
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
                 Text(x.str("nombre")).font(.custom("TeXGyrePagella-Bold", size: 21)).foregroundColor(TC.texto)
-                Text("Dorsal " + RallyView.sinCeros(x.str("dorsal")) + (x.str("motoclub").isEmpty ? "" : " · " + x.str("motoclub"))
-                     + (x.str("moto").isEmpty ? "" : " · " + x.str("moto"))).font(.system(size: 12.5)).foregroundColor(TC.suave).padding(.top, 3)
+                Text(datos).font(.system(size: 12.5)).foregroundColor(TC.suave).padding(.top, 3)
                 Group {
                     if let d = det { TiemposVista(det: d) }
                     else if error { Text(TxRally.t("clas_det_error")).font(.system(size: 14)).foregroundColor(TC.naranja) }
