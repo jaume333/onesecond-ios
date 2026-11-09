@@ -68,8 +68,9 @@ jobs:
           cp revisar/10_iphone.png fastlane/screenshots/es-ES/06_iphone.png || true
           sips -g pixelWidth -g pixelHeight fastlane/screenshots/es-ES/*.png
       - name: Guardar las capturas en la rama «capturas»
+        if: always()
         run: |
-          D=$(mktemp -d); cp fastlane/screenshots/es-ES/*.png revisar/*.png "$D"/
+          D=$(mktemp -d); cp fastlane/screenshots/es-ES/*.png revisar/*.png "$D"/ 2>/dev/null || true
           git config user.name "github-actions"; git config user.email "actions@github.com"
           git checkout --orphan capturas-tmp
           git rm -rfq . >/dev/null
