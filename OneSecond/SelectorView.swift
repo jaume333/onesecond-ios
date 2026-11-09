@@ -108,6 +108,8 @@ struct SelectorView: View {
                 }
                 .onAppear { if Demo.activo && Demo.pantalla == 16 { DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { sv.scrollTo("minijuegos", anchor: .top) } } }
                 }
+                // la barra de estado (hora, batería) con fondo al bajar por la lista
+                Color.fondo.frame(height: 0).ignoresSafeArea(edges: .top).frame(maxHeight: .infinity, alignment: .top)
                 Breve()
             }
             .navigationBarHidden(true)

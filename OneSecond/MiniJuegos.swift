@@ -60,7 +60,7 @@ struct MiniJuegoView: View {
 
     var body: some View {
         GeometryReader { g in
-        let estrecho = g.size.width < 370          // iPhone SE, mini...: barra más compacta
+        let estrecho = g.size.width < 400          // iPhone SE, mini...: barra más compacta
         VStack(spacing: 0) {
             HStack(spacing: estrecho ? 6 : 10) {
                 Button { if w.web.canGoBack { w.web.goBack() } else { cerrar() } } label: {
@@ -68,15 +68,15 @@ struct MiniJuegoView: View {
                 }
                 Image(juego.icono).resizable().frame(width: estrecho ? 26 : 30, height: estrecho ? 26 : 30)
                 Text(juego.nombre).font(.custom("TeXGyrePagella-Bold", size: estrecho ? 16 : 19)).foregroundColor(.texto)
-                    .lineLimit(1).minimumScaleFactor(0.7)
+                    .lineLimit(1).minimumScaleFactor(0.6).layoutPriority(-1)
                 Spacer(minLength: 4)
                 Button { escaneando = true } label: {
                     Text("▣ " + (estrecho ? "QR" : t("Escanear QR", "Escanejar QR", "Scan QR"))).font(.system(size: 14, weight: .bold)).foregroundColor(.white)
-                        .lineLimit(1).padding(.horizontal, estrecho ? 10 : 12).padding(.vertical, 8).background(RoundedRectangle(cornerRadius: 10).fill(Color.azul))
+                        .lineLimit(1).fixedSize().padding(.horizontal, estrecho ? 10 : 12).padding(.vertical, 8).background(RoundedRectangle(cornerRadius: 10).fill(Color.azul))
                 }
                 Button { texto = ""; escribir = true } label: {
                     Text("⌨︎" + (estrecho ? "" : " " + t("Código", "Codi", "Code"))).font(.system(size: 14, weight: .bold)).foregroundColor(.texto)
-                        .lineLimit(1).padding(.horizontal, 10).padding(.vertical, 8)
+                        .lineLimit(1).fixedSize().padding(.horizontal, 10).padding(.vertical, 8)
                         .background(RoundedRectangle(cornerRadius: 10).stroke(Color.borde, lineWidth: 1.5))
                 }
                 Button { cerrar() } label: { Image(systemName: "xmark").font(.system(size: 15, weight: .bold)).foregroundColor(.suave).padding(4) }
