@@ -1,0 +1,30 @@
+name: Publicar en App Store Connect
+# Solo se lanza a mano y con el permiso de Jaime cada vez.
+#  - publicar: saca a la App Store la versión aprobada que espera publicación manual (PENDING_DEVELOPER_RELEASE).
+#  - enviar: crea la versión (si no existe), le pone la última compilación de esa versión, las novedades y la envía a revisión.
+on:
+  workflow_dispatch:
+    inputs:
+      accion:
+        description: "publicar o enviar"
+        required: true
+      version:
+        description: "Versión (p. ej. 1.58)"
+        required: true
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    env:
+      KEY_ID: LQFB8QADZB
+      ISSUER_ID: a406dc4b-3c03-421b-8bb2-e10b20505f94
+      APP: "6832263265"
+      ACCION: ${{ inputs.accion }}
+      VERSION: ${{ inputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Hacerlo
+        env:
+          P8: ${{ secrets.APPSTORE_KEY_P8 }}
+        run: |
+          pip install -q pyjwt cryptography requests
+          python3 herramientas/publicar.py
