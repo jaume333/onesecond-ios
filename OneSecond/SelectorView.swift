@@ -83,6 +83,16 @@ struct SelectorView: View {
                             Text(t("MINI JUEGOS", "MINI JOCS", "MINI GAMES")).font(.system(size: 11, weight: .medium)).tracking(2.2)
                                 .foregroundColor(.suave).frame(maxWidth: .infinity, alignment: .leading).padding(.leading, 4).padding(.top, 10)
                                 .id("minijuegos")
+                            // aviso de la II Motoweekend (se deja de ver al acabar, el 16 de noviembre de 2026)
+                            if Date() < MiniJuego.finAviso {
+                                Text("📣  " + t("Del 13 al 15 de noviembre, por la II Motoweekend, los mini juegos funcionarán con QR. Escanéalo con «Escanear QR» o escribe su código.",
+                                               "Del 13 al 15 de novembre, per la II Motoweekend, els mini jocs funcionaran amb QR. Escaneja'l amb «Escanejar QR» o escriu el seu codi.",
+                                               "From 13 to 15 November, for the II Motoweekend, the mini games will work with QR codes. Scan it with «Scan QR» or type its code."))
+                                    .font(.system(size: 13, weight: .medium)).foregroundColor(Color(hex: 0xFFE7A8)).fixedSize(horizontal: false, vertical: true)
+                                    .frame(maxWidth: .infinity, alignment: .leading).padding(12)
+                                    .background(RoundedRectangle(cornerRadius: 12).fill(Color(hex: 0x2A2210)))
+                                    .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color(hex: 0x6B5A1F), lineWidth: 1))
+                            }
                             ForEach(MiniJuego.todos) { j in
                                 Banda(id: j.id, nombre: j.nombre, sub: j.subtitulo, icono: j.icono, metal: j.metal, alto: alto,
                                       abrir: { juego = JuegoAbierto(j: j, url: nil) }, info: { hoja = .info(j.id, j.nombre, j.icono, j.metal) })

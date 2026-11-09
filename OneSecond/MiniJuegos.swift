@@ -20,6 +20,11 @@ struct MiniJuego: Identifiable {
         sub: ["Carrera en la pantalla gigante", "Cursa a la pantalla gegant", "Race on the big screen"],
         icono: "ic_ruta66", metal: [0x461A12, 0xD67838, 0x78301C], direccion: "https://onesecond.es/ruta66/movil")
     static let todos = [cazatopo, ruta66]
+    /// El aviso de la II Motoweekend (13-15 nov. 2026) sale hasta el 16 de noviembre de 2026 a las 00:00 (hora de Madrid).
+    static let finAviso: Date = {
+        var c = DateComponents(); c.year = 2026; c.month = 11; c.day = 16; c.timeZone = TimeZone(identifier: "Europe/Madrid")
+        return Calendar(identifier: .gregorian).date(from: c) ?? .distantPast
+    }()
 
     /// Lo que se escribe a mano: la dirección del QR (con o sin https://) o, en Caza al Topo, solo el código del ticket
     /// (10 letras y números, con o sin espacios o guiones). Devuelve (juego, dirección) o nil.
