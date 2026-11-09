@@ -14,10 +14,10 @@ struct MiniJuego: Identifiable {
     var subtitulo: String { t(sub[0], sub[1], sub[2]) }
 
     static let cazatopo = MiniJuego(id: "cazatopo", nombre: "Caza al Topo",
-        sub: ["Un QR por consumición · ranking", "Un QR per consumició · rànquing", "One QR per drink · leaderboard"],
+        sub: ["Caza todos los topos · Ranking", "Caça tots els talps · Rànquing", "Whack all the moles · Leaderboard"],
         icono: "ic_cazatopo", metal: [0x281A0E, 0x966234, 0x4E321A], direccion: "https://onesecond.es/cazatopo/")
     static let ruta66 = MiniJuego(id: "ruta66", nombre: "Ruta 66",
-        sub: ["Carrera en la pantalla gigante", "Cursa a la pantalla gegant", "Race on the big screen"],
+        sub: ["Gana a todos con tu Chopper", "Guanya a tothom amb la teva Chopper", "Beat everyone with your Chopper"],
         icono: "ic_ruta66", metal: [0x461A12, 0xD67838, 0x78301C], direccion: "https://onesecond.es/ruta66/movil")
     static let todos = [cazatopo, ruta66]
     /// El aviso de la II Motoweekend (13-15 nov. 2026) sale hasta el 16 de noviembre de 2026 a las 00:00 (hora de Madrid).
