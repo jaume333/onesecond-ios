@@ -145,6 +145,7 @@ struct SelectorView: View {
             Button("OK") {}
         } message: { Text(mensaje?.1 ?? "") }
         .onAppear {
+            BingoAvisos.shared.arrancar()          // 1.58: avisos del Bingo Motero (si este iPhone juega)
             if Demo.activo, Demo.pantalla >= 6, Demo.pantalla - 6 < PruebaWeb.todas.count {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { poker = PruebaWeb.todas[Demo.pantalla - 6] }
             }
@@ -153,6 +154,9 @@ struct SelectorView: View {
             }
             if Demo.activo, Demo.pantalla == 15 {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { juego = JuegoAbierto(j: .ruta66, url: nil) }
+            }
+            if Demo.activo, Demo.pantalla == 17 {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { juego = JuegoAbierto(j: .bingo, url: nil) }
             }
             if Demo.activo, Demo.pantalla == 11 {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { hoja = .entrar }

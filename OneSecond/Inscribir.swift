@@ -308,6 +308,9 @@ final class Avisador: NSObject, UNUserNotificationCenterDelegate {
     }
     func userNotificationCenter(_ c: UNUserNotificationCenter, didReceive r: UNNotificationResponse, withCompletionHandler fin: @escaping () -> Void) {
         let i = r.notification.request.content.userInfo
+        if let j = i["minijuego"] as? String {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { NotificationCenter.default.post(name: .abrirMiniJuego, object: [j, BingoAvisos.web]) }
+        }
         if let id = i["evento"] as? Int {
             let ins = i["inscribir"] as? Bool ?? false
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {

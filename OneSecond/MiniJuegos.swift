@@ -19,7 +19,10 @@ struct MiniJuego: Identifiable {
     static let ruta66 = MiniJuego(id: "ruta66", nombre: "Ruta 66",
         sub: ["Gana a todos con tu Chopper", "Guanya a tothom amb la teva Chopper", "Beat everyone with your Chopper"],
         icono: "ic_ruta66", metal: [0x461A12, 0xD67838, 0x78301C], direccion: "https://onesecond.es/ruta66/movil")
-    static let todos = [cazatopo, ruta66]
+    static let bingo = MiniJuego(id: "bingo", nombre: "Bingo Motero",
+        sub: ["Cartones con QR · Avisos de línea y bingo", "Cartrons amb QR · Avisos de línia i bingo", "QR bingo cards · Line and bingo alerts"],
+        icono: "ic_bingo", metal: [0x22180E, 0xB08440, 0x563C1C], direccion: BingoAvisos.web)
+    static let todos = [cazatopo, ruta66, bingo]
     /// El aviso de la II Motoweekend (13-15 nov. 2026) sale hasta el 16 de noviembre de 2026 a las 00:00 (hora de Madrid).
     static let finAviso: Date = {
         var c = DateComponents(); c.year = 2026; c.month = 11; c.day = 16; c.timeZone = TimeZone(identifier: "Europe/Madrid")
@@ -34,6 +37,8 @@ struct MiniJuego: Identifiable {
         if x.lowercased().hasPrefix("onesecond.es") || x.lowercased().hasPrefix("www.onesecond.es") { x = "https://" + x }
         if x.lowercased().hasPrefix("http"), let j = deQR(x) { return (j, x) }
         let codigo = x.uppercased().filter { "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".contains($0) }
+        // Bingo Motero: el código del ticket son 8 letras y números (XXXX-XXXX)
+        if en.id == "bingo", codigo.count == 8 { let a = String(codigo.prefix(4)), b = String(codigo.suffix(4)); return (en, BingoAvisos.web + "c/" + a + "-" + b) }
         if en.id == "cazatopo", (6...16).contains(codigo.count) { return (en, "https://onesecond.es/cazatopo/?t=" + codigo) }
         return nil
     }
@@ -44,6 +49,7 @@ struct MiniJuego: Identifiable {
               ["onesecond.es", "www.onesecond.es"].contains(u.host ?? "") else { return nil }
         if u.path.hasPrefix("/cazatopo") { return cazatopo }
         if u.path.hasPrefix("/ruta66") { return ruta66 }
+        if u.path.hasPrefix("/bingo") { return bingo }
         return nil
     }
 }
@@ -93,12 +99,12 @@ struct MiniJuegoView: View {
             // iOS 15: el cuadro de escribir va en una hoja (las alertas con campo de texto son de iOS 16)
             VStack(alignment: .leading, spacing: 14) {
                 Text(t("Código del QR", "Codi del QR", "QR code")).font(.custom("TeXGyrePagella-Bold", size: 22)).foregroundColor(.texto)
-                Text(juego.id == "cazatopo"
+                Text(juego.id != "ruta66"
                      ? t("Escribe el código que hay debajo del QR del ticket (o la dirección entera).", "Escriu el codi que hi ha sota el QR del tiquet (o l'adreça sencera).", "Type the code under the QR on the ticket (or the full address).")
                      : t("Escribe la dirección que sale debajo del QR de la pantalla gigante.", "Escriu l'adreça que surt sota el QR de la pantalla gegant.", "Type the address shown under the QR on the big screen."))
                     .font(.system(size: 14)).foregroundColor(.suave)
-                TextField(juego.id == "cazatopo" ? t("Código del ticket", "Codi del tiquet", "Ticket code") : "onesecond.es/ruta66/…", text: $texto)
-                    .textInputAutocapitalization(juego.id == "cazatopo" ? .characters : .never).disableAutocorrection(true)
+                TextField(juego.id != "ruta66" ? t("Código del ticket", "Codi del tiquet", "Ticket code") : "onesecond.es/ruta66/…", text: $texto)
+                    .textInputAutocapitalization(juego.id != "ruta66" ? .characters : .never).disableAutocorrection(true)
                     .font(.system(size: 20, weight: .bold, design: .monospaced)).foregroundColor(.white)
                     .padding(14).background(RoundedRectangle(cornerRadius: 12).fill(Color.panel))
                     .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.borde, lineWidth: 1.5))
@@ -117,7 +123,11 @@ struct MiniJuegoView: View {
             }
             .padding(22).background(Color(hex: 0x0B0F15).ignoresSafeArea()).preferredColorScheme(.dark)
         }
-        .onAppear { w.abrir(inicio ?? juego.direccion) }
+        .onAppear {
+            w.abrir(inicio ?? juego.direccion)
+            if juego.id == "bingo" { BingoAvisos.shared.pedirPermiso(); BingoAvisos.shared.abierto = true }
+        }
+        .onDisappear { BingoAvisos.shared.abierto = false; BingoAvisos.shared.arrancar() }
         .sheet(isPresented: $escaneando) {
             EscanerQR { s in
                 escaneando = false
@@ -154,6 +164,10 @@ final class WebJuego: NSObject, ObservableObject, WKNavigationDelegate, WKUIDele
         c.allowsInlineMediaPlayback = true                        // la cámara de la propia web (su lector de QR)
         c.mediaTypesRequiringUserActionForPlayback = []           // los sonidos del juego
         c.websiteDataStore = .default()                           // el jugador se queda guardado (no se vuelve a pedir)
+        // en el bingo la web ofrece «activar avisos» (web push, o «añádela a la pantalla de inicio» en iPhone), que en la
+        // app no hace falta: los avisos los saca la app (BingoAvisos)
+        c.userContentController.addUserScript(WKUserScript(source: "if(location.pathname.indexOf('/bingo')===0){var s=document.createElement('style');s.textContent='.avisos{display:none!important}';document.documentElement.appendChild(s);}",
+                                                           injectionTime: .atDocumentEnd, forMainFrameOnly: true))
         web = WKWebView(frame: .zero, configuration: c)
         super.init()
         web.isOpaque = false
@@ -175,6 +189,10 @@ final class WebJuego: NSObject, ObservableObject, WKNavigationDelegate, WKUIDele
         }
         decisionHandler(.cancel)
         UIApplication.shared.open(u)
+    }
+
+    func webView(_ v: WKWebView, didFinish n: WKNavigation!) {
+        if v.url?.path.hasPrefix("/bingo") == true { Task { @MainActor in BingoAvisos.shared.arrancar() } }
     }
 
     func webView(_ v: WKWebView, createWebViewWith c: WKWebViewConfiguration, for a: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {

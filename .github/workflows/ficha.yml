@@ -71,7 +71,7 @@ jobs:
           done
           # pantallas para revisar (no van a la App Store): Rally Poker, Poker Run y Hold'em Run con datos reales
           mkdir -p revisar
-          for n in 6 7 8 9 10 11 12 13 14 15 16; do
+          for n in 6 7 8 9 10 11 12 13 14 15 16 17; do
             T 30 xcrun simctl terminate "$UDID" es.onesecond.rallygps || true
             T 120 xcrun simctl launch "$UDID" es.onesecond.rallygps -demo -pantalla $n -AppleLanguages "(es)" -AppleLocale es_ES || true
             if [ $n = 10 ] || [ $n = 14 ] || [ $n = 15 ]; then sleep 35; else sleep 15; fi
