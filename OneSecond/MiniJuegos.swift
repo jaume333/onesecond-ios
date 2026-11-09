@@ -21,6 +21,18 @@ struct MiniJuego: Identifiable {
         icono: "ic_ruta66", metal: [0x461A12, 0xD67838, 0x78301C], direccion: "https://onesecond.es/ruta66/movil")
     static let todos = [cazatopo, ruta66]
 
+    /// Lo que se escribe a mano: la dirección del QR (con o sin https://) o, en Caza al Topo, solo el código del ticket
+    /// (10 letras y números, con o sin espacios o guiones). Devuelve (juego, dirección) o nil.
+    static func deTexto(_ s: String, en: MiniJuego) -> (MiniJuego, String)? {
+        var x = s.trimmingCharacters(in: .whitespacesAndNewlines)
+        if x.isEmpty { return nil }
+        if x.lowercased().hasPrefix("onesecond.es") || x.lowercased().hasPrefix("www.onesecond.es") { x = "https://" + x }
+        if x.lowercased().hasPrefix("http"), let j = deQR(x) { return (j, x) }
+        let codigo = x.uppercased().filter { "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".contains($0) }
+        if en.id == "cazatopo", (6...16).contains(codigo.count) { return (en, "https://onesecond.es/cazatopo/?t=" + codigo) }
+        return nil
+    }
+
     /// ¿Es un QR de un mini juego? Devuelve el juego, o nil.
     static func deQR(_ s: String) -> MiniJuego? {
         guard let u = URLComponents(string: s.trimmingCharacters(in: .whitespacesAndNewlines)),
@@ -38,21 +50,31 @@ struct MiniJuegoView: View {
     @StateObject private var w = WebJuego()
     @State private var escaneando = false
     @State private var aviso: String? = nil
+    @State private var escribir = false
+    @State private var texto = ""
 
     var body: some View {
+        GeometryReader { g in
+        let estrecho = g.size.width < 370          // iPhone SE, mini...: barra más compacta
         VStack(spacing: 0) {
-            HStack(spacing: 10) {
+            HStack(spacing: estrecho ? 6 : 10) {
                 Button { if w.web.canGoBack { w.web.goBack() } else { cerrar() } } label: {
-                    Text("‹").font(.system(size: 30)).foregroundColor(.suave).padding(.horizontal, 8)
+                    Text("‹").font(.system(size: 30)).foregroundColor(.suave).padding(.horizontal, estrecho ? 4 : 8)
                 }
-                Image(juego.icono).resizable().frame(width: 30, height: 30)
-                Text(juego.nombre).font(.custom("TeXGyrePagella-Bold", size: 19)).foregroundColor(.texto)
-                Spacer()
+                Image(juego.icono).resizable().frame(width: estrecho ? 26 : 30, height: estrecho ? 26 : 30)
+                Text(juego.nombre).font(.custom("TeXGyrePagella-Bold", size: estrecho ? 16 : 19)).foregroundColor(.texto)
+                    .lineLimit(1).minimumScaleFactor(0.7)
+                Spacer(minLength: 4)
                 Button { escaneando = true } label: {
-                    Text("▣  " + t("Escanear QR", "Escanejar QR", "Scan QR")).font(.system(size: 14, weight: .bold)).foregroundColor(.white)
-                        .padding(.horizontal, 14).padding(.vertical, 8).background(RoundedRectangle(cornerRadius: 10).fill(Color.azul))
+                    Text("▣ " + (estrecho ? "QR" : t("Escanear QR", "Escanejar QR", "Scan QR"))).font(.system(size: 14, weight: .bold)).foregroundColor(.white)
+                        .lineLimit(1).padding(.horizontal, estrecho ? 10 : 12).padding(.vertical, 8).background(RoundedRectangle(cornerRadius: 10).fill(Color.azul))
                 }
-                Button { cerrar() } label: { Image(systemName: "xmark").font(.system(size: 15, weight: .bold)).foregroundColor(.suave).padding(6) }
+                Button { texto = ""; escribir = true } label: {
+                    Text("⌨︎" + (estrecho ? "" : " " + t("Código", "Codi", "Code"))).font(.system(size: 14, weight: .bold)).foregroundColor(.texto)
+                        .lineLimit(1).padding(.horizontal, 10).padding(.vertical, 8)
+                        .background(RoundedRectangle(cornerRadius: 10).stroke(Color.borde, lineWidth: 1.5))
+                }
+                Button { cerrar() } label: { Image(systemName: "xmark").font(.system(size: 15, weight: .bold)).foregroundColor(.suave).padding(4) }
             }
             .padding(.horizontal, 8).padding(.vertical, 6)
             ZStack(alignment: .top) {
@@ -60,20 +82,60 @@ struct MiniJuegoView: View {
                 if w.cargando < 1 { ProgressView(value: w.cargando).tint(.azul) }
             }
         }
+        }
         .background(Color(hex: 0x0B0F15).ignoresSafeArea())
+        .sheet(isPresented: $escribir) {
+            // iOS 15: el cuadro de escribir va en una hoja (las alertas con campo de texto son de iOS 16)
+            VStack(alignment: .leading, spacing: 14) {
+                Text(t("Código del QR", "Codi del QR", "QR code")).font(.custom("TeXGyrePagella-Bold", size: 22)).foregroundColor(.texto)
+                Text(juego.id == "cazatopo"
+                     ? t("Escribe el código que hay debajo del QR del ticket (o la dirección entera).", "Escriu el codi que hi ha sota el QR del tiquet (o l'adreça sencera).", "Type the code under the QR on the ticket (or the full address).")
+                     : t("Escribe la dirección que sale debajo del QR de la pantalla gigante.", "Escriu l'adreça que surt sota el QR de la pantalla gegant.", "Type the address shown under the QR on the big screen."))
+                    .font(.system(size: 14)).foregroundColor(.suave)
+                TextField(juego.id == "cazatopo" ? t("Código del ticket", "Codi del tiquet", "Ticket code") : "onesecond.es/ruta66/…", text: $texto)
+                    .textInputAutocapitalization(juego.id == "cazatopo" ? .characters : .never).disableAutocorrection(true)
+                    .font(.system(size: 20, weight: .bold, design: .monospaced)).foregroundColor(.white)
+                    .padding(14).background(RoundedRectangle(cornerRadius: 12).fill(Color.panel))
+                    .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.borde, lineWidth: 1.5))
+                    .submitLabel(.go).onSubmit { escribir = false; abrirTexto() }
+                HStack(spacing: 10) {
+                    Button { escribir = false } label: {
+                        Text(t("Cancelar", "Cancel·lar", "Cancel")).font(.system(size: 16, weight: .medium)).foregroundColor(.suave)
+                            .frame(maxWidth: .infinity).frame(height: 50).overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.borde))
+                    }
+                    Button { escribir = false; abrirTexto() } label: {
+                        Text(t("Abrir", "Obrir", "Open")).font(.system(size: 16, weight: .bold)).foregroundColor(.white)
+                            .frame(maxWidth: .infinity).frame(height: 50).background(RoundedRectangle(cornerRadius: 12).fill(Color.azul))
+                    }
+                }
+                Spacer()
+            }
+            .padding(22).background(Color(hex: 0x0B0F15).ignoresSafeArea()).preferredColorScheme(.dark)
+        }
         .onAppear { w.abrir(inicio ?? juego.direccion) }
         .sheet(isPresented: $escaneando) {
             EscanerQR { s in
                 escaneando = false
-                if let j = MiniJuego.deQR(s) {
-                    if j.id == juego.id { w.abrir(s) }
-                    else { cerrar(); DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { NotificationCenter.default.post(name: .abrirMiniJuego, object: [j.id, s]) } }
+                if let (j, u) = MiniJuego.deTexto(s, en: juego) {
+                    if j.id == juego.id { w.abrir(u) }
+                    else { cerrar(); DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { NotificationCenter.default.post(name: .abrirMiniJuego, object: [j.id, u]) } }
                 } else {
                     aviso = t("Este QR no es de un mini juego de One Second.", "Aquest QR no és d'un mini joc de One Second.", "This QR is not from a One Second mini game.")
                 }
             }.ignoresSafeArea()
         }
         .alert(aviso ?? "", isPresented: Binding(get: { aviso != nil }, set: { if !$0 { aviso = nil } })) { Button("OK") {} }
+    }
+}
+
+extension MiniJuegoView {
+    func abrirTexto() {
+        guard let (j, u) = MiniJuego.deTexto(texto, en: juego) else {
+            aviso = t("Ese código no es válido. Revisa que esté bien escrito.", "Aquest codi no és vàlid. Revisa que estigui ben escrit.", "That code is not valid. Check it is typed correctly.")
+            return
+        }
+        if j.id == juego.id { w.abrir(u) }
+        else { cerrar(); DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { NotificationCenter.default.post(name: .abrirMiniJuego, object: [j.id, u]) } }
     }
 }
 
