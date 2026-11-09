@@ -13,7 +13,7 @@ permissions:
 jobs:
   ficha:
     runs-on: macos-15
-    timeout-minutes: 45
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
       - name: Usar Xcode 26
@@ -44,7 +44,7 @@ jobs:
             -derivedDataPath build CODE_SIGNING_ALLOWED=NO build 2>&1 | tail -5
           xcrun simctl install "$UDID" "build/Build/Products/Debug-iphonesimulator/One Second.app"
       - name: Capturas
-        timeout-minutes: 15
+        timeout-minutes: 30
         run: |
           mkdir -p fastlane/screenshots/es-ES
           T() { perl -e 'alarm shift; exec @ARGV' "$@"; }
