@@ -26,7 +26,7 @@ jobs:
           brew install xcodegen
           xcodegen generate
       - name: Simulador de iPhone grande (6,9")
-        timeout-minutes: 10
+        timeout-minutes: 25
         run: |
           xcrun simctl list devices available | grep -E "iPhone" | head -30
           NOMBRE=$(xcrun simctl list devices available | grep -oE "iPhone [0-9]+ Pro Max" | sort -V | tail -1)
@@ -34,8 +34,20 @@ jobs:
           echo "Simulador: $NOMBRE $UDID"
           echo "UDID=$UDID" >> $GITHUB_ENV
           T() { perl -e 'alarm shift; exec @ARGV' "$@"; }
-          T 120 xcrun simctl boot "$UDID" || true
-          T 400 xcrun simctl bootstatus "$UDID" -b || echo "bootstatus no terminó; sigo"
+          # el simulador a veces no arranca en el primer intento: se apaga, se borra y se reintenta (y si no, otro iPhone)
+          ok=0
+          for intento in 1 2 3; do
+            T 120 xcrun simctl boot "$UDID" || true
+            if T 300 xcrun simctl bootstatus "$UDID" -b; then ok=1; break; fi
+            echo "no arrancó (intento $intento): se reintenta"
+            T 60 xcrun simctl shutdown all || true
+            T 120 xcrun simctl erase "$UDID" || true
+            if [ $intento = 2 ]; then
+              UDID=$(xcrun simctl list devices available | grep -E "iPhone 1[0-9] Pro Max \(" | grep -v "$UDID" | head -1 | grep -oE "[0-9A-F-]{36}")
+              echo "otro iPhone: $UDID"; echo "UDID=$UDID" >> $GITHUB_ENV
+            fi
+          done
+          [ $ok = 1 ] || { echo "::error::El simulador no arranca"; exit 1; }
           xcrun simctl status_bar "$UDID" override --time "9:41" --batteryState charged --batteryLevel 100 --cellularBars 4 --wifiBars 3 --operatorName ""
       - name: Compilar para el simulador
         run: |
