@@ -1,7 +1,7 @@
 import SwiftUI
 import WebKit
 
-/// MINI JUEGOS (como MiniJuego.java de Android 1.58): Caza al Topo (onesecond.es/cazatopo: cada consumición trae un QR
+/// MINI JUEGOS (como MiniJuego.java de Android 1.58): Caza al Topo (onesecond.es/cazatopo: en algunos eventos cada ticket trae un QR
 /// con una partida) y Ruta 66 (onesecond.es/ruta66: la carrera de la pantalla gigante; cada móvil es una moto).
 /// Son las mismas webs, dentro de la app; arriba, «Escanear QR» (el QR del ticket o el de la pantalla gigante).
 struct MiniJuego: Identifiable {
@@ -166,7 +166,7 @@ final class WebJuego: NSObject, ObservableObject, WKNavigationDelegate, WKUIDele
         c.websiteDataStore = .default()                           // el jugador se queda guardado (no se vuelve a pedir)
         // en el bingo la web ofrece «activar avisos» (web push, o «añádela a la pantalla de inicio» en iPhone), que en la
         // app no hace falta: los avisos los saca la app (BingoAvisos)
-        c.userContentController.addUserScript(WKUserScript(source: "if(location.pathname.indexOf('/bingo')===0){var s=document.createElement('style');s.textContent='.avisos{display:none!important}';document.documentElement.appendChild(s);}",
+        c.userContentController.addUserScript(WKUserScript(source: BingoAvisos.jsWeb,
                                                            injectionTime: .atDocumentEnd, forMainFrameOnly: true))
         web = WKWebView(frame: .zero, configuration: c)
         super.init()
