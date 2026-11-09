@@ -46,6 +46,7 @@ struct SelectorView: View {
                 ForEach(PruebaWeb.todas) { w in
                     NavigationLink(tag: w, selection: $poker) { PokerView(d: w) } label: { EmptyView() }.hidden()
                 }
+                ScrollViewReader { sv in
                 ScrollView {
                     VStack(spacing: 0) {
                         HStack(spacing: 2) {
@@ -81,6 +82,7 @@ struct SelectorView: View {
                             // 1.58: MINI JUEGOS (Caza al Topo y Ruta 66)
                             Text(t("MINI JUEGOS", "MINI JOCS", "MINI GAMES")).font(.system(size: 11, weight: .medium)).tracking(2.2)
                                 .foregroundColor(.suave).frame(maxWidth: .infinity, alignment: .leading).padding(.leading, 4).padding(.top, 10)
+                                .id("minijuegos")
                             ForEach(MiniJuego.todos) { j in
                                 Banda(id: j.id, nombre: j.nombre, sub: j.subtitulo, icono: j.icono, metal: j.metal, alto: alto,
                                       abrir: { juego = JuegoAbierto(j: j, url: nil) }, info: { hoja = .info(j.id, j.nombre, j.icono, j.metal) })
@@ -93,6 +95,8 @@ struct SelectorView: View {
                             .font(.system(size: 11)).foregroundColor(Color(hex: 0x5F6B7D)).padding(.top, 18)
                     }
                     .padding(.horizontal, 16).padding(.top, 12).padding(.bottom, 24)
+                }
+                .onAppear { if Demo.activo && Demo.pantalla == 16 { DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { sv.scrollTo("minijuegos", anchor: .top) } } }
                 }
                 Breve()
             }
@@ -131,6 +135,12 @@ struct SelectorView: View {
         .onAppear {
             if Demo.activo, Demo.pantalla >= 6, Demo.pantalla - 6 < PruebaWeb.todas.count {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { poker = PruebaWeb.todas[Demo.pantalla - 6] }
+            }
+            if Demo.activo, Demo.pantalla == 14 {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { juego = JuegoAbierto(j: .cazatopo, url: nil) }
+            }
+            if Demo.activo, Demo.pantalla == 15 {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { juego = JuegoAbierto(j: .ruta66, url: nil) }
             }
             if Demo.activo, Demo.pantalla == 11 {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { hoja = .entrar }
