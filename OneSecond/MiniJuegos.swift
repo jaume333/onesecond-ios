@@ -192,7 +192,12 @@ final class WebJuego: NSObject, ObservableObject, WKNavigationDelegate, WKUIDele
     }
 
     func webView(_ v: WKWebView, didFinish n: WKNavigation!) {
-        if v.url?.path.hasPrefix("/bingo") == true { Task { @MainActor in BingoAvisos.shared.arrancar() } }
+        if v.url?.path.hasPrefix("/bingo") == true {
+            // se vuelve a aplicar al acabar de cargar y un poco después (por si la web aún se está pintando)
+            v.evaluateJavaScript(BingoAvisos.jsWeb)
+            for s in [0.5, 1.5, 3.0] { DispatchQueue.main.asyncAfter(deadline: .now() + s) { v.evaluateJavaScript(BingoAvisos.jsWeb) } }
+            Task { @MainActor in BingoAvisos.shared.arrancar() }
+        }
     }
 
     func webView(_ v: WKWebView, createWebViewWith c: WKWebViewConfiguration, for a: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
