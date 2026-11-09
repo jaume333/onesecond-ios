@@ -14,6 +14,8 @@ struct SelectorView: View {
     @State private var elegir: [Cuenta.Insc] = []
     @State private var mensaje: (String, String)? = nil
     @State private var poker: PruebaWeb? = nil
+    @State private var juego: JuegoAbierto? = nil
+    struct JuegoAbierto: Identifiable { let j: MiniJuego; let url: String?; var id: String { j.id } }
     @AppStorage("navigator_visto") private var navVisto = false
 
     enum Hoja: Identifiable {
@@ -76,6 +78,13 @@ struct SelectorView: View {
                                       abierta: cuenta.abiertas.contains(w.id),
                                       abrir: { poker = w }, info: { hoja = .info(w.id, w.nombre, w.icono, w.metal) })
                             }
+                            // 1.58: MINI JUEGOS (Caza al Topo y Ruta 66)
+                            Text(t("MINI JUEGOS", "MINI JOCS", "MINI GAMES")).font(.system(size: 11, weight: .medium)).tracking(2.2)
+                                .foregroundColor(.suave).frame(maxWidth: .infinity, alignment: .leading).padding(.leading, 4).padding(.top, 10)
+                            ForEach(MiniJuego.todos) { j in
+                                Banda(id: j.id, nombre: j.nombre, sub: j.subtitulo, icono: j.icono, metal: j.metal, alto: alto,
+                                      abrir: { juego = JuegoAbierto(j: j, url: nil) }, info: { hoja = .info(j.id, j.nombre, j.icono, j.metal) })
+                            }
                         }.padding(.top, 20)
 
                         cajaCuenta.padding(.top, 16)
@@ -90,6 +99,10 @@ struct SelectorView: View {
             .navigationBarHidden(true)
         }
         .navigationViewStyle(.stack)
+        .fullScreenCover(item: $juego) { a in MiniJuegoView(juego: a.j, inicio: a.url) }
+        .onReceive(NotificationCenter.default.publisher(for: .abrirMiniJuego)) { n in
+            if let x = n.object as? [String], x.count == 2, let j = MiniJuego.todos.first(where: { $0.id == x[0] }) { juego = JuegoAbierto(j: j, url: x[1]) }
+        }
         .onReceive(NotificationCenter.default.publisher(for: .abrirInscribir)) { n in
             if let i = n.object as? Int { abierta = nil; navAbierto = false; hoja = .inscribir(i) }
         }
