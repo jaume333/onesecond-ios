@@ -85,9 +85,9 @@ struct SelectorView: View {
                                 .id("minijuegos")
                             // aviso de la II Motoweekend (se deja de ver al acabar, el 16 de noviembre de 2026)
                             if Date() < MiniJuego.finAviso {
-                                Text("📣  " + t("Del 13 al 15 de noviembre, por la II Motoweekend, los mini juegos funcionarán con QR. Escanéalo con «Escanear QR» o escribe su código.",
-                                               "Del 13 al 15 de novembre, per la II Motoweekend, els mini jocs funcionaran amb QR. Escaneja'l amb «Escanejar QR» o escriu el seu codi.",
-                                               "From 13 to 15 November, for the II Motoweekend, the mini games will work with QR codes. Scan it with «Scan QR» or type its code."))
+                                Text("📣  " + t("II Motoweekend a La Ràpita (del 13 al 15 de noviembre): los mini juegos funcionarán con QR. Escanéalo con «Escanear QR» o escribe su código.",
+                                               "II Motoweekend a La Ràpita (del 13 al 15 de novembre): els mini jocs funcionaran amb QR. Escaneja'l amb «Escanejar QR» o escriu el seu codi.",
+                                               "II Motoweekend in La Ràpita (13 to 15 November): the mini games will work with QR codes. Scan it with «Scan QR» or type its code."))
                                     .font(.system(size: 13, weight: .medium)).foregroundColor(Color(hex: 0xFFE7A8)).fixedSize(horizontal: false, vertical: true)
                                     .frame(maxWidth: .infinity, alignment: .leading).padding(12)
                                     .background(RoundedRectangle(cornerRadius: 12).fill(Color(hex: 0x2A2210)))
