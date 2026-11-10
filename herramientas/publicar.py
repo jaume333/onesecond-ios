@@ -79,19 +79,14 @@ elif ACCION == "mirar":
     print("APP", app.get("name"), app.get("bundleId"), "contentRights:", app.get("contentRightsDeclaration"))
     for ruta in [f"/apps/{APP}/appAvailabilityV2", f"/apps/{APP}/appPriceSchedule"]:
         r = requests.get(API + ruta, headers=cab()); print("GET", ruta, r.status_code, r.text[:600])
-    r = requests.get(API + f"/apps/{APP}/appAvailabilityV2", headers=cab())
-    if r.ok:
-        aid = r.json()["data"]["id"]
-        n, si, pag = 0, 0, f"/appAvailabilities/{aid}/territoryAvailabilities?limit=200"
-        while pag:
-            rr = requests.get(API + pag if pag.startswith("/") else pag, headers=cab()); print("RAW", rr.status_code, rr.text[:700].replace(chr(10), " "))
-            j = rr.json()
-            for t in j.get("data", []):
-                n += 1; a = t["attributes"]
-                if a.get("available"): si += 1
-                if n <= 3 or "ESP" in t["id"] or a.get("contentStatuses"): print("TERR", t["id"][:40], a)
-            pag = j.get("links", {}).get("next")
-        print("TERRITORIOS", n, "disponibles", si)
+    V2 = "https://api.appstoreconnect.apple.com/v2"
+    rr = requests.get(V2 + f"/appAvailabilities/{APP}?include=territoryAvailabilities&limit[territoryAvailabilities]=50", headers=cab())
+    print("RAW2", rr.status_code, rr.text[:300].replace(chr(10), " "))
+    inc = rr.json().get("included", []) if rr.ok else []
+    print("TERRITORIOS (primeros 50)", len(inc), "disponibles", sum(1 for t in inc if t["attributes"].get("available")))
+    for t in inc[:4]: print("TERR", t["attributes"])
+    rr = requests.get(API + f"/apps/{APP}/availableTerritories?limit=200", headers=cab())
+    print("V1 availableTerritories", rr.status_code, len(rr.json().get("data", [])) if rr.ok else rr.text[:200].replace(chr(10), " "))
     j = requests.get(API + f"/appPriceSchedules/{APP}/manualPrices?include=appPricePoint", headers=cab()).json()
     print("PRECIOS", len(j.get("data", [])), [x.get("attributes") for x in j.get("included", [])][:2])
     for v in pedir("GET", f"/apps/{APP}/appStoreVersions?limit=5")["data"]:
