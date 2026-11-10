@@ -91,6 +91,8 @@ elif ACCION == "mirar":
                 if n <= 3 or "ESP" in t["id"] or a.get("contentStatuses"): print("TERR", t["id"][:40], a)
             pag = j.get("links", {}).get("next")
         print("TERRITORIOS", n, "disponibles", si)
+    j = requests.get(API + f"/appPriceSchedules/{APP}/manualPrices?include=appPricePoint", headers=cab()).json()
+    print("PRECIOS", len(j.get("data", [])), [x.get("attributes") for x in j.get("included", [])][:2])
     for v in pedir("GET", f"/apps/{APP}/appStoreVersions?limit=5")["data"]:
         print("VERSION", v["attributes"]["versionString"], v["attributes"].get("appStoreState"), v["attributes"].get("earliestReleaseDate"))
 else:
