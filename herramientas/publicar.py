@@ -84,7 +84,8 @@ elif ACCION == "mirar":
         aid = r.json()["data"]["id"]
         n, si, pag = 0, 0, f"/appAvailabilities/{aid}/territoryAvailabilities?limit=200"
         while pag:
-            j = requests.get(API + pag if pag.startswith("/") else pag, headers=cab()).json()
+            rr = requests.get(API + pag if pag.startswith("/") else pag, headers=cab()); print("RAW", rr.status_code, rr.text[:700].replace(chr(10), " "))
+            j = rr.json()
             for t in j.get("data", []):
                 n += 1; a = t["attributes"]
                 if a.get("available"): si += 1
