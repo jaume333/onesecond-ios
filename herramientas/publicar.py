@@ -73,5 +73,25 @@ elif ACCION == "enviar":
                             "appStoreVersion": {"data": {"type": "appStoreVersions", "id": v["id"]}}}}})
     pedir("PATCH", f"/reviewSubmissions/{s['id']}", {"data": {"type": "reviewSubmissions", "id": s["id"], "attributes": {"submitted": True}}})
     print("ENVIADA A REVISION", VER)
+elif ACCION == "mirar":
+    # solo mira: disponibilidad por países, precio y datos de la ficha
+    app = pedir("GET", f"/apps/{APP}")["data"]["attributes"]
+    print("APP", app.get("name"), app.get("bundleId"), "contentRights:", app.get("contentRightsDeclaration"))
+    for ruta in [f"/apps/{APP}/appAvailabilityV2", f"/apps/{APP}/appPriceSchedule"]:
+        r = requests.get(API + ruta, headers=cab()); print("GET", ruta, r.status_code, r.text[:600])
+    r = requests.get(API + f"/apps/{APP}/appAvailabilityV2", headers=cab())
+    if r.ok:
+        aid = r.json()["data"]["id"]
+        n, si, pag = 0, 0, f"/appAvailabilities/{aid}/territoryAvailabilities?limit=200"
+        while pag:
+            j = requests.get(API + pag if pag.startswith("/") else pag, headers=cab()).json()
+            for t in j.get("data", []):
+                n += 1; a = t["attributes"]
+                if a.get("available"): si += 1
+                if n <= 3 or "ESP" in t["id"] or a.get("contentStatuses"): print("TERR", t["id"][:40], a)
+            pag = j.get("links", {}).get("next")
+        print("TERRITORIOS", n, "disponibles", si)
+    for v in pedir("GET", f"/apps/{APP}/appStoreVersions?limit=5")["data"]:
+        print("VERSION", v["attributes"]["versionString"], v["attributes"].get("appStoreState"), v["attributes"].get("earliestReleaseDate"))
 else:
     print("Acción desconocida"); sys.exit(1)
