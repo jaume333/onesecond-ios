@@ -84,7 +84,22 @@ elif ACCION == "mirar":
     print("RAW2", rr.status_code, rr.text[:300].replace(chr(10), " "))
     inc = rr.json().get("included", []) if rr.ok else []
     print("TERRITORIOS (primeros 50)", len(inc), "disponibles", sum(1 for t in inc if t["attributes"].get("available")))
-    for t in inc[:4]: print("TERR", t["attributes"])
+    import base64, collections
+    todos, url = [], V2 + f"/appAvailabilities/{APP}/territoryAvailabilities?include=territory&limit=200"
+    while url:
+        rr = requests.get(url, headers=cab())
+        if not rr.ok: print("ERR terr", rr.status_code, rr.text[:200].replace(chr(10)," ")); break
+        jj = rr.json(); todos += jj.get("data", []); url = jj.get("links", {}).get("next")
+    if not todos:
+        todos = inc
+    est = collections.defaultdict(list)
+    for t in todos:
+        ter = (t.get("relationships", {}).get("territory", {}).get("data") or {}).get("id")
+        if not ter:
+            try: ter = json.loads(base64.b64decode(t["id"] + "==").decode()).get("t")
+            except Exception: ter = t["id"][:12]
+        est[",".join(t["attributes"].get("contentStatuses") or [])].append(str(ter))
+    for k, v in est.items(): print("ESTADO", k, len(v), " ".join(sorted(v))[:900])
     rr = requests.get(API + f"/apps/{APP}/availableTerritories?limit=200", headers=cab())
     print("V1 availableTerritories", rr.status_code, len(rr.json().get("data", [])) if rr.ok else rr.text[:200].replace(chr(10), " "))
     j = requests.get(API + f"/appPriceSchedules/{APP}/manualPrices?include=appPricePoint", headers=cab()).json()
