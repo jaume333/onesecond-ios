@@ -118,5 +118,38 @@ elif ACCION == "capturas":
                 a = sc["attributes"]; ad = a.get("assetDeliveryState") or {}
                 im = a.get("imageAsset") or {}
                 print("    CAP", a.get("fileName"), a.get("fileSize"), im.get("width"), im.get("height"), ad.get("state"), ad.get("errors"), sc["id"])
+elif ACCION == "cambiar01":
+    # Sustituye la 1ª captura (subida dañada) por la buena de la rama «capturas». Sube primero la nueva,
+    # luego borra la mala y la deja en primer lugar.
+    import hashlib
+    URL = "https://raw.githubusercontent.com/jaume333/onesecond-ios/capturas/01_iphone.png"
+    datos = requests.get(URL, timeout=60).content
+    md5 = hashlib.md5(datos).hexdigest(); print("ARCHIVO", len(datos), md5)
+    if md5 != "e5a2c908ffb44a69ea09c10e16a52d43": print("ERROR el archivo no es el esperado"); sys.exit(1)
+    v = version(); loc = [l for l in pedir("GET", f"/appStoreVersions/{v['id']}/appStoreVersionLocalizations")["data"] if l["attributes"]["locale"] == "es-ES"][0]
+    ss = [x for x in pedir("GET", f"/appStoreVersionLocalizations/{loc['id']}/appScreenshotSets")["data"] if x["attributes"]["screenshotDisplayType"] == "APP_IPHONE_67"][0]
+    antes = pedir("GET", f"/appScreenshotSets/{ss['id']}/appScreenshots?limit=20")["data"]
+    mala = [c for c in antes if c["attributes"]["fileName"] == "01_iphone.png" and c["attributes"]["fileSize"] < 500000]
+    if not mala: print("ERROR no encuentro la captura mala"); sys.exit(1)
+    res = pedir("POST", "/appScreenshots", {"data": {"type": "appScreenshots", "attributes": {"fileName": "01_iphone.png", "fileSize": len(datos)},
+                 "relationships": {"appScreenshotSet": {"data": {"type": "appScreenshotSets", "id": ss["id"]}}}}})["data"]
+    for op in res["attributes"]["uploadOperations"]:
+        h = {x["name"]: x["value"] for x in op["requestHeaders"]}
+        r = requests.request(op["method"], op["url"], headers=h, data=datos[op["offset"]:op["offset"] + op["length"]], timeout=120)
+        if r.status_code >= 300: print("ERROR subida", r.status_code, r.text[:500]); sys.exit(1)
+    pedir("PATCH", f"/appScreenshots/{res['id']}", {"data": {"type": "appScreenshots", "id": res["id"], "attributes": {"uploaded": True, "sourceFileChecksum": md5}}})
+    for i in range(30):
+        a = pedir("GET", f"/appScreenshots/{res['id']}")["data"]["attributes"]; st = (a.get("assetDeliveryState") or {}).get("state")
+        print("ESTADO", st)
+        if st == "COMPLETE": break
+        if st == "FAILED": print("ERROR", a.get("assetDeliveryState")); sys.exit(1)
+        time.sleep(5)
+    else:
+        print("ERROR no terminó de procesarse"); sys.exit(1)
+    for c in mala: pedir("DELETE", f"/appScreenshots/{c['id']}"); print("BORRADA", c["id"])
+    resto = [c["id"] for c in antes if c not in mala]
+    pedir("PATCH", f"/appScreenshotSets/{ss['id']}/relationships/appScreenshots", {"data": [{"type": "appScreenshots", "id": i} for i in [res["id"]] + resto]})
+    for sc in pedir("GET", f"/appScreenshotSets/{ss['id']}/appScreenshots?limit=20")["data"]:
+        a = sc["attributes"]; print("    CAP", a.get("fileName"), a.get("fileSize"), (a.get("assetDeliveryState") or {}).get("state"))
 else:
     print("Acción desconocida"); sys.exit(1)
