@@ -106,5 +106,17 @@ elif ACCION == "mirar":
     print("PRECIOS", len(j.get("data", [])), [x.get("attributes") for x in j.get("included", [])][:2])
     for v in pedir("GET", f"/apps/{APP}/appStoreVersions?limit=5")["data"]:
         print("VERSION", v["attributes"]["versionString"], v["attributes"].get("appStoreState"), v["attributes"].get("earliestReleaseDate"))
+elif ACCION == "capturas":
+    # solo mira: las capturas de cada idioma de la versión y su estado
+    v = version()
+    if not v: print("No existe la versión", VER); sys.exit(1)
+    for loc in pedir("GET", f"/appStoreVersions/{v['id']}/appStoreVersionLocalizations")["data"]:
+        print("IDIOMA", loc["attributes"]["locale"])
+        for ss in pedir("GET", f"/appStoreVersionLocalizations/{loc['id']}/appScreenshotSets")["data"]:
+            print("  SET", ss["attributes"]["screenshotDisplayType"])
+            for sc in pedir("GET", f"/appScreenshotSets/{ss['id']}/appScreenshots?limit=20")["data"]:
+                a = sc["attributes"]; ad = a.get("assetDeliveryState") or {}
+                im = a.get("imageAsset") or {}
+                print("    CAP", a.get("fileName"), a.get("fileSize"), im.get("width"), im.get("height"), ad.get("state"), ad.get("errors"), sc["id"])
 else:
     print("Acción desconocida"); sys.exit(1)
