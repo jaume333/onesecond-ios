@@ -151,5 +151,14 @@ elif ACCION == "cambiar01":
     pedir("PATCH", f"/appScreenshotSets/{ss['id']}/relationships/appScreenshots", {"data": [{"type": "appScreenshots", "id": i} for i in [res["id"]] + resto]})
     for sc in pedir("GET", f"/appScreenshotSets/{ss['id']}/appScreenshots?limit=20")["data"]:
         a = sc["attributes"]; print("    CAP", a.get("fileName"), a.get("fileSize"), (a.get("assetDeliveryState") or {}).get("state"))
+elif ACCION == "mover01":
+    # Pasa la 1ª captura (la que no se ve) al final; no sube ni borra nada.
+    v = version(); loc = [l for l in pedir("GET", f"/appStoreVersions/{v['id']}/appStoreVersionLocalizations")["data"] if l["attributes"]["locale"] == "es-ES"][0]
+    ss = [x for x in pedir("GET", f"/appStoreVersionLocalizations/{loc['id']}/appScreenshotSets")["data"] if x["attributes"]["screenshotDisplayType"] == "APP_IPHONE_67"][0]
+    ids = [c["id"] for c in pedir("GET", f"/appScreenshotSets/{ss['id']}/appScreenshots?limit=20")["data"]]
+    nuevo = ids[1:] + ids[:1]
+    pedir("PATCH", f"/appScreenshotSets/{ss['id']}/relationships/appScreenshots", {"data": [{"type": "appScreenshots", "id": i} for i in nuevo]})
+    for sc in pedir("GET", f"/appScreenshotSets/{ss['id']}/appScreenshots?limit=20")["data"]:
+        print("    CAP", sc["attributes"].get("fileName"), sc["attributes"].get("fileSize"))
 else:
     print("Acción desconocida"); sys.exit(1)
