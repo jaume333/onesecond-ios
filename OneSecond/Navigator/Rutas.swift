@@ -18,6 +18,7 @@ enum Rutas {
         switch c {
         case "ronda": return "Ronda la Llana"
         case "rider1000": return "Rider 1000"
+        case "classics": return "One Second Rally Classics"   // 1.61
         case "rally": return "One Second Rally"
         case "rallypoker": return "Rally Poker"
         case "pokerrun": return "Poker Run"
@@ -30,6 +31,7 @@ enum Rutas {
         switch c {
         case "ronda": return "ic_ronda"
         case "rider1000": return "ic_rider"
+        case "classics": return "ic_rally_classics"   // 1.61
         case "rally": return "ic_rally"
         case "rallypoker": return "ic_rallypoker"
         case "pokerrun": return "ic_pokerrun"
@@ -41,6 +43,7 @@ enum Rutas {
         switch c {
         case "ronda": return Color(hex: 0xB8693A)
         case "rider1000": return Color(hex: 0x6B7584)
+        case "classics": return Color(hex: 0x7A1E2A)   // 1.61: granate Classics
         case "rally": return Color(hex: 0xB8963A)
         case "rallypoker": return Color(hex: 0x4A6FC0)
         case "pokerrun": return Color(hex: 0xC8202D)

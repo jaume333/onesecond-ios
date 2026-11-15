@@ -17,6 +17,11 @@ struct RallyView: View {
     @State private var clas: [String: Any]? = nil
     @State private var clasCodigo = 0
     @State private var tiemposDe: FilaClas? = nil
+    @State private var recMirado = Date.distantPast          // 1.61: Classics: el recorrido de la organización
+    @AppStorage("rec_archivo") private var recArchivo = ""
+    @AppStorage("rec_nombre") private var recNombre = ""
+    @AppStorage("rec_v") private var recV = ""
+    @AppStorage("rec_url") private var recUrl = ""
     private let reloj = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     private let relojClas = Timer.publish(every: 30, on: .main, in: .common).autoconnect()
 
@@ -37,6 +42,9 @@ struct RallyView: View {
                     VStack(spacing: 0) {
                         if !aj.vinculada { vincularBloque.padding(.top, 14) }
                         else { tarjeta.padding(.top, 16) }
+                        if aj.vinculada && !recArchivo.isEmpty && recUrl == aj.url.trimmingCharacters(in: .whitespaces) {
+                            botonRecorrido.padding(.top, 12)
+                        }
                         let ex = extra()
                         if !ex.0.isEmpty {
                             Text(ex.0).font(.system(size: 12.5)).foregroundColor(ex.1 ? TC.naranja : TC.suave)
@@ -84,8 +92,10 @@ struct RallyView: View {
             }
             pedirPosicion()
             Task { await cargarClas() }
+            recMirado = .distantPast
+            Task { await mirarRecorrido() }
         }
-        .onReceive(reloj) { _ in pedirPosicion() }
+        .onReceive(reloj) { _ in pedirPosicion(); Task { await mirarRecorrido() } }
         .onReceive(relojClas) { _ in Task { await cargarClas() } }
         .sheet(item: $hoja) { h in
             Group {
@@ -363,6 +373,52 @@ struct RallyView: View {
             let (c, d) = await Red.pedir(u)
             if c == 200 { posJson = Red.objeto(d) } else if c == 404 { posJson = [:] }
         }
+    }
+
+    // ---------- 1.61: CLASSICS · EL RECORRIDO EN LA APP ----------
+    /// La organización puede mandar el recorrido (solo el trazado: nunca los waypoints ni los puntos de control):
+    /// GET <base>/recorrido -> {activo, nombre, v}; si es nuevo o ha cambiado se baja <base>/recorrido.gpx al Navigator.
+    /// Como mucho cada 5 minutos y solo con esta pantalla abierta.
+    private var botonRecorrido: some View {
+        Button {
+            if Rutas.buscar(recArchivo) != nil { NotificationCenter.default.post(name: .abrirRuta, object: recArchivo) }
+            else { recMirado = .distantPast; Task { await mirarRecorrido() } }
+        } label: {
+            VStack(spacing: 2) {
+                Text("🗺  " + t("Ver / navegar el recorrido", "Veure / navegar el recorregut", "View / navigate the route"))
+                    .font(.system(size: 15, weight: .bold)).foregroundColor(TC.texto)
+                if !recNombre.isEmpty { Text(recNombre).font(.system(size: 13)).foregroundColor(Self.oro).lineLimit(1) }
+            }
+            .frame(maxWidth: .infinity).frame(minHeight: 54)
+            .background(RoundedRectangle(cornerRadius: 12).fill(TC.panel))
+            .overlay(RoundedRectangle(cornerRadius: 12).stroke(Self.oro, lineWidth: 1.5))
+        }
+    }
+
+    private func mirarRecorrido() async {
+        let u = central.aj(p).url.trimmingCharacters(in: .whitespaces)
+        guard !Demo.activo, central.aj(p).vinculada, u.contains("/api/p/"), Date().timeIntervalSince(recMirado) > 300 else { return }
+        recMirado = Date()
+        let base = u.replacingOccurrences(of: "/+$", with: "", options: .regularExpression)
+        let (c, d) = await Red.pedir(base + "/recorrido")
+        guard c == 200 else { return }                      // otra prueba (sin recorrido) o sin red: se deja como estaba
+        let j = Red.objeto(d)
+        let viejo = recArchivo
+        if (j["activo"] as? Bool) != true {
+            if !viejo.isEmpty { Rutas.borrar(viejo) }       // la organización ya no lo manda: se quita del móvil
+            recArchivo = ""; recNombre = ""; recV = ""; recUrl = ""
+            return
+        }
+        let v = j.str("v"), nombre = j.str("nombre").isEmpty ? "Recorrido" : j.str("nombre")
+        if v == recV && u == recUrl && Rutas.buscar(viejo) != nil { return }
+        guard let datos = try? await Rutas.bajar(base + "/recorrido.gpx"),
+              let g = try? Rutas.guardar(datos, nombreArchivo: nombre.replacingOccurrences(of: "→", with: "-") + ".gpx",
+                                          origen: "One Second Rally Classics", carpetaSrv: "classics", remoto: "recorrido") else { return }
+        if !viejo.isEmpty && viejo != g.archivo { Rutas.borrar(viejo) }
+        let primera = viejo.isEmpty
+        recArchivo = g.archivo; recNombre = nombre; recV = v; recUrl = u
+        central.breve((primera ? t("Ya tienes el recorrido: ", "Ja tens el recorregut: ", "You have the route: ")
+                       : t("Recorrido actualizado: ", "Recorregut actualitzat: ", "Route updated: ")) + nombre)
     }
 
     private func cargarClas() async {
