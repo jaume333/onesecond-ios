@@ -23,9 +23,9 @@ def version():
     return None
 
 NOVEDADES = {
-    "es": "One Second Rally Classics: nueva sección destacada con su logo clásico. Lector de QR de los mini juegos mejorado: recuadro para apuntar, linterna, avisos si la cámara no se abre y código del ticket de Ruta 66. Pequeñas mejoras.",
-    "ca": "One Second Rally Classics: nova secció destacada amb el seu logo clàssic. Lector de QR dels mini jocs millorat: requadre per apuntar, llanterna, avisos si la càmera no s'obre i codi del tiquet de Ruta 66. Petites millores.",
-    "en": "One Second Rally Classics: new featured section with its classic logo. Improved mini games QR reader: aiming frame, torch, warnings if the camera does not open and Route 66 ticket code. Small improvements.",
+    "es": "One Second Rally Classics: nueva sección destacada con su logo clásico, inscripción con tu cuenta One Second, resultados en la app y el recorrido en el mapa. Lector de QR de los mini juegos mejorado: recuadro para apuntar, linterna, avisos si la cámara no se abre y código del ticket de Ruta 66. Pequeñas mejoras.",
+    "ca": "One Second Rally Classics: nova secció destacada amb el seu logo clàssic, inscripció amb el teu compte One Second, resultats a l'app i el recorregut al mapa. Lector de QR dels mini jocs millorat: requadre per apuntar, llanterna, avisos si la càmera no s'obre i codi del tiquet de Ruta 66. Petites millores.",
+    "en": "One Second Rally Classics: new featured section with its classic logo, registration with your One Second account, results in the app and the route on the map. Improved mini games QR reader: aiming frame, torch, warnings if the camera does not open and Route 66 ticket code. Small improvements.",
 }
 
 def arreglar01(v):
@@ -128,6 +128,25 @@ elif ACCION == "enviar":
         pedir("PATCH", f"/builds/{b['id']}", {"data": {"type": "builds", "id": b["id"], "attributes": {"usesNonExemptEncryption": False}}})
     # 2) la versión (se crea si no existe; hereda los textos de la anterior)
     v = version()
+    if not v:
+        # 1.61: si hay otra versión sin publicar (p. ej. la 1.60 esperando revisión), se retira de revisión y se convierte en esta
+        otra = None
+        for x in pedir("GET", f"/apps/{APP}/appStoreVersions?filter[platform]=IOS&limit=20")["data"]:
+            if x["attributes"].get("appStoreState") not in ("READY_FOR_SALE", "REPLACED_WITH_NEW_VERSION", "REMOVED_FROM_SALE", "DEVELOPER_REMOVED_FROM_SALE"):
+                otra = x; break
+        if otra:
+            print("Versión sin publicar:", otra["attributes"]["versionString"], otra["attributes"].get("appStoreState"))
+            for rs in pedir("GET", f"/apps/{APP}/reviewSubmissions?filter[platform]=IOS&limit=10")["data"]:
+                if rs["attributes"].get("state") in ("WAITING_FOR_REVIEW", "READY_FOR_REVIEW"):
+                    pedir("PATCH", f"/reviewSubmissions/{rs['id']}", {"data": {"type": "reviewSubmissions", "id": rs["id"], "attributes": {"canceled": True}}})
+                    print("RETIRADA de revisión", rs["id"])
+            for k in range(40):
+                otra = pedir("GET", f"/appStoreVersions/{otra['id']}")["data"]
+                if otra["attributes"].get("appStoreState") in ("PREPARE_FOR_SUBMISSION", "DEVELOPER_REJECTED", "REJECTED", "METADATA_REJECTED"): break
+                time.sleep(10)
+            pedir("PATCH", f"/appStoreVersions/{otra['id']}", {"data": {"type": "appStoreVersions", "id": otra["id"], "attributes": {"versionString": VER}}})
+            print("Versión", otra["attributes"]["versionString"], "->", VER)
+            v = version()
     if not v:
         v = pedir("POST", "/appStoreVersions", {"data": {"type": "appStoreVersions",
               "attributes": {"platform": "IOS", "versionString": VER, "releaseType": "AFTER_APPROVAL"},
