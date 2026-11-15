@@ -192,6 +192,7 @@ struct SelectorView: View {
                         // el nombre y, centrada debajo, la etiqueta «Classics» escrita a mano y en diagonal
                         VStack(alignment: .center, spacing: 0) {
                         Text(p.nombre).font(.custom("TeXGyrePagella-Bold", size: 22)).foregroundColor(.white).shadow(color: .black.opacity(0.6), radius: 3, y: 1)
+                            .lineLimit(1).fixedSize()
                         Text("Classics").font(.custom("GreatVibes-Regular", size: 21)).foregroundColor(Color(hex: 0xFFF4DE))
                             .shadow(color: Color(red: 40 / 255, green: 0, blue: 0).opacity(0.7), radius: 2, y: 1)
                             .padding(.horizontal, 12).padding(.bottom, 3)
