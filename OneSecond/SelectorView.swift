@@ -222,6 +222,40 @@ struct SelectorView: View {
             .shadow(color: .black.opacity(0.4), radius: 6, y: 3)
         }
         .buttonStyle(.plain)
+        // 1.62: «NUEVO EVENTO · Rally La Ràpita - Amposta · 22 nov», centrada sobre el borde de arriba de la tarjeta
+        .padding(.top, etiquetaEvento == nil ? 0 : 24)
+        .overlay(alignment: .top) {
+            if let ev = etiquetaEvento {
+                let nom = ev.0, dia = ev.1
+                Button { hoja = .web("https://onesecond.es/classics/?lang=" + Idioma.codigo + "#proximos") } label: {
+                    HStack(spacing: 10) {
+                        PuntoLatido()
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(t("NUEVO EVENTO", "NOU ESDEVENIMENT", "NEW EVENT")).font(.system(size: 10.5, weight: .bold)).tracking(0.4).foregroundColor(Color(hex: 0xE2BE70))
+                            Text(nom + " · " + dia).font(.system(size: 14.5, weight: .bold)).foregroundColor(Color(hex: 0xFFF4E4)).lineLimit(1)
+                        }
+                    }
+                    .padding(.leading, 16).padding(.trailing, 20).padding(.vertical, 8)
+                    .background(Capsule().fill(Color(hex: 0x7A1E2A)))
+                    .overlay(Capsule().stroke(Color(hex: 0xE2BE70), lineWidth: 2))
+                    .shadow(color: .black.opacity(0.5), radius: 6, y: 3)
+                }
+                .buttonStyle(.plain).padding(.horizontal, 16)
+                .accessibilityLabel(t("Nuevo evento: ", "Nou esdeveniment: ", "New event: ") + nom + ", " + dia)
+            }
+        }
+    }
+
+    /// 1.62: el nombre y el día («22 nov») del próximo evento de Classics, o nil si no hay.
+    private var etiquetaEvento: (String, String)? {
+        guard let e = cuenta.classicsEv, let s = Cuenta.salida(e), s > Date().addingTimeInterval(-12 * 3600) else { return nil }
+        var cal = Calendar(identifier: .gregorian); cal.timeZone = Cuenta.madrid
+        let m = cal.component(.month, from: s) - 1, d = cal.component(.day, from: s)
+        let mes = [["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"],
+                   ["gen", "febr", "març", "abr", "maig", "juny", "jul", "ag", "set", "oct", "nov", "des"],
+                   ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]]
+        let l = min(max(Idioma.actual, 0), 2)
+        return (Cuenta.nombre(e), l == 2 ? "\(mes[2][m]) \(d)" : "\(d) \(mes[l][m])")
     }
 
     private var cajaCuenta: some View {
@@ -654,5 +688,16 @@ struct Breve: View {
                     .padding(16).transition(.move(edge: .bottom))
             }
         }.animation(.easeInOut, value: central.mensajeBreve?.0)
+    }
+}
+
+
+/// 1.62: el punto rojo que late en la etiqueta «Nuevo evento».
+struct PuntoLatido: View {
+    @State private var on = false
+    var body: some View {
+        Circle().fill(Color(red: 1, green: 96 / 255, blue: 96 / 255)).frame(width: 10, height: 10)
+            .opacity(on ? 0.25 : 1)
+            .onAppear { withAnimation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true)) { on = true } }
     }
 }

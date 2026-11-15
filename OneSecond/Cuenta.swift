@@ -13,6 +13,8 @@ final class Cuenta: ObservableObject {
     @Published private(set) var token: String = UserDefaults.standard.string(forKey: "cuenta_token") ?? ""
     @Published private(set) var email: String = UserDefaults.standard.string(forKey: "cuenta_email") ?? ""
     @Published private(set) var eventos: [[String: Any]] = []
+    /// 1.62: el próximo evento de One Second Rally Classics (para la etiqueta «Nuevo evento» de la tarjeta)
+    @Published private(set) var classicsEv: [String: Any]? = (UserDefaults.standard.data(forKey: "classics_ev")).flatMap { try? JSONSerialization.jsonObject(with: $0) as? [String: Any] }
     @Published private(set) var abiertas: Set<String> = Set((UserDefaults.standard.string(forKey: "abiertas") ?? "").split(separator: ",").map(String.init))
     @Published var avisosActivos: Bool = UserDefaults.standard.object(forKey: "avisos_pruebas") as? Bool ?? true {
         didSet { UserDefaults.standard.set(avisosActivos, forKey: "avisos_pruebas"); programarAvisos() }
@@ -137,6 +139,14 @@ final class Cuenta: ObservableObject {
             let ab = Set(evs.filter { $0.bool("abierto") && !$0.bool("completo") }.map { $0.str("app") })
             abiertas = ab
             UserDefaults.standard.set(ab.sorted().joined(separator: ","), forKey: "abiertas")
+            // 1.62: el próximo evento de Classics (desde hoy)
+            let limite = Date().addingTimeInterval(-12 * 3600)
+            let cl = evs.filter { $0.str("app") == "classics" }
+                .compactMap { e -> (Date, [String: Any])? in guard let s = Cuenta.salida(e), s > limite else { return nil }; return (s, e) }
+                .min { $0.0 < $1.0 }?.1
+            classicsEv = cl
+            if let cl, let d = try? JSONSerialization.data(withJSONObject: cl) { UserDefaults.standard.set(d, forKey: "classics_ev") }
+            else { UserDefaults.standard.removeObject(forKey: "classics_ev") }
             // telemetría gratuita de las pruebas con app (para la próxima Ronda y los avisos)
             let tel = evs.filter { Prueba.deCuentas($0.str("app")) != nil && $0.int("precio_cent", 1) == 0
                 && $0.str("fecha").range(of: #"^\d{4}-\d\d-\d\d"#, options: .regularExpression) != nil }
