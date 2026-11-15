@@ -37,7 +37,7 @@ targets:
         UIRequiredDeviceCapabilities: [location-services, gps]
         UIBackgroundModes: [location]
         NSLocationWhenInUseUsageDescription: "One Second usa el GPS solo mientras pulsas EMITIR durante una prueba, para que la organización calcule tus pasos por los puntos de control y pueda localizarte si das un aviso de incidencia."
-        NSCameraUsageDescription: "La cámara se usa solo para escanear el QR que te da la organización para vincular la app con tu inscripción."
+        NSCameraUsageDescription: "La cámara se usa solo para escanear códigos QR: el que te da la organización para vincular la app con tu inscripción y el de los tickets de los mini juegos."
         CFBundleLocalizations: [es, ca, en]
         CFBundleDevelopmentRegion: es
         CFBundleURLTypes:

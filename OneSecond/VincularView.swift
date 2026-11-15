@@ -97,6 +97,8 @@ struct VincularView: View {
 }
 
 /// Lector de QR con la cámara.
+/// 1.60: pide el permiso si hace falta (y si está denegado, lleva a Ajustes), recuadro para apuntar, linterna,
+/// botón Cancelar, vibración al leer y vuelve a arrancar la cámara si el sistema la corta.
 struct EscanerQR: UIViewControllerRepresentable {
     let leido: (String) -> Void
     func makeUIViewController(context: Context) -> Controlador { let c = Controlador(); c.leido = leido; return c }
@@ -106,15 +108,52 @@ struct EscanerQR: UIViewControllerRepresentable {
         var leido: ((String) -> Void)?
         private let sesion = AVCaptureSession()
         private var hecho = false
+        private var capa: AVCaptureVideoPreviewLayer?
+        private var disp: AVCaptureDevice?
+        private let marco = UIView()
+        private let texto = UILabel()
+        private let linterna = UIButton(type: .system)
+        private let cancelar = UIButton(type: .system)
+        private var obs: [NSObjectProtocol] = []
 
         override func viewDidLoad() {
             super.viewDidLoad()
             view.backgroundColor = .black
-            guard let disp = AVCaptureDevice.default(for: .video), let entrada = try? AVCaptureDeviceInput(device: disp),
-                  sesion.canAddInput(entrada) else {
-                let l = UILabel(); l.text = t("No se puede usar la cámara.", "No es pot fer servir la càmera.", "Camera not available."); l.textColor = .white
-                l.frame = view.bounds; l.textAlignment = .center; view.addSubview(l); return
+            texto.textColor = .white; texto.textAlignment = .center; texto.numberOfLines = 0
+            texto.font = .systemFont(ofSize: 16, weight: .semibold)
+            texto.text = t("Apunta al QR", "Apunta al QR", "Point at the QR code")
+            marco.layer.borderColor = UIColor(red: 0.94, green: 0.81, blue: 0.6, alpha: 1).cgColor
+            marco.layer.borderWidth = 4; marco.layer.cornerRadius = 16; marco.isUserInteractionEnabled = false
+            for (b, s) in [(cancelar, t("Cancelar", "Cancel·lar", "Cancel")), (linterna, "🔦 " + t("Linterna", "Llanterna", "Torch"))] {
+                b.setTitle(s, for: .normal); b.setTitleColor(.white, for: .normal)
+                b.titleLabel?.font = .systemFont(ofSize: 17, weight: .bold)
+                b.backgroundColor = UIColor(white: 0, alpha: 0.55); b.layer.cornerRadius = 12
+                b.contentEdgeInsets = UIEdgeInsets(top: 10, left: 18, bottom: 10, right: 18)
             }
+            cancelar.addTarget(self, action: #selector(salir), for: .touchUpInside)
+            linterna.addTarget(self, action: #selector(luz), for: .touchUpInside)
+            switch AVCaptureDevice.authorizationStatus(for: .video) {
+            case .authorized: montar()
+            case .notDetermined:
+                AVCaptureDevice.requestAccess(for: .video) { si in DispatchQueue.main.async { si ? self.montar() : self.sinPermiso() } }
+            default: sinPermiso()
+            }
+            [marco, texto, linterna, cancelar].forEach { view.addSubview($0) }
+            // si el sistema corta la cámara (llamada, otra app…), al volver se arranca otra vez
+            obs.append(NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main) { [weak self] _ in
+                guard let s = self, !s.hecho, s.capa != nil, !s.sesion.isRunning else { return }
+                DispatchQueue.global(qos: .userInitiated).async { s.sesion.startRunning() }
+            })
+        }
+        deinit { obs.forEach { NotificationCenter.default.removeObserver($0) } }
+
+        private func montar() {
+            guard let d = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back) ?? AVCaptureDevice.default(for: .video),
+                  let entrada = try? AVCaptureDeviceInput(device: d), sesion.canAddInput(entrada) else {
+                texto.text = t("No se puede usar la cámara.", "No es pot fer servir la càmera.", "Camera not available."); linterna.isHidden = true; return
+            }
+            disp = d
+            linterna.isHidden = !d.hasTorch
             sesion.addInput(entrada)
             let salida = AVCaptureMetadataOutput()
             if sesion.canAddOutput(salida) {
@@ -122,21 +161,64 @@ struct EscanerQR: UIViewControllerRepresentable {
                 salida.setMetadataObjectsDelegate(self, queue: .main)
                 salida.metadataObjectTypes = [.qr]
             }
-            let capa = AVCaptureVideoPreviewLayer(session: sesion)
-            capa.frame = view.layer.bounds
-            capa.videoGravity = .resizeAspectFill
-            view.layer.addSublayer(capa)
+            // enfoque continuo de cerca (tickets) si el móvil lo permite
+            if (try? d.lockForConfiguration()) != nil {
+                if d.isFocusModeSupported(.continuousAutoFocus) { d.focusMode = .continuousAutoFocus }
+                if d.isAutoFocusRangeRestrictionSupported { d.autoFocusRangeRestriction = .near }
+                d.unlockForConfiguration()
+            }
+            let c = AVCaptureVideoPreviewLayer(session: sesion)
+            c.videoGravity = .resizeAspectFill
+            view.layer.insertSublayer(c, at: 0)
+            capa = c
+            view.setNeedsLayout()
             DispatchQueue.global(qos: .userInitiated).async { self.sesion.startRunning() }
+        }
+
+        private func sinPermiso() {
+            texto.text = t("No hay permiso para usar la cámara.\nActívalo en Ajustes › One Second › Cámara.",
+                           "No hi ha permís per fer servir la càmera.\nActiva'l a Configuració › One Second › Càmera.",
+                           "Camera access is off.\nTurn it on in Settings › One Second › Camera.")
+            linterna.setTitle(t("Abrir Ajustes", "Obrir Configuració", "Open Settings"), for: .normal)
+            linterna.removeTarget(self, action: #selector(luz), for: .touchUpInside)
+            linterna.addTarget(self, action: #selector(ajustes), for: .touchUpInside)
+            linterna.isHidden = false
+            marco.isHidden = true
+        }
+
+        override func viewDidLayoutSubviews() {
+            super.viewDidLayoutSubviews()
+            let b = view.bounds, lado = min(b.width, b.height) * 0.68
+            capa?.frame = b
+            marco.frame = CGRect(x: (b.width - lado) / 2, y: (b.height - lado) / 2 - 30, width: lado, height: lado)
+            texto.frame = CGRect(x: 20, y: marco.frame.minY - 70, width: b.width - 40, height: 60)
+            if marco.isHidden { texto.frame = CGRect(x: 20, y: b.height / 2 - 90, width: b.width - 40, height: 80) }
+            let abajo = b.height - view.safeAreaInsets.bottom - 70
+            linterna.sizeToFit(); cancelar.sizeToFit()
+            let lw = linterna.isHidden ? 0 : linterna.bounds.width, cw = cancelar.bounds.width, hueco: CGFloat = linterna.isHidden ? 0 : 14
+            var x = (b.width - lw - cw - hueco) / 2
+            if !linterna.isHidden { linterna.frame = CGRect(x: x, y: abajo, width: lw, height: 48); x += lw + hueco }
+            cancelar.frame = CGRect(x: x, y: abajo, width: cw, height: 48)
+        }
+
+        @objc private func salir() { if sesion.isRunning { sesion.stopRunning() }; dismiss(animated: true) }
+        @objc private func ajustes() { if let u = URL(string: UIApplication.openSettingsURLString) { UIApplication.shared.open(u) } }
+        @objc private func luz() {
+            guard let d = disp, d.hasTorch, (try? d.lockForConfiguration()) != nil else { return }
+            d.torchMode = d.torchMode == .on ? .off : .on
+            d.unlockForConfiguration()
         }
 
         override func viewWillDisappear(_ animated: Bool) {
             super.viewWillDisappear(animated)
+            if let d = disp, d.hasTorch, d.torchMode == .on, (try? d.lockForConfiguration()) != nil { d.torchMode = .off; d.unlockForConfiguration() }
             if sesion.isRunning { sesion.stopRunning() }
         }
 
         func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput objs: [AVMetadataObject], from connection: AVCaptureConnection) {
             guard !hecho, let o = objs.first as? AVMetadataMachineReadableCodeObject, let s = o.stringValue else { return }
             hecho = true
+            UINotificationFeedbackGenerator().notificationOccurred(.success)
             sesion.stopRunning()
             leido?(s)
         }

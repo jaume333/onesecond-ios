@@ -40,6 +40,8 @@ struct MiniJuego: Identifiable {
         // Bingo Motero: el código del ticket son 8 letras y números (XXXX-XXXX)
         if en.id == "bingo", codigo.count == 8 { let a = String(codigo.prefix(4)), b = String(codigo.suffix(4)); return (en, BingoAvisos.web + "c/" + a + "-" + b) }
         if en.id == "cazatopo", (6...16).contains(codigo.count) { return (en, "https://onesecond.es/cazatopo/?t=" + codigo) }
+        // Ruta 66: el código del ticket son 10 letras y números
+        if en.id == "ruta66", codigo.count == 10 { return (en, "https://onesecond.es/ruta66/movil?t=" + codigo) }
         return nil
     }
 
@@ -101,10 +103,10 @@ struct MiniJuegoView: View {
                 Text(t("Código del QR", "Codi del QR", "QR code")).font(.custom("TeXGyrePagella-Bold", size: 22)).foregroundColor(.texto)
                 Text(juego.id != "ruta66"
                      ? t("Escribe el código que hay debajo del QR del ticket (o la dirección entera).", "Escriu el codi que hi ha sota el QR del tiquet (o l'adreça sencera).", "Type the code under the QR on the ticket (or the full address).")
-                     : t("Escribe la dirección que sale debajo del QR de la pantalla gigante.", "Escriu l'adreça que surt sota el QR de la pantalla gegant.", "Type the address shown under the QR on the big screen."))
+                     : t("Escribe el código que hay debajo del QR del ticket (o la dirección que sale debajo del QR de la pantalla gigante).", "Escriu el codi que hi ha sota el QR del tiquet (o l'adreça que surt sota el QR de la pantalla gegant).", "Type the code under the QR on the ticket (or the address under the QR on the big screen)."))
                     .font(.system(size: 14)).foregroundColor(.suave)
-                TextField(juego.id != "ruta66" ? t("Código del ticket", "Codi del tiquet", "Ticket code") : "onesecond.es/ruta66/…", text: $texto)
-                    .textInputAutocapitalization(juego.id != "ruta66" ? .characters : .never).disableAutocorrection(true)
+                TextField(t("Código del ticket", "Codi del tiquet", "Ticket code"), text: $texto)
+                    .textInputAutocapitalization(.characters).disableAutocorrection(true)
                     .font(.system(size: 20, weight: .bold, design: .monospaced)).foregroundColor(.white)
                     .padding(14).background(RoundedRectangle(cornerRadius: 12).fill(Color.panel))
                     .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.borde, lineWidth: 1.5))
@@ -164,6 +166,8 @@ final class WebJuego: NSObject, ObservableObject, WKNavigationDelegate, WKUIDele
         c.allowsInlineMediaPlayback = true                        // la cámara de la propia web (su lector de QR)
         c.mediaTypesRequiringUserActionForPlayback = []           // los sonidos del juego
         c.websiteDataStore = .default()                           // el jugador se queda guardado (no se vuelve a pedir)
+        // 1.60: las webs reconocen la app por «OneSecondApp» (como en Android) y no enseñan su propio lector de QR
+        c.applicationNameForUserAgent = "Mobile/15E148 OneSecondApp"
         // en el bingo la web ofrece «activar avisos» (web push, o «añádela a la pantalla de inicio» en iPhone), que en la
         // app no hace falta: los avisos los saca la app (BingoAvisos)
         c.userContentController.addUserScript(WKUserScript(source: BingoAvisos.jsWeb,
