@@ -118,13 +118,16 @@ struct RallyView: View {
         ZStack(alignment: .top) {
             BanderaCuadros().frame(height: 150)
             VStack(spacing: 0) {
-                Image("logo_ros_aro").resizable().scaledToFit().frame(width: 146, height: 146).clipShape(Circle())
+                Image("logo_rally_classics").resizable().scaledToFit().frame(width: 146, height: 146).clipShape(Circle())   // 1.60: Classics
                     .shadow(color: .black.opacity(0.6), radius: 14, y: 6)
                 let n = Text("One Second Rally").font(.custom("TeXGyrePagella-Bold", size: 36))
                 n.lineLimit(1).minimumScaleFactor(0.6).foregroundColor(.clear)
                     .overlay(LinearGradient(stops: zip(Self.cromado, [0, 0.4, 0.55, 0.75, 1.0]).map { .init(color: $0, location: $1) }, startPoint: .top, endPoint: .bottom)
                         .mask(n.lineLimit(1).minimumScaleFactor(0.6)))
                     .padding(.top, 6)
+                // 1.60: «Classics» escrito a mano y en diagonal debajo del nombre
+                Text("Classics").font(.custom("GreatVibes-Regular", size: 30)).foregroundColor(Color(hex: 0xE2BE70))
+                    .shadow(color: .black.opacity(0.8), radius: 3, y: 1).rotationEffect(.degrees(-6)).padding(.bottom, 4)
                 (Text(TxRally.t("lema_a")).italic().foregroundColor(Self.claro)
                  + Text(TxRally.t("lema_b")).font(.custom("TeXGyrePagella-Bold", size: 13.5)).foregroundColor(TC.texto)
                  + Text(".»").italic().foregroundColor(Self.claro))
