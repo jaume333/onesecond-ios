@@ -70,11 +70,19 @@ def poner_capturas(v, rama="capturas-160", n=6):
     loc = [l for l in pedir("GET", f"/appStoreVersions/{v['id']}/appStoreVersionLocalizations")["data"] if l["attributes"]["locale"] == "es-ES"][0]
     ss = [x for x in pedir("GET", f"/appStoreVersionLocalizations/{loc['id']}/appScreenshotSets")["data"] if x["attributes"]["screenshotDisplayType"] == "APP_IPHONE_67"][0]
     antes = [c["id"] for c in pedir("GET", f"/appScreenshotSets/{ss['id']}/appScreenshots?limit=20")["data"]]
+    # comprobar antes que las nuevas se pueden descargar y no están vacías
+    datos_todos = {}
+    for i in range(1, n + 1):
+        nom = f"{i:02d}_iphone.png"
+        d = requests.get(f"https://raw.githubusercontent.com/jaume333/onesecond-ios/{rama}/{nom}", timeout=60).content
+        if len(d) < 100000: print("ERROR captura sospechosa", nom, len(d)); return False
+        datos_todos[nom] = d
+    for i in antes: pedir("DELETE", f"/appScreenshots/{i}")   # máximo 10 por juego: primero se quitan las viejas
+    antes = []
     nuevas = []
     for i in range(1, n + 1):
         nom = f"{i:02d}_iphone.png"
-        datos = requests.get(f"https://raw.githubusercontent.com/jaume333/onesecond-ios/{rama}/{nom}", timeout=60).content
-        if len(datos) < 100000: print("ERROR captura sospechosa", nom, len(datos)); return False
+        datos = datos_todos[nom]
         md5 = hashlib.md5(datos).hexdigest()
         res = pedir("POST", "/appScreenshots", {"data": {"type": "appScreenshots", "attributes": {"fileName": nom, "fileSize": len(datos)},
                      "relationships": {"appScreenshotSet": {"data": {"type": "appScreenshotSets", "id": ss["id"]}}}}})["data"]
@@ -146,6 +154,29 @@ elif ACCION == "enviar":
           "relationships": {"reviewSubmission": {"data": {"type": "reviewSubmissions", "id": s["id"]}},
                             "appStoreVersion": {"data": {"type": "appStoreVersions", "id": v["id"]}}}}})
     pedir("PATCH", f"/reviewSubmissions/{s['id']}", {"data": {"type": "reviewSubmissions", "id": s["id"], "attributes": {"submitted": True}}})
+    print("ENVIADA A REVISION", VER)
+elif ACCION == "recapturas":
+    # Retira la versión de revisión (si está esperando), pone las capturas buenas y la vuelve a enviar.
+    v = version()
+    print("Estado", v["attributes"].get("appStoreState"))
+    for rs in pedir("GET", f"/apps/{APP}/reviewSubmissions?filter[platform]=IOS&limit=10")["data"]:
+        st = rs["attributes"].get("state")
+        print("Envío", rs["id"], st)
+        if st in ("WAITING_FOR_REVIEW", "READY_FOR_REVIEW"):
+            pedir("PATCH", f"/reviewSubmissions/{rs['id']}", {"data": {"type": "reviewSubmissions", "id": rs["id"], "attributes": {"canceled": True}}})
+            print("RETIRADO", rs["id"])
+    for k in range(40):
+        v = version(); st = v["attributes"].get("appStoreState")
+        if st in ("PREPARE_FOR_SUBMISSION", "DEVELOPER_REJECTED", "REJECTED", "METADATA_REJECTED"): break
+        time.sleep(10)
+    print("Estado ahora", st)
+    if not poner_capturas(v): print("ERROR capturas: no se vuelve a enviar"); sys.exit(1)
+    s2 = pedir("POST", "/reviewSubmissions", {"data": {"type": "reviewSubmissions", "attributes": {"platform": "IOS"},
+              "relationships": {"app": {"data": {"type": "apps", "id": APP}}}}})["data"]
+    pedir("POST", "/reviewSubmissionItems", {"data": {"type": "reviewSubmissionItems",
+          "relationships": {"reviewSubmission": {"data": {"type": "reviewSubmissions", "id": s2["id"]}},
+                            "appStoreVersion": {"data": {"type": "appStoreVersions", "id": v["id"]}}}}})
+    pedir("PATCH", f"/reviewSubmissions/{s2['id']}", {"data": {"type": "reviewSubmissions", "id": s2["id"], "attributes": {"submitted": True}}})
     print("ENVIADA A REVISION", VER)
 elif ACCION == "mirar":
     # solo mira: disponibilidad por países, precio y datos de la ficha
