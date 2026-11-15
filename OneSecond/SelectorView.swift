@@ -190,6 +190,13 @@ struct SelectorView: View {
                     Image("ic_rally_classics").resizable().scaledToFit().frame(width: 72, height: 72)
                     VStack(alignment: .leading, spacing: 2) {
                         Text(p.nombre).font(.custom("TeXGyrePagella-Bold", size: 22)).foregroundColor(.white).shadow(color: .black.opacity(0.6), radius: 3, y: 1)
+                        // etiqueta «Classics» escrita a mano y en diagonal, debajo del nombre (así no tapa nada)
+                        Text("Classics").font(.custom("GreatVibes-Regular", size: 21)).foregroundColor(Color(hex: 0xFFF4DE))
+                            .shadow(color: Color(red: 40 / 255, green: 0, blue: 0).opacity(0.7), radius: 2, y: 1)
+                            .padding(.horizontal, 12).padding(.bottom, 3)
+                            .background(RoundedRectangle(cornerRadius: 7).fill(LinearGradient(colors: [Color(hex: 0x96191E), Color(hex: 0x600A0F)], startPoint: .top, endPoint: .bottom)))
+                            .overlay(RoundedRectangle(cornerRadius: 7).stroke(Color(hex: 0xE2BA60), lineWidth: 1.5))
+                            .rotationEffect(.degrees(-8)).padding(.leading, 4).padding(.vertical, 5)
                         Text(cuenta.proxima(p.id) ?? p.subtitulo).font(.system(size: 12.5)).foregroundColor(.white.opacity(225 / 255))
                     }
                     Spacer(minLength: 0)
@@ -210,16 +217,6 @@ struct SelectorView: View {
             .clipShape(RoundedRectangle(cornerRadius: 22))
             .overlay(RoundedRectangle(cornerRadius: 22).stroke(Color(hex: 0xE2BE70), lineWidth: 2))
             .shadow(color: .black.opacity(0.4), radius: 6, y: 3)
-            // etiqueta «Classics» escrita a mano, en diagonal, arriba a la derecha
-            .overlay(alignment: .topTrailing) {
-                Text("Classics").font(.custom("GreatVibes-Regular", size: 25)).foregroundColor(Color(hex: 0xFFF4DE))
-                    .shadow(color: Color(red: 40 / 255, green: 0, blue: 0).opacity(0.7), radius: 2, y: 1)
-                    .padding(.horizontal, 16).padding(.top, 1).padding(.bottom, 4)
-                    .background(RoundedRectangle(cornerRadius: 8).fill(LinearGradient(colors: [Color(hex: 0x96191E), Color(hex: 0x600A0F)], startPoint: .top, endPoint: .bottom)))
-                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color(hex: 0xE2BA60), lineWidth: 1.5))
-                    .shadow(color: .black.opacity(0.45), radius: 4, y: 2)
-                    .rotationEffect(.degrees(-12)).padding(.top, 10).padding(.trailing, 10)
-            }
         }
         .buttonStyle(.plain)
     }
