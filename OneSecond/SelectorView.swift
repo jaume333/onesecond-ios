@@ -199,7 +199,7 @@ struct SelectorView: View {
                             .overlay(RoundedRectangle(cornerRadius: 7).stroke(Color(hex: 0xE2BA60), lineWidth: 1.5))
                             .rotationEffect(.degrees(-8)).padding(.vertical, 5)
                         }
-                        Text(cuenta.proxima(p.id) ?? p.subtitulo).font(.system(size: 12.5)).foregroundColor(.white.opacity(225 / 255))
+                        Text(cuenta.proxima(p.id) ?? t("No importa lo rápido que seas, importa lo exacto que seas", "No importa com de ràpid siguis, importa com d'exacte siguis", "It doesn't matter how fast you are, it matters how precise you are")).font(.system(size: 12.5)).foregroundColor(.white.opacity(225 / 255))
                     }
                     Spacer(minLength: 0)
                 }
