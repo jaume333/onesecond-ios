@@ -189,14 +189,16 @@ struct SelectorView: View {
                 HStack(spacing: 12) {
                     Image("ic_rally_classics").resizable().scaledToFit().frame(width: 72, height: 72)
                     VStack(alignment: .leading, spacing: 2) {
+                        // el nombre y, centrada debajo, la etiqueta «Classics» escrita a mano y en diagonal
+                        VStack(alignment: .center, spacing: 0) {
                         Text(p.nombre).font(.custom("TeXGyrePagella-Bold", size: 22)).foregroundColor(.white).shadow(color: .black.opacity(0.6), radius: 3, y: 1)
-                        // etiqueta «Classics» escrita a mano y en diagonal, debajo del nombre (así no tapa nada)
                         Text("Classics").font(.custom("GreatVibes-Regular", size: 21)).foregroundColor(Color(hex: 0xFFF4DE))
                             .shadow(color: Color(red: 40 / 255, green: 0, blue: 0).opacity(0.7), radius: 2, y: 1)
                             .padding(.horizontal, 12).padding(.bottom, 3)
                             .background(RoundedRectangle(cornerRadius: 7).fill(LinearGradient(colors: [Color(hex: 0x96191E), Color(hex: 0x600A0F)], startPoint: .top, endPoint: .bottom)))
                             .overlay(RoundedRectangle(cornerRadius: 7).stroke(Color(hex: 0xE2BA60), lineWidth: 1.5))
-                            .rotationEffect(.degrees(-8)).padding(.leading, 4).padding(.vertical, 5)
+                            .rotationEffect(.degrees(-8)).padding(.vertical, 5)
+                        }
                         Text(cuenta.proxima(p.id) ?? p.subtitulo).font(.system(size: 12.5)).foregroundColor(.white.opacity(225 / 255))
                     }
                     Spacer(minLength: 0)
