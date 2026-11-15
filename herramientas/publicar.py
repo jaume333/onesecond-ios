@@ -23,10 +23,46 @@ def version():
     return None
 
 NOVEDADES = {
-    "es": "Nueva sección MINI JUEGOS: Caza al Topo, Ruta 66 y Bingo Motero, con lector de QR y código del ticket. El bingo te avisa con notificaciones si haces línea o bingo y cuando va a empezar la partida. Mejoras en el navegador y en las pantallas de las pruebas.",
-    "ca": "Nova secció MINI JOCS: Caça el Talp, Ruta 66 i Bingo Motero, amb lector de QR i codi del tiquet. El bingo t'avisa amb notificacions si fas línia o bingo i quan comença la partida. Millores al navegador i a les pantalles de les proves.",
-    "en": "New MINI GAMES section: Whack-a-Mole, Route 66 and Biker Bingo, with QR reader and ticket code. The bingo notifies you if you get a line or bingo and when a game is about to start. Improvements to the navigator and the event screens.",
+    "es": "One Second Rally Classics: nueva sección destacada con su logo clásico. Lector de QR de los mini juegos mejorado: recuadro para apuntar, linterna, avisos si la cámara no se abre y código del ticket de Ruta 66. Pequeñas mejoras.",
+    "ca": "One Second Rally Classics: nova secció destacada amb el seu logo clàssic. Lector de QR dels mini jocs millorat: requadre per apuntar, llanterna, avisos si la càmera no s'obre i codi del tiquet de Ruta 66. Petites millores.",
+    "en": "One Second Rally Classics: new featured section with its classic logo. Improved mini games QR reader: aiming frame, torch, warnings if the camera does not open and Route 66 ticket code. Small improvements.",
 }
+
+def arreglar01(v):
+    """Sustituye la 1ª captura (subida dañada en la 1.59) por la buena de la rama «capturas» (solo en versiones editables)."""
+    # Sustituye la 1ª captura (subida dañada) por la buena de la rama «capturas». Sube primero la nueva,
+    # luego borra la mala y la deja en primer lugar.
+    import hashlib
+    URL = "https://raw.githubusercontent.com/jaume333/onesecond-ios/capturas/01_iphone.png"
+    datos = requests.get(URL, timeout=60).content
+    md5 = hashlib.md5(datos).hexdigest(); print("ARCHIVO", len(datos), md5)
+    if md5 != "e5a2c908ffb44a69ea09c10e16a52d43": print("ERROR el archivo no es el esperado"); return False
+    loc = [l for l in pedir("GET", f"/appStoreVersions/{v['id']}/appStoreVersionLocalizations")["data"] if l["attributes"]["locale"] == "es-ES"][0]
+    ss = [x for x in pedir("GET", f"/appStoreVersionLocalizations/{loc['id']}/appScreenshotSets")["data"] if x["attributes"]["screenshotDisplayType"] == "APP_IPHONE_67"][0]
+    antes = pedir("GET", f"/appScreenshotSets/{ss['id']}/appScreenshots?limit=20")["data"]
+    mala = [c for c in antes if c["attributes"]["fileName"] == "01_iphone.png" and c["attributes"]["fileSize"] < 500000]
+    if not mala: print("ERROR no encuentro la captura mala"); return False
+    res = pedir("POST", "/appScreenshots", {"data": {"type": "appScreenshots", "attributes": {"fileName": "01_iphone.png", "fileSize": len(datos)},
+                 "relationships": {"appScreenshotSet": {"data": {"type": "appScreenshotSets", "id": ss["id"]}}}}})["data"]
+    for op in res["attributes"]["uploadOperations"]:
+        h = {x["name"]: x["value"] for x in op["requestHeaders"]}
+        r = requests.request(op["method"], op["url"], headers=h, data=datos[op["offset"]:op["offset"] + op["length"]], timeout=120)
+        if r.status_code >= 300: print("ERROR subida", r.status_code, r.text[:500]); return False
+    pedir("PATCH", f"/appScreenshots/{res['id']}", {"data": {"type": "appScreenshots", "id": res["id"], "attributes": {"uploaded": True, "sourceFileChecksum": md5}}})
+    for i in range(30):
+        a = pedir("GET", f"/appScreenshots/{res['id']}")["data"]["attributes"]; st = (a.get("assetDeliveryState") or {}).get("state")
+        print("ESTADO", st)
+        if st == "COMPLETE": break
+        if st == "FAILED": print("ERROR", a.get("assetDeliveryState")); return False
+        time.sleep(5)
+    else:
+        print("ERROR no terminó de procesarse"); return False
+    for c in mala: pedir("DELETE", f"/appScreenshots/{c['id']}"); print("BORRADA", c["id"])
+    resto = [c["id"] for c in antes if c not in mala]
+    pedir("PATCH", f"/appScreenshotSets/{ss['id']}/relationships/appScreenshots", {"data": [{"type": "appScreenshots", "id": i} for i in [res["id"]] + resto]})
+    for sc in pedir("GET", f"/appScreenshotSets/{ss['id']}/appScreenshots?limit=20")["data"]:
+        a = sc["attributes"]; print("    CAP", a.get("fileName"), a.get("fileSize"), (a.get("assetDeliveryState") or {}).get("state"))
+    return True
 
 if ACCION == "publicar":
     v = version()
@@ -65,6 +101,11 @@ elif ACCION == "enviar":
         txt = NOVEDADES["ca"] if l.startswith("ca") else NOVEDADES["es"] if l.startswith("es") else NOVEDADES["en"]
         pedir("PATCH", f"/appStoreVersionLocalizations/{loc['id']}", {"data": {"type": "appStoreVersionLocalizations", "id": loc["id"], "attributes": {"whatsNew": txt}}})
         print("Novedades", l)
+    # 3b) la 1ª captura de la 1.59 se subió dañada: en la versión nueva se cambia por la buena
+    try:
+        print("Captura 01:", arreglar01(v))
+    except SystemExit:
+        print("Captura 01: no se ha podido cambiar (se envía igual)")
     # 4) enviar a revisión
     s = pedir("POST", "/reviewSubmissions", {"data": {"type": "reviewSubmissions", "attributes": {"platform": "IOS"},
               "relationships": {"app": {"data": {"type": "apps", "id": APP}}}}})["data"]
@@ -119,38 +160,7 @@ elif ACCION == "capturas":
                 im = a.get("imageAsset") or {}
                 print("    CAP", a.get("fileName"), a.get("fileSize"), im.get("width"), im.get("height"), ad.get("state"), ad.get("errors"), sc["id"])
 elif ACCION == "cambiar01":
-    # Sustituye la 1ª captura (subida dañada) por la buena de la rama «capturas». Sube primero la nueva,
-    # luego borra la mala y la deja en primer lugar.
-    import hashlib
-    URL = "https://raw.githubusercontent.com/jaume333/onesecond-ios/capturas/01_iphone.png"
-    datos = requests.get(URL, timeout=60).content
-    md5 = hashlib.md5(datos).hexdigest(); print("ARCHIVO", len(datos), md5)
-    if md5 != "e5a2c908ffb44a69ea09c10e16a52d43": print("ERROR el archivo no es el esperado"); sys.exit(1)
-    v = version(); loc = [l for l in pedir("GET", f"/appStoreVersions/{v['id']}/appStoreVersionLocalizations")["data"] if l["attributes"]["locale"] == "es-ES"][0]
-    ss = [x for x in pedir("GET", f"/appStoreVersionLocalizations/{loc['id']}/appScreenshotSets")["data"] if x["attributes"]["screenshotDisplayType"] == "APP_IPHONE_67"][0]
-    antes = pedir("GET", f"/appScreenshotSets/{ss['id']}/appScreenshots?limit=20")["data"]
-    mala = [c for c in antes if c["attributes"]["fileName"] == "01_iphone.png" and c["attributes"]["fileSize"] < 500000]
-    if not mala: print("ERROR no encuentro la captura mala"); sys.exit(1)
-    res = pedir("POST", "/appScreenshots", {"data": {"type": "appScreenshots", "attributes": {"fileName": "01_iphone.png", "fileSize": len(datos)},
-                 "relationships": {"appScreenshotSet": {"data": {"type": "appScreenshotSets", "id": ss["id"]}}}}})["data"]
-    for op in res["attributes"]["uploadOperations"]:
-        h = {x["name"]: x["value"] for x in op["requestHeaders"]}
-        r = requests.request(op["method"], op["url"], headers=h, data=datos[op["offset"]:op["offset"] + op["length"]], timeout=120)
-        if r.status_code >= 300: print("ERROR subida", r.status_code, r.text[:500]); sys.exit(1)
-    pedir("PATCH", f"/appScreenshots/{res['id']}", {"data": {"type": "appScreenshots", "id": res["id"], "attributes": {"uploaded": True, "sourceFileChecksum": md5}}})
-    for i in range(30):
-        a = pedir("GET", f"/appScreenshots/{res['id']}")["data"]["attributes"]; st = (a.get("assetDeliveryState") or {}).get("state")
-        print("ESTADO", st)
-        if st == "COMPLETE": break
-        if st == "FAILED": print("ERROR", a.get("assetDeliveryState")); sys.exit(1)
-        time.sleep(5)
-    else:
-        print("ERROR no terminó de procesarse"); sys.exit(1)
-    for c in mala: pedir("DELETE", f"/appScreenshots/{c['id']}"); print("BORRADA", c["id"])
-    resto = [c["id"] for c in antes if c not in mala]
-    pedir("PATCH", f"/appScreenshotSets/{ss['id']}/relationships/appScreenshots", {"data": [{"type": "appScreenshots", "id": i} for i in [res["id"]] + resto]})
-    for sc in pedir("GET", f"/appScreenshotSets/{ss['id']}/appScreenshots?limit=20")["data"]:
-        a = sc["attributes"]; print("    CAP", a.get("fileName"), a.get("fileSize"), (a.get("assetDeliveryState") or {}).get("state"))
+    arreglar01(version())
 elif ACCION == "mover01":
     # Pasa la 1ª captura (la que no se ve) al final; no sube ni borra nada.
     v = version(); loc = [l for l in pedir("GET", f"/appStoreVersions/{v['id']}/appStoreVersionLocalizations")["data"] if l["attributes"]["locale"] == "es-ES"][0]
