@@ -64,6 +64,39 @@ def arreglar01(v):
         a = sc["attributes"]; print("    CAP", a.get("fileName"), a.get("fileSize"), (a.get("assetDeliveryState") or {}).get("state"))
     return True
 
+def poner_capturas(v, rama="capturas-160", n=6):
+    """Cambia todas las capturas de iPhone (es-ES, 6,9") de la versión por 01..06_iphone.png de la rama indicada."""
+    import hashlib
+    loc = [l for l in pedir("GET", f"/appStoreVersions/{v['id']}/appStoreVersionLocalizations")["data"] if l["attributes"]["locale"] == "es-ES"][0]
+    ss = [x for x in pedir("GET", f"/appStoreVersionLocalizations/{loc['id']}/appScreenshotSets")["data"] if x["attributes"]["screenshotDisplayType"] == "APP_IPHONE_67"][0]
+    antes = [c["id"] for c in pedir("GET", f"/appScreenshotSets/{ss['id']}/appScreenshots?limit=20")["data"]]
+    nuevas = []
+    for i in range(1, n + 1):
+        nom = f"{i:02d}_iphone.png"
+        datos = requests.get(f"https://raw.githubusercontent.com/jaume333/onesecond-ios/{rama}/{nom}", timeout=60).content
+        if len(datos) < 100000: print("ERROR captura sospechosa", nom, len(datos)); return False
+        md5 = hashlib.md5(datos).hexdigest()
+        res = pedir("POST", "/appScreenshots", {"data": {"type": "appScreenshots", "attributes": {"fileName": nom, "fileSize": len(datos)},
+                     "relationships": {"appScreenshotSet": {"data": {"type": "appScreenshotSets", "id": ss["id"]}}}}})["data"]
+        for op in res["attributes"]["uploadOperations"]:
+            h = {x["name"]: x["value"] for x in op["requestHeaders"]}
+            r = requests.request(op["method"], op["url"], headers=h, data=datos[op["offset"]:op["offset"] + op["length"]], timeout=120)
+            if r.status_code >= 300: print("ERROR subida", nom, r.status_code); return False
+        pedir("PATCH", f"/appScreenshots/{res['id']}", {"data": {"type": "appScreenshots", "id": res["id"], "attributes": {"uploaded": True, "sourceFileChecksum": md5}}})
+        nuevas.append(res["id"]); print("SUBIDA", nom, len(datos))
+    for k in range(40):
+        est = [(pedir("GET", f"/appScreenshots/{i}")["data"]["attributes"].get("assetDeliveryState") or {}).get("state") for i in nuevas]
+        if all(e == "COMPLETE" for e in est): break
+        if any(e == "FAILED" for e in est): print("ERROR procesando", est); return False
+        time.sleep(5)
+    else:
+        print("ERROR no terminaron de procesarse"); return False
+    for i in antes: pedir("DELETE", f"/appScreenshots/{i}")
+    pedir("PATCH", f"/appScreenshotSets/{ss['id']}/relationships/appScreenshots", {"data": [{"type": "appScreenshots", "id": i} for i in nuevas]})
+    for sc in pedir("GET", f"/appScreenshotSets/{ss['id']}/appScreenshots?limit=20")["data"]:
+        a = sc["attributes"]; print("    CAP", a.get("fileName"), a.get("fileSize"), (a.get("assetDeliveryState") or {}).get("state"))
+    return True
+
 if ACCION == "publicar":
     v = version()
     if not v: print("No existe la versión", VER); sys.exit(1)
@@ -103,7 +136,7 @@ elif ACCION == "enviar":
         print("Novedades", l)
     # 3b) la 1ª captura de la 1.59 se subió dañada: en la versión nueva se cambia por la buena
     try:
-        print("Captura 01:", arreglar01(v))
+        print("Capturas nuevas:", poner_capturas(v))
     except SystemExit:
         print("Captura 01: no se ha podido cambiar (se envía igual)")
     # 4) enviar a revisión
