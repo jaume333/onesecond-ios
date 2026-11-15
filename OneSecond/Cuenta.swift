@@ -167,10 +167,13 @@ final class Cuenta: ObservableObject {
     static func lugar(_ ev: [String: Any]) -> String { let l = ev.str("lugar"); return l == "null" ? "" : l }
 
     /// «Sábado 7 de noviembre · Sabadell» de la próxima Ronda (o nil si no se sabe).
-    var proximaRonda: String? {
+    var proximaRonda: String? { proxima("ronda") }
+
+    /// 1.60: lo mismo para cualquier prueba (la destacada es One Second Rally).
+    func proxima(_ id: String) -> String? {
         let ahora = Date()
         var mejor: (Date, [String: Any])? = nil
-        for e in eventos where Prueba.deCuentas(e.str("app"))?.id == "ronda" {
+        for e in eventos where Prueba.deCuentas(e.str("app"))?.id == id {
             guard let s = Cuenta.salida(e), s > ahora.addingTimeInterval(-12 * 3600) else { continue }
             if mejor == nil || s < mejor!.0 { mejor = (s, e) }
         }

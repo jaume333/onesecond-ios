@@ -62,13 +62,13 @@ struct SelectorView: View {
                             .tracking(2).foregroundColor(.suave).padding(.top, 2)
 
                         VStack(spacing: 12) {
-                            rondaDestacada.padding(.bottom, 2)
+                            destacada.padding(.bottom, 2)
                             Banda(id: "navigator", nombre: "One Second Navigator",
                                   sub: t("Navega con las rutas GPX", "Navega amb les rutes GPX", "Navigate GPX routes"),
                                   icono: "ic_navigator", metal: SelectorView.navMetal, alto: alto, nuevo: !navVisto,
                                   abrir: { navVisto = true; navAbierto = true },
                                   info: { hoja = .info("navigator", "One Second Navigator", "ic_navigator", SelectorView.navMetal) })
-                            ForEach(Prueba.todas.filter { $0.id != "ronda" }) { p in
+                            ForEach(Prueba.todas.filter { $0.id != "rally" }) { p in
                                 let aj = central.aj(p)
                                 Banda(id: p.id, nombre: p.nombre, sub: aj.vinculada ? aj.piloto : p.subtitulo, icono: p.icono, metal: p.metal, alto: alto,
                                       vinc: aj.vinculada, emi: central.emitiendo(p), abierta: cuenta.abiertas.contains(p.appCuentas),
@@ -83,16 +83,6 @@ struct SelectorView: View {
                             Text(t("MINI JUEGOS", "MINI JOCS", "MINI GAMES")).font(.system(size: 11, weight: .medium)).tracking(2.2)
                                 .foregroundColor(.suave).frame(maxWidth: .infinity, alignment: .leading).padding(.leading, 4).padding(.top, 10)
                                 .id("minijuegos")
-                            // aviso de la II Motoweekend (se deja de ver al acabar, el 16 de noviembre de 2026)
-                            if Date() < MiniJuego.finAviso {
-                                Text("📣  " + t("II Motoweekend a La Ràpita (del 13 al 15 de noviembre): los mini juegos funcionarán con QR. Escanéalo con «Escanear QR» o escribe su código.",
-                                               "II Motoweekend a La Ràpita (del 13 al 15 de novembre): els mini jocs funcionaran amb QR. Escaneja'l amb «Escanejar QR» o escriu el seu codi.",
-                                               "II Motoweekend in La Ràpita (13 to 15 November): the mini games will work with QR codes. Scan it with «Scan QR» or type its code."))
-                                    .font(.system(size: 13, weight: .medium)).foregroundColor(Color(hex: 0xFFE7A8)).fixedSize(horizontal: false, vertical: true)
-                                    .frame(maxWidth: .infinity, alignment: .leading).padding(12)
-                                    .background(RoundedRectangle(cornerRadius: 12).fill(Color(hex: 0x2A2210)))
-                                    .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color(hex: 0x6B5A1F), lineWidth: 1))
-                            }
                             ForEach(MiniJuego.todos) { j in
                                 Banda(id: j.id, nombre: j.nombre, sub: j.subtitulo, icono: j.icono, metal: j.metal, alto: alto,
                                       abrir: { juego = JuegoAbierto(j: j, url: nil) }, info: { hoja = .info(j.id, j.nombre, j.icono, j.metal) })
@@ -189,17 +179,18 @@ struct SelectorView: View {
         .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color(red: 61 / 255, green: 1, blue: 138 / 255).opacity(90 / 255), lineWidth: 1))
     }
 
-    /// La Ronda, la primera y destacada: nombre, día y lugar de la próxima Ronda y, debajo, vincular / dorsal / emitiendo.
-    private var rondaDestacada: some View {
-        let p = Prueba.ronda
+    /// La destacada, la primera (1.37: la Ronda; 1.60: One Second Rally con la etiqueta «Classics» escrita a mano y en
+    /// diagonal): nombre, día y lugar de la próxima prueba y, debajo, vincular / dorsal / emitiendo.
+    private var destacada: some View {
+        let p = Prueba.rally
         let aj = central.aj(p), vinc = aj.vinculada, emi = central.emitiendo(p)
         return Button { abierta = p } label: {
             VStack(spacing: 12) {
                 HStack(spacing: 12) {
-                    Image(p.icono).resizable().scaledToFill().frame(width: 58, height: 58).clipShape(RoundedRectangle(cornerRadius: 13))
+                    Image("ic_rally_classics").resizable().scaledToFit().frame(width: 72, height: 72)
                     VStack(alignment: .leading, spacing: 2) {
                         Text(p.nombre).font(.custom("TeXGyrePagella-Bold", size: 22)).foregroundColor(.white).shadow(color: .black.opacity(0.6), radius: 3, y: 1)
-                        Text(cuenta.proximaRonda ?? p.subtitulo).font(.system(size: 12.5)).foregroundColor(.white.opacity(225 / 255))
+                        Text(cuenta.proxima(p.id) ?? p.subtitulo).font(.system(size: 12.5)).foregroundColor(.white.opacity(225 / 255))
                     }
                     Spacer(minLength: 0)
                 }
@@ -215,10 +206,20 @@ struct SelectorView: View {
                 .background(RoundedRectangle(cornerRadius: 12).fill(Color.black.opacity(72 / 255)))
             }
             .padding(.horizontal, 16).padding(.vertical, 14)
-            .background(LinearGradient(colors: p.metal.map { Color(hex: $0) }, startPoint: .topLeading, endPoint: .bottomTrailing))
+            .background(LinearGradient(colors: [Color(hex: 0x2A1B0E), Color(hex: 0x7A5622), Color(hex: 0x3A2512)], startPoint: .topLeading, endPoint: .bottomTrailing))
             .clipShape(RoundedRectangle(cornerRadius: 22))
-            .overlay(RoundedRectangle(cornerRadius: 22).stroke(Color(hex: 0xF0C9A8), lineWidth: 2))
+            .overlay(RoundedRectangle(cornerRadius: 22).stroke(Color(hex: 0xE2BE70), lineWidth: 2))
             .shadow(color: .black.opacity(0.4), radius: 6, y: 3)
+            // etiqueta «Classics» escrita a mano, en diagonal, arriba a la derecha
+            .overlay(alignment: .topTrailing) {
+                Text("Classics").font(.custom("GreatVibes-Regular", size: 25)).foregroundColor(Color(hex: 0xFFF4DE))
+                    .shadow(color: Color(red: 40 / 255, green: 0, blue: 0).opacity(0.7), radius: 2, y: 1)
+                    .padding(.horizontal, 16).padding(.top, 1).padding(.bottom, 4)
+                    .background(RoundedRectangle(cornerRadius: 8).fill(LinearGradient(colors: [Color(hex: 0x96191E), Color(hex: 0x600A0F)], startPoint: .top, endPoint: .bottom)))
+                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color(hex: 0xE2BA60), lineWidth: 1.5))
+                    .shadow(color: .black.opacity(0.45), radius: 4, y: 2)
+                    .rotationEffect(.degrees(-12)).padding(.top, 10).padding(.trailing, 10)
+            }
         }
         .buttonStyle(.plain)
     }

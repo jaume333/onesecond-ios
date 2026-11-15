@@ -5,7 +5,7 @@ options:
     iOS: "15.0"
 settings:
   base:
-    MARKETING_VERSION: "1.59"
+    MARKETING_VERSION: "1.60"
     CURRENT_PROJECT_VERSION: "1"
     SWIFT_VERSION: "5.0"
 targets:
@@ -44,7 +44,7 @@ targets:
           - CFBundleURLName: es.onesecond.rallygps
             CFBundleURLSchemes: [onesecondgps, rider1000gps, rondagps]
         LSApplicationQueriesSchemes: [tel]
-        UIAppFonts: [pagella_negrita.otf]
+        UIAppFonts: [pagella_negrita.otf, GreatVibes-Regular.ttf]
         LSSupportsOpeningDocumentsInPlace: false
         CFBundleDocumentTypes:
           - CFBundleTypeName: GPX
