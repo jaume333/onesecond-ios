@@ -342,7 +342,7 @@ struct RallyView: View {
             let s = String(u[r])
             if let a = s.range(of: "onesecond.es"), let b = s.range(of: "api/p/") { return String(s[a.upperBound..<b.lowerBound]) }
         }
-        return "/rally/"
+        return "/classics/"   // 1.61: One Second Rally pasa a ser Classics
     }
 
     private static var idVisita: String {
