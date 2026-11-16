@@ -63,7 +63,7 @@ final class Navegacion: NSObject, ObservableObject, CLLocationManagerDelegate {
         }
         // la voz por el altavoz o el intercomunicador, bajando la música mientras habla
         try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .voicePrompt, options: [.duckOthers, .interruptSpokenAudioAndMixWithOthers, .allowBluetoothA2DP])
-        emite = emitirVinculada()
+        emite = yaEmite()          // 1.62: navegar ya NO empieza a emitir solo
         return true
     }
 
@@ -87,7 +87,13 @@ final class Navegacion: NSObject, ObservableObject, CLLocationManagerDelegate {
         return g.archivo
     }
 
-    /// La prueba vinculada empieza a emitir la posición (devuelve su nombre, o nil).
+    /// 1.62: la prueba que ya está emitiendo (navegar no empieza a emitir: volvía a emitir aunque se hubiera parado).
+    private func yaEmite() -> String? {
+        guard let e = Central.shared.emitiendo else { return nil }
+        return Prueba.de(e)?.nombre
+    }
+
+    /// La prueba vinculada empieza a emitir la posición (devuelve su nombre, o nil). Ya no se usa (1.62).
     private func emitirVinculada() -> String? {
         let c = Central.shared
         if let e = c.emitiendo { return Prueba.de(e)?.nombre }
@@ -113,7 +119,7 @@ final class Navegacion: NSObject, ObservableObject, CLLocationManagerDelegate {
             if self.ruta != nil && (st == .authorizedWhenInUse || st == .authorizedAlways) {
                 manager.allowsBackgroundLocationUpdates = true
                 manager.startUpdatingLocation()
-                if self.emite == nil { self.emite = self.emitirVinculada() }
+                if self.emite == nil { self.emite = self.yaEmite() }
             }
         }
     }
@@ -154,6 +160,7 @@ final class Navegacion: NSObject, ObservableObject, CLLocationManagerDelegate {
     }
 
     private func comprobarFuera() {
+        return                                               // 1.62: sin avisos de «te has salido de la ruta» (molestaban mucho)
         guard estuvoEnRuta else { return }                   // aún vamos hacia la ruta: no se avisa
         if aRuta > Navegacion.fueraM { fueraSeguidos += 1 } else if aRuta < Navegacion.vueltaM { fueraSeguidos = 0 }
         if !fuera && fueraSeguidos >= 3 {
