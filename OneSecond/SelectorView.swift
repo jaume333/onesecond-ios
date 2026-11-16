@@ -11,6 +11,7 @@ struct SelectorView: View {
     @Binding var abierta: Prueba?
     @Binding var navAbierto: Bool
     @State private var hoja: Hoja? = nil
+    @State private var pushActivo = Push.activos      // 1.62
     @State private var elegir: [Cuenta.Insc] = []
     @State private var mensaje: (String, String)? = nil
     @State private var poker: PruebaWeb? = nil
@@ -91,12 +92,14 @@ struct SelectorView: View {
 
                         cajaCuenta.padding(.top, 16)
                         filaAvisos.padding(.top, 12)
+                        filaPush.padding(.top, 8)
                         Text("onesecond.es · v" + (Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""))
                             .font(.system(size: 11)).foregroundColor(Color(hex: 0x5F6B7D)).padding(.top, 18)
                     }
                     .padding(.horizontal, 16).padding(.top, 12).padding(.bottom, 24)
                 }
-                .onAppear { if Demo.activo && Demo.pantalla == 16 { DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { sv.scrollTo("minijuegos", anchor: .top) } } }
+                .onAppear { if Push.activos { Push.registrar() } }      // 1.62: avisos de nuevos eventos
+        .onAppear { if Demo.activo && Demo.pantalla == 16 { DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { sv.scrollTo("minijuegos", anchor: .top) } } }
                 }
                 // la barra de estado (hora, batería) con fondo al bajar por la lista
                 Color.fondo.frame(height: 0).ignoresSafeArea(edges: .top).frame(maxHeight: .infinity, alignment: .top)
@@ -301,6 +304,22 @@ struct SelectorView: View {
             Spacer(minLength: 0)
             Toggle("", isOn: Binding(get: { cuenta.avisosActivos }, set: { v in cuenta.avisosActivos = v; if v { Notificar.pedirPermiso() } }))
                 .labelsHidden()
+        }
+        .padding(.leading, 16).padding(.trailing, 12).padding(.vertical, 12)
+        .background(RoundedRectangle(cornerRadius: 16).fill(Color.panel))
+        .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.borde, lineWidth: 1))
+    }
+
+    /// 1.62: interruptor «Avisos de nuevos eventos» (notificaciones push).
+    private var filaPush: some View {
+        HStack(spacing: 10) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text("📲  " + t("Avisos de nuevos eventos", "Avisos de nous esdeveniments", "New event alerts")).font(.system(size: 14.5, weight: .medium)).foregroundColor(.texto)
+                Text(t("Cuando la organización publica un evento nuevo de One Second.", "Quan l'organització publica un esdeveniment nou de One Second.",
+                       "When the organisers publish a new One Second event.")).font(.system(size: 12)).foregroundColor(.suave)
+            }
+            Spacer(minLength: 0)
+            Toggle("", isOn: Binding(get: { pushActivo }, set: { v in pushActivo = v; Push.poner(v) })).labelsHidden()
         }
         .padding(.leading, 16).padding(.trailing, 12).padding(.vertical, 12)
         .background(RoundedRectangle(cornerRadius: 16).fill(Color.panel))

@@ -308,6 +308,11 @@ final class Avisador: NSObject, UNUserNotificationCenterDelegate {
     }
     func userNotificationCenter(_ c: UNUserNotificationCenter, didReceive r: UNNotificationResponse, withCompletionHandler fin: @escaping () -> Void) {
         let i = r.notification.request.content.userInfo
+        // 1.62: aviso de nuevo evento (push): se abre la prueba (Classics → One Second Rally)
+        if let app = i["app"] as? String, i["url"] is String {
+            let p = app == "classics" ? "rally" : app
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { NotificationCenter.default.post(name: .abrirPruebaDe, object: p) }
+        }
         if let j = i["minijuego"] as? String {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { NotificationCenter.default.post(name: .abrirMiniJuego, object: [j, BingoAvisos.web]) }
         }
@@ -326,6 +331,9 @@ final class AppDelegado: NSObject, UIApplicationDelegate {
         UNUserNotificationCenter.current().delegate = Avisador.shared
         return true
     }
+    // 1.62: avisos de nuevos eventos (push de Apple)
+    func application(_ a: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken t: Data) { Push.recibido(t) }
+    func application(_ a: UIApplication, didFailToRegisterForRemoteNotificationsWithError e: Error) { }
 }
 
 extension Notification.Name {
