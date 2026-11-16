@@ -306,12 +306,12 @@ struct RallyView: View {
                             .padding(.top, k == 0 ? 10 : 2)
                     }
                 }
-                Button { if let u = URL(string: "https://onesecond.es" + web) { UIApplication.shared.open(u) } } label: {
+                Button { if let u = URL(string: "https://onesecond.es" + webResultados) { UIApplication.shared.open(u) } } label: {
                     Text(TxRally.t("clas_completa") + "  ↗").font(.system(size: 15, weight: .bold)).foregroundColor(TC.texto)
                         .frame(maxWidth: .infinity).frame(height: 48).background(RoundedRectangle(cornerRadius: 8).fill(Self.panel2))
                         .overlay(RoundedRectangle(cornerRadius: 8).stroke(TC.borde, lineWidth: 1.5))
                 }.padding(.top, 14)
-                Text(TxRally.t("clas_abre") + " onesecond.es" + web.replacingOccurrences(of: "/$", with: "", options: .regularExpression))
+                Text(TxRally.t("clas_abre") + " onesecond.es" + webResultados.replacingOccurrences(of: "/$", with: "", options: .regularExpression))
                     .font(.system(size: 12)).foregroundColor(TC.suave).frame(maxWidth: .infinity).padding(.top, 6)
             } else {
                 Text(TxRally.t(clasCodigo == 0 ? "clas_cargando" : clasCodigo == 503 || clasCodigo == 429 ? "clas_mucha" : "clas_error"))
@@ -354,6 +354,9 @@ struct RallyView: View {
         }
         return "/classics/"   // 1.61: One Second Rally pasa a ser Classics
     }
+
+    /// 1.62: en Classics, «Ver la clasificación completa» abre onesecond.es/classics/resultados
+    private var webResultados: String { web == "/classics/" ? "/classics/resultados" : web }
 
     private static var idVisita: String {
         if let v = UserDefaults.standard.string(forKey: "prueba_web_vid") { return v }
