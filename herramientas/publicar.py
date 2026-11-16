@@ -23,9 +23,9 @@ def version():
     return None
 
 NOVEDADES = {
-    "es": "One Second Rally Classics: nueva sección destacada con su logo clásico, inscripción con tu cuenta One Second, resultados en la app y el recorrido en el mapa. Lector de QR de los mini juegos mejorado: recuadro para apuntar, linterna, avisos si la cámara no se abre y código del ticket de Ruta 66. Pequeñas mejoras.",
-    "ca": "One Second Rally Classics: nova secció destacada amb el seu logo clàssic, inscripció amb el teu compte One Second, resultats a l'app i el recorregut al mapa. Lector de QR dels mini jocs millorat: requadre per apuntar, llanterna, avisos si la càmera no s'obre i codi del tiquet de Ruta 66. Petites millores.",
-    "en": "One Second Rally Classics: new featured section with its classic logo, registration with your One Second account, results in the app and the route on the map. Improved mini games QR reader: aiming frame, torch, warnings if the camera does not open and Route 66 ticket code. Small improvements.",
+    "es": "Avisos de nuevos eventos: recibe una notificación cuando se abra un evento nuevo (puedes desactivarlo en el menú). One Second Rally Classics: aviso del próximo evento, botones EMITIR y PARAR más cómodos y la clasificación completa en la web. El navegador ya no avisa de salirse de la ruta ni empieza a emitir solo. Pequeñas mejoras.",
+    "ca": "Avisos de nous esdeveniments: rep una notificació quan s'obri un esdeveniment nou (ho pots desactivar al menú). One Second Rally Classics: avís del proper esdeveniment, botons EMETRE i ATURAR més còmodes i la classificació completa al web. El navegador ja no avisa de sortir de la ruta ni comença a emetre sol. Petites millores.",
+    "en": "New event alerts: get a notification when a new event opens (you can turn it off in the menu). One Second Rally Classics: next event badge, easier START and STOP buttons and the full standings on the web. The navigator no longer warns about leaving the route or starts broadcasting by itself. Small improvements.",
 }
 
 def arreglar01(v):
