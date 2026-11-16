@@ -41,7 +41,8 @@ struct RallyView: View {
                     cabecera
                     VStack(spacing: 0) {
                         if !aj.vinculada { vincularBloque.padding(.top, 14) }
-                        else { tarjeta.padding(.top, 16) }
+                        else { tarjeta.padding(.top, 10) }
+                        emitirBloque.padding(.top, 12)          // 1.62: justo debajo de la tarjeta
                         if aj.vinculada && !recArchivo.isEmpty && recUrl == aj.url.trimmingCharacters(in: .whitespaces) {
                             botonRecorrido.padding(.top, 12)
                         }
@@ -54,7 +55,6 @@ struct RallyView: View {
                             MensajesCaja(p: p, tx: TxRally.t, acento: Self.oro, boton: TC.azul, botonTexto: .white,
                                          burbuja: Color(hex: 0x1D3550), burbujaB: Color(hex: 0x2C5A86)) { hoja = .chat }.padding(.top, 14)
                         }
-                        emitirBloque.padding(.top, 12)
                         avisar.padding(.top, 16)
                     }.padding(.horizontal, 16).padding(.bottom, 16)
                     VStack(spacing: 0) {
@@ -124,27 +124,22 @@ struct RallyView: View {
     }
 
     // ---------- bandera a cuadros con el logo encima ----------
+    // 1.62: cabecera pequeña (logo al lado del nombre) para que Emitir / Parar queden a mano
     private var cabecera: some View {
-        ZStack(alignment: .top) {
-            BanderaCuadros().frame(height: 150)
-            VStack(spacing: 0) {
-                Image("logo_rally_classics").resizable().scaledToFit().frame(width: 146, height: 146).clipShape(Circle())   // 1.60: Classics
-                    .shadow(color: .black.opacity(0.6), radius: 14, y: 6)
-                let n = Text("One Second Rally").font(.custom("TeXGyrePagella-Bold", size: 36))
+        HStack(spacing: 12) {
+            Image("logo_rally_classics").resizable().scaledToFit().frame(width: 60, height: 60).clipShape(Circle())
+                .shadow(color: .black.opacity(0.6), radius: 8, y: 4)
+            VStack(alignment: .leading, spacing: 0) {
+                let n = Text("One Second Rally").font(.custom("TeXGyrePagella-Bold", size: 23))
                 n.lineLimit(1).minimumScaleFactor(0.6).foregroundColor(.clear)
                     .overlay(LinearGradient(stops: zip(Self.cromado, [0, 0.4, 0.55, 0.75, 1.0]).map { .init(color: $0, location: $1) }, startPoint: .top, endPoint: .bottom)
                         .mask(n.lineLimit(1).minimumScaleFactor(0.6)))
-                    .padding(.top, 6)
-                // 1.60: «Classics» escrito a mano y en diagonal debajo del nombre
-                Text("Classics").font(.custom("GreatVibes-Regular", size: 30)).foregroundColor(Color(hex: 0xE2BE70))
-                    .shadow(color: .black.opacity(0.8), radius: 3, y: 1).rotationEffect(.degrees(-6)).padding(.bottom, 4)
-                (Text(TxRally.t("lema_a")).italic().foregroundColor(Self.claro)
-                 + Text(TxRally.t("lema_b")).font(.custom("TeXGyrePagella-Bold", size: 13.5)).foregroundColor(TC.texto)
-                 + Text(".»").italic().foregroundColor(Self.claro))
-                    .font(.system(size: 13.5)).multilineTextAlignment(.center).padding(.top, 2)
+                Text("Classics").font(.custom("GreatVibes-Regular", size: 22)).foregroundColor(Color(hex: 0xE2BE70))
+                    .shadow(color: .black.opacity(0.8), radius: 3, y: 1).rotationEffect(.degrees(-5)).padding(.leading, 4)
             }
-            .padding(.horizontal, 16).padding(.top, 22)
+            Spacer(minLength: 0)
         }
+        .padding(.leading, 60).padding(.trailing, 16).padding(.top, 10).padding(.bottom, 6)
     }
 
     private var vincularBloque: some View {
@@ -223,24 +218,29 @@ struct RallyView: View {
     }
 
     // ---------- emitir / parar (Parar manteniendo pulsado 1,5 s) ----------
+    // 1.62: EMITIR (un toque) y PARAR (mantener pulsado) en una línea; oro y granate, los colores de Classics
+    private static let oroBoton = LinearGradient(colors: [Color(hex: 0xF1D58E), Color(hex: 0xC99A3E), Color(hex: 0x9C7426)], startPoint: .top, endPoint: .bottom)
+    private static let granate = LinearGradient(colors: [Color(hex: 0xA3283A), Color(hex: 0x7A1E2A), Color(hex: 0x5A1420)], startPoint: .top, endPoint: .bottom)
+
     @ViewBuilder private var emitirBloque: some View {
         let aj = central.aj(p)
-        if central.emitiendo(p) {
-            BotonMantener(arriba: "■  " + TxRally.t("parar_b"), abajo: TxRally.t("mantener"), alAcabar: { central.parar() },
-                          antes: { central.breve(TxRally.t("mantener_aviso"), error: true) }, dura: 1.5, ancho: true, alto: 56)
-        } else {
-            VStack(spacing: 10) {
-                Text(TxRally.t("parado_desc")).font(.system(size: 13)).foregroundColor(TC.suave).multilineTextAlignment(.center)
-                let otra = central.emitiendo != nil
+        let on = central.emitiendo(p)
+        let otra = !on && central.emitiendo != nil
+        VStack(spacing: 6) {
+            HStack(spacing: 10) {
                 Button { if aj.vinculada { central.emitir(p) } else { hoja = .vincular } } label: {
-                    Text("▶  " + TxRally.t("emitir_b")).font(.system(size: 19, weight: .bold)).foregroundColor(.white)
-                        .frame(maxWidth: .infinity).frame(height: 56).background(RoundedRectangle(cornerRadius: 12).fill(TC.azul))
-                }.disabled(otra).opacity(otra ? 0.4 : 1)
-                if otra {
-                    Text(t("Se está emitiendo en otra prueba. Páralo allí antes.", "S'està emetent en una altra prova. Atura-ho allà abans.", "Another event is sending. Stop it there first."))
-                        .font(.system(size: 13)).foregroundColor(TC.naranja)
-                }
+                    Text("▶  " + t("EMITIR", "EMETRE", "START")).font(.system(size: 17, weight: .heavy)).tracking(1.2)
+                        .foregroundColor(on ? Color(hex: 0x4F5A6E) : Color(hex: 0x2A1B0E))
+                        .frame(maxWidth: .infinity).frame(height: 64)
+                        .background(RoundedRectangle(cornerRadius: 14).fill(on ? AnyShapeStyle(Color(hex: 0x161C26)) : AnyShapeStyle(Self.oroBoton)))
+                        .overlay(RoundedRectangle(cornerRadius: 14).stroke(on ? Color(hex: 0x273142) : .clear, lineWidth: 1))
+                        .shadow(color: on ? .clear : Color(hex: 0xE2BE70).opacity(0.35), radius: 7, y: 3)
+                }.disabled(on || otra).opacity(otra ? 0.4 : 1)
+                PararClassics(on: on, alAcabar: { central.parar() }, antes: { central.breve(TxRally.t("mantener_aviso"), error: true) })
             }
+            Text(otra ? t("Se está emitiendo en otra prueba. Páralo allí antes.", "S'està emetent en una altra prova. Atura-ho allà abans.", "Another event is sending. Stop it there first.")
+                 : t("Para parar, mantén pulsado PARAR", "Per aturar, mantén premut ATURAR", "To stop, press and hold STOP"))
+                .font(.system(size: 11.5)).foregroundColor(otra ? TC.naranja : TC.suave).opacity(on || otra ? 1 : 0)
         }
     }
 
@@ -507,5 +507,43 @@ struct FichaTiemposRally: View {
             let (c, d) = await Red.pedir("https://onesecond.es" + web + "api/public/live/participante?d=" + dor)
             if c == 200 { det = Red.objeto(d) } else { error = true }
         }
+    }
+}
+
+
+/// 1.62: el botón PARAR de Classics: granate con borde dorado mientras se emite; hay que mantenerlo pulsado 1,5 s.
+struct PararClassics: View {
+    let on: Bool
+    let alAcabar: () -> Void
+    let antes: () -> Void
+    @State private var hecho: CGFloat = 0
+    @State private var desde = Date.distantPast
+    private static let granate = LinearGradient(colors: [Color(hex: 0xA3283A), Color(hex: 0x7A1E2A), Color(hex: 0x5A1420)], startPoint: .top, endPoint: .bottom)
+
+    var body: some View {
+        Text("■  " + t("PARAR", "ATURAR", "STOP")).font(.system(size: 17, weight: .heavy)).tracking(1.2)
+            .foregroundColor(on ? Color(hex: 0xFFE7C0) : Color(hex: 0x4F5A6E))
+            .frame(maxWidth: .infinity).frame(height: 64)
+            .background(RoundedRectangle(cornerRadius: 14).fill(on ? AnyShapeStyle(Self.granate) : AnyShapeStyle(Color(hex: 0x161C26))))
+            .overlay(GeometryReader { g in
+                RoundedRectangle(cornerRadius: 14).fill(Color(red: 1, green: 120 / 255, blue: 120 / 255).opacity(0.55)).frame(width: g.size.width * hecho)
+            })
+            .clipShape(RoundedRectangle(cornerRadius: 14))
+            .overlay(RoundedRectangle(cornerRadius: 14).stroke(on ? Color(hex: 0xE2BE70) : Color(hex: 0x273142), lineWidth: on ? 1.5 : 1))
+            .shadow(color: on ? Color(hex: 0xA0283A).opacity(0.45) : .clear, radius: 7, y: 3)
+            .contentShape(Rectangle())
+            .onLongPressGesture(minimumDuration: 1.5, maximumDistance: 40, pressing: { p in
+                guard on else { return }
+                if p {
+                    desde = Date(); hecho = 0
+                    withAnimation(.linear(duration: 1.5)) { hecho = 1 }
+                } else {
+                    withAnimation(.easeOut(duration: 0.15)) { hecho = 0 }
+                    if Date().timeIntervalSince(desde) < 1.45 { antes() }
+                }
+            }, perform: {
+                hecho = 0
+                if on { alAcabar() }
+            })
     }
 }
