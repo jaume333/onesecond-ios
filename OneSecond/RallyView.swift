@@ -43,6 +43,10 @@ struct RallyView: View {
                         if !aj.vinculada { vincularBloque.padding(.top, 14) }
                         else { tarjeta.padding(.top, 10) }
                         emitirBloque.padding(.top, 12)          // 1.62: justo debajo de la tarjeta
+                        // 1.63: la clasificación (los 25 primeros) justo debajo de EMITIR / PARAR, para tenerla a mano
+                        Text(TxRally.t("clas_t").uppercased()).font(.system(size: 11, weight: .bold)).tracking(2).foregroundColor(TC.suave)
+                            .frame(maxWidth: .infinity, alignment: .leading).padding(.top, 18)
+                        clasificacion.padding(.top, 8)
                         if aj.vinculada && !recArchivo.isEmpty && recUrl == aj.url.trimmingCharacters(in: .whitespaces) {
                             botonRecorrido.padding(.top, 12)
                         }
@@ -59,9 +63,6 @@ struct RallyView: View {
                     }.padding(.horizontal, 16).padding(.bottom, 16)
                     VStack(spacing: 0) {
                         MisAvisos(p: p)
-                        Text(TxRally.t("clas_t").uppercased()).font(.system(size: 11, weight: .bold)).tracking(2).foregroundColor(TC.suave)
-                            .frame(maxWidth: .infinity, alignment: .leading).padding(.top, 20)
-                        clasificacion.padding(.top, 8)
                         Button { hoja = .ajustes } label: {
                             Text("⚙  " + TxRally.t("ajustes")).font(.system(size: 15, weight: .bold)).foregroundColor(Self.claro)
                                 .frame(maxWidth: .infinity).frame(height: 50)
