@@ -1,0 +1,70 @@
+name: Capturas para el tutorial (Classics)
+# Solo saca capturas en el simulador con datos de ejemplo (modo demo). No sube nada a la App Store ni a TestFlight.
+on:
+  push:
+    branches: ['tuto-*']
+permissions:
+  contents: write
+jobs:
+  capturas:
+    runs-on: macos-15
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Usar Xcode 26
+        run: |
+          X=$(ls -d /Applications/Xcode_26*.app | sort -V | tail -1)
+          sudo xcode-select -s "$X"
+      - name: Generar el proyecto
+        run: |
+          brew install xcodegen
+          xcodegen generate
+      - name: Simulador
+        timeout-minutes: 25
+        run: |
+          NOMBRE=$(xcrun simctl list devices available | grep -oE "iPhone [0-9]+ Pro Max" | sort -V | tail -1)
+          UDID=$(xcrun simctl list devices available | grep "$NOMBRE (" | head -1 | grep -oE "[0-9A-F-]{36}")
+          echo "UDID=$UDID" >> $GITHUB_ENV
+          T() { perl -e 'alarm shift; exec @ARGV' "$@"; }
+          ok=0
+          for intento in 1 2 3; do
+            T 120 xcrun simctl boot "$UDID" || true
+            if T 300 xcrun simctl bootstatus "$UDID" -b; then ok=1; break; fi
+            T 60 xcrun simctl shutdown all || true; T 120 xcrun simctl erase "$UDID" || true
+          done
+          [ $ok = 1 ] || { echo "::error::El simulador no arranca"; exit 1; }
+          xcrun simctl status_bar "$UDID" override --time "9:41" --batteryState charged --batteryLevel 100 --cellularBars 4 --wifiBars 3 --operatorName ""
+      - name: Compilar para el simulador
+        run: |
+          set -o pipefail
+          xcodebuild -project OneSecond.xcodeproj -scheme OneSecond -sdk iphonesimulator -destination "id=$UDID" \
+            -derivedDataPath build CODE_SIGNING_ALLOWED=NO build 2>&1 | tail -5
+          xcrun simctl install "$UDID" "build/Build/Products/Debug-iphonesimulator/One Second.app"
+      - name: Capturas (es / ca / en)
+        timeout-minutes: 30
+        run: |
+          mkdir -p out
+          T() { perl -e 'alarm shift; exec @ARGV' "$@"; }
+          T 180 xcrun simctl launch "$UDID" es.onesecond.rallygps -demo -pantalla 1 || true
+          sleep 15
+          for L in es ca en; do
+            case $L in es) LOC=es_ES;; ca) LOC=ca_ES;; en) LOC=en_GB;; esac
+            for V in "1 menu" "13 classics" "13 medio -medio" "13 abajo -abajo"; do
+              set -- $V; N=$1; NOM=$2; EXTRA=$3
+              T 30 xcrun simctl terminate "$UDID" es.onesecond.rallygps || true
+              T 120 xcrun simctl launch "$UDID" es.onesecond.rallygps -demo -pantalla $N $EXTRA -AppleLanguages "($L)" -AppleLocale $LOC || echo "launch falló"
+              sleep 10
+              T 60 xcrun simctl io "$UDID" screenshot "out/${NOM}_${L}.png" || echo "captura falló"
+            done
+          done
+          ls -la out
+      - name: Guardar las capturas en la rama «capturas-tuto»
+        if: always()
+        run: |
+          D=$(mktemp -d); cp out/*.png "$D"/ 2>/dev/null || true
+          git config user.name "github-actions"; git config user.email "actions@github.com"
+          git checkout --orphan capturas-tuto-tmp
+          git rm -rfq . >/dev/null
+          cp "$D"/*.png . 2>/dev/null || echo sin capturas > LEEME.txt
+          git add -A && git commit -qm "Capturas tutorial ${{ github.run_number }}"
+          git push -f origin HEAD:capturas-tuto

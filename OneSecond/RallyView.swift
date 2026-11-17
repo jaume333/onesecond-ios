@@ -36,6 +36,7 @@ struct RallyView: View {
         let aj = central.aj(p)
         ZStack(alignment: .top) {
             TC.fondo.ignoresSafeArea()
+            ScrollViewReader { sv in
             ScrollView {
                 VStack(spacing: 0) {
                     cabecera
@@ -59,7 +60,7 @@ struct RallyView: View {
                             MensajesCaja(p: p, tx: TxRally.t, acento: Self.oro, boton: TC.azul, botonTexto: .white,
                                          burbuja: Color(hex: 0x1D3550), burbujaB: Color(hex: 0x2C5A86)) { hoja = .chat }.padding(.top, 14)
                         }
-                        avisar.padding(.top, 16)
+                        avisar.padding(.top, 16).id("avisar")
                     }.padding(.horizontal, 16).padding(.bottom, 16)
                     VStack(spacing: 0) {
                         MisAvisos(p: p)
@@ -70,8 +71,13 @@ struct RallyView: View {
                                 .overlay(RoundedRectangle(cornerRadius: 8).stroke(TC.borde, lineWidth: 1.5))
                         }.padding(.top, 14)
                         Text(TxRally.t("ayuda")).font(.system(size: 13)).foregroundColor(TC.suave).multilineTextAlignment(.center).padding(.top, 14)
-                    }.padding(.horizontal, 16).padding(.bottom, 20)
+                    }.padding(.horizontal, 16).padding(.bottom, 20).id("fin")
                 }
+            }
+            .onAppear {     // capturas del tutorial (solo en el simulador): -abajo = la parte de abajo de la pantalla
+                if Demo.activo && Demo.args.contains("-abajo") { DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) { sv.scrollTo("fin", anchor: .bottom) } }
+                if Demo.activo && Demo.args.contains("-medio") { DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) { sv.scrollTo("avisar", anchor: .center) } }
+            }
             }
             Button { volver() } label: {
                 Image(systemName: "chevron.left").font(.system(size: 17, weight: .semibold)).foregroundColor(TC.texto)
