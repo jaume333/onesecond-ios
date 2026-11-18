@@ -101,7 +101,7 @@ jobs:
         run: |
           python3 -c "import json,os;json.dump({'key_id':'LQFB8QADZB','issuer_id':'a406dc4b-3c03-421b-8bb2-e10b20505f94','key':os.environ['P8'],'in_house':False},open('api_key.json','w'))"
           sudo gem install fastlane --no-document >/dev/null
-          fastlane deliver --api_key_path api_key.json --app_identifier es.onesecond.rallygps --app_version 1.57 \
+          fastlane deliver --api_key_path api_key.json --app_identifier es.onesecond.rallygps --app_version 1.64 \
             --platform ios --skip_binary_upload true --submit_for_review false --automatic_release false \
             --force true --overwrite_screenshots true --run_precheck_before_submit false \
             --metadata_path fastlane/metadata --screenshots_path fastlane/screenshots

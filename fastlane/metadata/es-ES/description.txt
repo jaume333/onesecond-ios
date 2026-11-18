@@ -1,6 +1,6 @@
 One Second es la app oficial para los participantes de los eventos de motor organizados con One Second (onesecond.es). En una sola app tienes todas las pruebas:
 
-• ONE SECOND RALLY: rally de regularidad. Tu móvil cronometra con GPS, con décimas de segundo, tu paso por cada control del recorrido, incluso por los controles escondidos que nadie conoce.
+• ONE SECOND LEGENDS: rally de regularidad. Tu móvil cronometra con GPS, con décimas de segundo, tu paso por cada control del recorrido, incluso por los controles escondidos que nadie conoce.
 • RIDER 1000: ruta de varios días. La app registra tu paso por los puntos de control y la organización te sigue en el mapa por seguridad.
 • RONDA LA LLANA: ruta con puntos de control, seguimiento por GPS, avisos y mensajes con la organización.
 

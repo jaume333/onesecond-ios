@@ -23,9 +23,9 @@ def version():
     return None
 
 NOVEDADES = {
-    "es": "Avisos de nuevos eventos: recibe una notificación cuando se abra un evento nuevo (puedes desactivarlo en el menú). One Second Rally Classics: aviso del próximo evento, botones EMITIR y PARAR más cómodos y la clasificación completa en la web. El navegador ya no avisa de salirse de la ruta ni empieza a emitir solo. Pequeñas mejoras.",
-    "ca": "Avisos de nous esdeveniments: rep una notificació quan s'obri un esdeveniment nou (ho pots desactivar al menú). One Second Rally Classics: avís del proper esdeveniment, botons EMETRE i ATURAR més còmodes i la classificació completa al web. El navegador ja no avisa de sortir de la ruta ni comença a emetre sol. Petites millores.",
-    "en": "New event alerts: get a notification when a new event opens (you can turn it off in the menu). One Second Rally Classics: next event badge, easier START and STOP buttons and the full standings on the web. The navigator no longer warns about leaving the route or starts broadcasting by itself. Small improvements.",
+    "es": "One Second Rally Classics pasa a llamarse One Second Legends, con logo nuevo. La clasificación (los 25 primeros) aparece justo debajo de EMITIR y PARAR. Los enlaces llevan a la nueva web onesecond.es/legends. Pequeñas mejoras.",
+    "ca": "One Second Rally Classics passa a dir-se One Second Legends, amb logo nou. La classificació (els 25 primers) apareix just sota EMETRE i ATURAR. Els enllaços porten al nou web onesecond.es/legends. Petites millores.",
+    "en": "One Second Rally Classics is now One Second Legends, with a new logo. The standings (top 25) now appear right below START and STOP. Links take you to the new onesecond.es/legends site. Small improvements.",
 }
 
 def arreglar01(v):
