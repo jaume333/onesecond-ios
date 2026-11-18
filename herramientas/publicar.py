@@ -105,6 +105,20 @@ def poner_capturas(v, rama="capturas", n=6):   # 1.64: la rama «capturas» (la 
         a = sc["attributes"]; print("    CAP", a.get("fileName"), a.get("fileSize"), (a.get("assetDeliveryState") or {}).get("state"))
     return True
 
+def poner_notas(v):
+    """1.65 (24): las notas para el revisor (fastlane/metadata/review_information/notes.txt) en la versión."""
+    import os
+    ruta = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "fastlane", "metadata", "review_information", "notes.txt")
+    txt = open(ruta, encoding="utf-8").read().strip()[:3990]
+    r = requests.get(API + f"/appStoreVersions/{v['id']}/appStoreReviewDetail", headers=cab())
+    d = r.json().get("data") if r.status_code == 200 else None
+    if d:
+        pedir("PATCH", f"/appStoreReviewDetails/{d['id']}", {"data": {"type": "appStoreReviewDetails", "id": d["id"], "attributes": {"notes": txt}}})
+    else:
+        pedir("POST", "/appStoreReviewDetails", {"data": {"type": "appStoreReviewDetails", "attributes": {"notes": txt},
+              "relationships": {"appStoreVersion": {"data": {"type": "appStoreVersions", "id": v["id"]}}}}})
+    print("Notas para el revisor puestas:", len(txt), "caracteres")
+
 if ACCION == "publicar":
     v = version()
     if not v: print("No existe la versión", VER); sys.exit(1)
@@ -166,6 +180,7 @@ elif ACCION == "enviar":
         print("Capturas nuevas:", poner_capturas(v))
     except SystemExit:
         print("Captura 01: no se ha podido cambiar (se envía igual)")
+    poner_notas(v)
     # 4) enviar a revisión
     s = pedir("POST", "/reviewSubmissions", {"data": {"type": "reviewSubmissions", "attributes": {"platform": "IOS"},
               "relationships": {"app": {"data": {"type": "apps", "id": APP}}}}})["data"]

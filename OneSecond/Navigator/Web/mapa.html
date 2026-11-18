@@ -1,7 +1,7 @@
 <!doctype html>
 <html><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<!-- One Second Navigator para iPhone: el mapa (MapLibre GL JS) con los mismos estilos que Android: oscuro, claro,
+<!-- One Second Navigator para iPhone: el mapa (MapLibre GL JS) con sus estilos: oscuro, claro,
      satélite, topográfico, relieve, híbrido, 3D y primera persona. Las teselas se piden con tesela:// y la app las
      guarda en el iPhone, así el mapa guardado se ve sin cobertura. La app llama a iniciar(), estilo(), pos(),
      centrar(), verTodo() y rumboArriba(); el mapa avisa a la app («listo», «movido») por window.webkit. -->
@@ -24,7 +24,7 @@ var yo = null, flecha = null, ultimo = null, porMi = false;
 function T(k) { return "tesela://t/" + k + "/{z}/{x}/{y}"; }
 function es3d(e) { return e === "3d" || e === "fp"; }
 
-/** Las capas de cada estilo (las mismas fuentes que Android: OpenStreetMap, IGN, IDEE e ICGC). */
+/** Las capas de cada estilo (fuentes: OpenStreetMap, IGN, IDEE e ICGC). */
 function estiloMapa(e) {
   var s = {version: 8, sources: {}, layers: [{id: "fondo", type: "background", paint: {"background-color": e === "oscuro" ? "#1a2230" : "#a9b9b4"}}]};
   function capa(id, k, max, paint) {
@@ -40,7 +40,7 @@ function estiloMapa(e) {
     s.sources.dem = {type: "raster-dem", tiles: [T("dem")], encoding: "terrarium", tileSize: 256, maxzoom: 14};
     s.terrain = {source: "dem", exaggeration: 1.35};
   }
-  // oscuro: OpenStreetMap con los colores invertidos y el tono girado 180° (como el filtro de Android)
+  // oscuro: OpenStreetMap con los colores invertidos y el tono girado 180° 
   else if (e === "oscuro") capa("base", "osm", 19, {"raster-brightness-min": 0.92, "raster-brightness-max": 0.06, "raster-hue-rotate": 180, "raster-saturation": -0.15, "raster-contrast": 0.05});
   else capa("base", "osm", 19);
   return s;

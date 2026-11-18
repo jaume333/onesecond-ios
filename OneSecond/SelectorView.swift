@@ -654,7 +654,9 @@ struct Web: UIViewRepresentable {
     }
 
     func makeUIView(context: Context) -> WKWebView {
-        let w = WKWebView(frame: .zero, configuration: WKWebViewConfiguration())
+        let c = WKWebViewConfiguration()
+        c.applicationNameForUserAgent = "Mobile/15E148 OneSecondApp"   // 1.65 (24): la web sabe que está dentro de la app de iPhone
+        let w = WKWebView(frame: .zero, configuration: c)
         w.isOpaque = false
         w.backgroundColor = UIColor(Color.fondo)
         w.navigationDelegate = context.coordinator
