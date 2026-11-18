@@ -197,6 +197,19 @@ elif ACCION == "enviar":
                                 "appStoreVersion": {"data": {"type": "appStoreVersions", "id": v["id"]}}}}})
     pedir("PATCH", f"/reviewSubmissions/{s['id']}", {"data": {"type": "reviewSubmissions", "id": s["id"], "attributes": {"submitted": True}}})
     print("ENVIADA A REVISION", VER, "envío", s["id"])
+elif ACCION == "reenviar":
+    # 1.65 (24): solo vuelve a enviar a revisión la versión tal como está (build, notas y capturas ya puestos), con reintentos
+    v = version(); print("Estado", v["attributes"].get("appStoreState"))
+    s = None
+    for rs in pedir("GET", f"/apps/{APP}/reviewSubmissions?filter[platform]=IOS&limit=10")["data"]:
+        if rs["attributes"].get("state") in ("UNRESOLVED_ISSUES", "READY_FOR_REVIEW") and s is None: s = rs
+    print("Envío", s and s["id"], s and s["attributes"].get("state"))
+    for k in range(20):
+        r = requests.patch(API + f"/reviewSubmissions/{s['id']}", headers=cab(), data=json.dumps({"data": {"type": "reviewSubmissions", "id": s["id"], "attributes": {"submitted": True}}}))
+        if r.status_code in (200, 201, 204): print("ENVIADA A REVISION", VER, "envío", s["id"]); break
+        print("Aún no se puede (", r.status_code, "):", (r.json().get("errors") or [{}])[0].get("meta", {}).get("associatedErrors", r.text[:300]) if r.text else ""); time.sleep(60)
+    else:
+        print("ERROR no se ha podido enviar"); sys.exit(1)
 elif ACCION == "recapturas":
     # Retira la versión de revisión (si está esperando), pone las capturas buenas y la vuelve a enviar.
     v = version()
