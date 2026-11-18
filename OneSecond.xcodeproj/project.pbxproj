@@ -1,0 +1,481 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		035ECA754DD5486DCD2E97CA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 424CAD96613A3C6AB1D7D81D /* Assets.xcassets */; };
+		0BDCC5E0B46F9DA7DFAA173F /* mapa.html in Resources */ = {isa = PBXBuildFile; fileRef = 28973FA339A75A115659498F /* mapa.html */; };
+		1741185FD77D621FF266DF65 /* EntrarSocial.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF0E92B076F67AAAFDA2CCAF /* EntrarSocial.swift */; };
+		2D7DB43E5A76E56C8E113956 /* AvisosView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93C60930690DE92050B937F5 /* AvisosView.swift */; };
+		2DE2867173EF6038F5B62AB2 /* pagella_negrita.otf in Resources */ = {isa = PBXBuildFile; fileRef = D748B6B44A4F82B72B8A3269 /* pagella_negrita.otf */; };
+		3694EE9D216687BF9AABEB88 /* InfoTextos.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CAD91A97DD3803BCFAD9039 /* InfoTextos.swift */; };
+		3FADF54A059997B30A6D1A8A /* Pruebas.swift in Sources */ = {isa = PBXBuildFile; fileRef = B87F4C485F4ED2AA4B18BFE7 /* Pruebas.swift */; };
+		47A0EB21E45722C16B8D5CE3 /* maplibre-gl.css in Resources */ = {isa = PBXBuildFile; fileRef = B6F31008F11D7EDBBC85541E /* maplibre-gl.css */; };
+		4A68AF58B72FE88D58E3C157 /* Rutas.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB79605AB25BF61D6FE3AF86 /* Rutas.swift */; };
+		4B3541DEE666AAB2B65F6B9E /* TextosApps.swift in Sources */ = {isa = PBXBuildFile; fileRef = F066914B924534AE894D2196 /* TextosApps.swift */; };
+		4B7755783E4F351C5BAC0FC5 /* Trafico.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E5DAD40B76006E803698149 /* Trafico.swift */; };
+		50C139A1459E1B463A55C247 /* Puntos.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB08703E96665A3C19E4FBB1 /* Puntos.swift */; };
+		5769F80DB7B92FE3E19FD1CC /* BingoAvisos.swift in Sources */ = {isa = PBXBuildFile; fileRef = 337544D4BDD93DCCCCEE9193 /* BingoAvisos.swift */; };
+		57AFE0981DA2B9D86023C955 /* NavigatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D865D77C383BD38B794CA54F /* NavigatorView.swift */; };
+		5824AA04019D89745DF8CA5C /* Cuenta.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B9D54B9310F5798B3C3FAC0 /* Cuenta.swift */; };
+		655DCE93B55E968D00FB2BC9 /* OneSecondApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9960119E83D83B7F0D51C501 /* OneSecondApp.swift */; };
+		6EDF9FBAF822FC2BE3095791 /* Teselas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B12701AB7E5AA128FB285AF /* Teselas.swift */; };
+		799F5F49823F3626ABFD83D9 /* Red.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA3385AA131BE4B10F5D0A91 /* Red.swift */; };
+		7AB2B97AB7ABEFC28D0AD14E /* SelectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D50CF126D58ED35221ECB753 /* SelectorView.swift */; };
+		824B26A40B4B8588BC5AE32D /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E6B333F230E91D942FF706F /* ChatView.swift */; };
+		895298253575074B1431CF71 /* Push.swift in Sources */ = {isa = PBXBuildFile; fileRef = E97E41D8B55874F14DCA694A /* Push.swift */; };
+		9A74466233A389CF4A819625 /* Central.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F1545F9EF3B089E20C04A18 /* Central.swift */; };
+		9BFA06A1D3E99DB0ED87213B /* GreatVibes-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FD298320E78952D853DCFE0C /* GreatVibes-Regular.ttf */; };
+		9D653018837F182FE2C44C96 /* Gpx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DB8529551CEC883CB4BD196 /* Gpx.swift */; };
+		9D842F3395454875280C7519 /* Navegacion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BEAA154E15258A3E9CD5958 /* Navegacion.swift */; };
+		A2076E59AD69B54BB7B1638D /* Inscribir.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8665819E3C646B4DB1A27F18 /* Inscribir.swift */; };
+		AA53B354CF91029F4175AC38 /* Mensajes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 258784A78118C58149393EB0 /* Mensajes.swift */; };
+		ACE451F210A75CA708B43873 /* NavMapaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD4672DAC25206A79BCC1F47 /* NavMapaView.swift */; };
+		B5687E00662958E0DD884A90 /* PruebaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1EBDB629E37CB1B9ED46143 /* PruebaView.swift */; };
+		B6AA004ECEE0825AD67E785F /* MiniJuegos.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE1441CBA3C73A4217CD89AF /* MiniJuegos.swift */; };
+		CDA56F297BF07B2127CCC056 /* PokerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA83CC66541EA2997CF6013 /* PokerView.swift */; };
+		CE525001CAA4CFD6A1F4E96B /* Fichas.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EA493C2C22D788A303BCDE9 /* Fichas.swift */; };
+		D23161B7D31AB2254F180224 /* Cola.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80F970C06BBF4845E49DCD15 /* Cola.swift */; };
+		D64E9728EEA11E7A5EA07CB3 /* Telemetria.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BE515A46A00C50ED4852939 /* Telemetria.swift */; };
+		DCDAD1AE4027172B98E4D545 /* Avisos.swift in Sources */ = {isa = PBXBuildFile; fileRef = A520A070B425090F964477D3 /* Avisos.swift */; };
+		E3B21400E25581FFF2CF13F2 /* VincularView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F122E5F429070B647A0C4F /* VincularView.swift */; };
+		E51B5BFA91F8CF2709AB28E8 /* TelemetriaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 783832F1D6B7191C63DA2499 /* TelemetriaView.swift */; };
+		F0CF741C02CCDBDE7E018FAE /* maplibre-gl.js in Resources */ = {isa = PBXBuildFile; fileRef = 6C26F1DEA54305656F3E3DF1 /* maplibre-gl.js */; };
+		FC52573DBC147FEBBA646D9D /* RallyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FB9B9AFA027F3B7C7E5CE7D /* RallyView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		0B12701AB7E5AA128FB285AF /* Teselas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Teselas.swift; sourceTree = "<group>"; };
+		0BE515A46A00C50ED4852939 /* Telemetria.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Telemetria.swift; sourceTree = "<group>"; };
+		1DB8529551CEC883CB4BD196 /* Gpx.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Gpx.swift; sourceTree = "<group>"; };
+		258784A78118C58149393EB0 /* Mensajes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mensajes.swift; sourceTree = "<group>"; };
+		28973FA339A75A115659498F /* mapa.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = mapa.html; sourceTree = "<group>"; };
+		2CAD91A97DD3803BCFAD9039 /* InfoTextos.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoTextos.swift; sourceTree = "<group>"; };
+		337544D4BDD93DCCCCEE9193 /* BingoAvisos.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BingoAvisos.swift; sourceTree = "<group>"; };
+		3BEAA154E15258A3E9CD5958 /* Navegacion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Navegacion.swift; sourceTree = "<group>"; };
+		424CAD96613A3C6AB1D7D81D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		4FA83CC66541EA2997CF6013 /* PokerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PokerView.swift; sourceTree = "<group>"; };
+		57F122E5F429070B647A0C4F /* VincularView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VincularView.swift; sourceTree = "<group>"; };
+		62796399BAD44EEEE09E1AFE /* OneSecond.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = OneSecond.entitlements; sourceTree = "<group>"; };
+		699F104B3FC9D221217AB017 /* OneSecond.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = OneSecond.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		6C26F1DEA54305656F3E3DF1 /* maplibre-gl.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = "maplibre-gl.js"; sourceTree = "<group>"; };
+		6EA493C2C22D788A303BCDE9 /* Fichas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fichas.swift; sourceTree = "<group>"; };
+		783832F1D6B7191C63DA2499 /* TelemetriaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TelemetriaView.swift; sourceTree = "<group>"; };
+		7E5DAD40B76006E803698149 /* Trafico.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Trafico.swift; sourceTree = "<group>"; };
+		80F970C06BBF4845E49DCD15 /* Cola.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cola.swift; sourceTree = "<group>"; };
+		8665819E3C646B4DB1A27F18 /* Inscribir.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Inscribir.swift; sourceTree = "<group>"; };
+		8E6B333F230E91D942FF706F /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
+		8F1545F9EF3B089E20C04A18 /* Central.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Central.swift; sourceTree = "<group>"; };
+		8FB9B9AFA027F3B7C7E5CE7D /* RallyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RallyView.swift; sourceTree = "<group>"; };
+		93C60930690DE92050B937F5 /* AvisosView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvisosView.swift; sourceTree = "<group>"; };
+		9960119E83D83B7F0D51C501 /* OneSecondApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OneSecondApp.swift; sourceTree = "<group>"; };
+		9B9D54B9310F5798B3C3FAC0 /* Cuenta.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cuenta.swift; sourceTree = "<group>"; };
+		A1EBDB629E37CB1B9ED46143 /* PruebaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PruebaView.swift; sourceTree = "<group>"; };
+		A520A070B425090F964477D3 /* Avisos.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Avisos.swift; sourceTree = "<group>"; };
+		AD4672DAC25206A79BCC1F47 /* NavMapaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavMapaView.swift; sourceTree = "<group>"; };
+		B6F31008F11D7EDBBC85541E /* maplibre-gl.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = "maplibre-gl.css"; sourceTree = "<group>"; };
+		B87F4C485F4ED2AA4B18BFE7 /* Pruebas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pruebas.swift; sourceTree = "<group>"; };
+		BB08703E96665A3C19E4FBB1 /* Puntos.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Puntos.swift; sourceTree = "<group>"; };
+		BB79605AB25BF61D6FE3AF86 /* Rutas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Rutas.swift; sourceTree = "<group>"; };
+		CF0E92B076F67AAAFDA2CCAF /* EntrarSocial.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntrarSocial.swift; sourceTree = "<group>"; };
+		D50CF126D58ED35221ECB753 /* SelectorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectorView.swift; sourceTree = "<group>"; };
+		D748B6B44A4F82B72B8A3269 /* pagella_negrita.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = pagella_negrita.otf; sourceTree = "<group>"; };
+		D865D77C383BD38B794CA54F /* NavigatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigatorView.swift; sourceTree = "<group>"; };
+		DA3385AA131BE4B10F5D0A91 /* Red.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Red.swift; sourceTree = "<group>"; };
+		E97E41D8B55874F14DCA694A /* Push.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Push.swift; sourceTree = "<group>"; };
+		E9A8FCDF2ED5E13DED9C48AC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		F066914B924534AE894D2196 /* TextosApps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextosApps.swift; sourceTree = "<group>"; };
+		FD298320E78952D853DCFE0C /* GreatVibes-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GreatVibes-Regular.ttf"; sourceTree = "<group>"; };
+		FE1441CBA3C73A4217CD89AF /* MiniJuegos.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiniJuegos.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		237B7F6FE9744191BB1813F2 = {
+			isa = PBXGroup;
+			children = (
+				33D495BC114AFFC7D9A7696D /* OneSecond */,
+				A1815A22A18B95C126E760DF /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		33D495BC114AFFC7D9A7696D /* OneSecond */ = {
+			isa = PBXGroup;
+			children = (
+				424CAD96613A3C6AB1D7D81D /* Assets.xcassets */,
+				A520A070B425090F964477D3 /* Avisos.swift */,
+				93C60930690DE92050B937F5 /* AvisosView.swift */,
+				337544D4BDD93DCCCCEE9193 /* BingoAvisos.swift */,
+				8F1545F9EF3B089E20C04A18 /* Central.swift */,
+				8E6B333F230E91D942FF706F /* ChatView.swift */,
+				80F970C06BBF4845E49DCD15 /* Cola.swift */,
+				9B9D54B9310F5798B3C3FAC0 /* Cuenta.swift */,
+				CF0E92B076F67AAAFDA2CCAF /* EntrarSocial.swift */,
+				6EA493C2C22D788A303BCDE9 /* Fichas.swift */,
+				E9A8FCDF2ED5E13DED9C48AC /* Info.plist */,
+				2CAD91A97DD3803BCFAD9039 /* InfoTextos.swift */,
+				8665819E3C646B4DB1A27F18 /* Inscribir.swift */,
+				258784A78118C58149393EB0 /* Mensajes.swift */,
+				FE1441CBA3C73A4217CD89AF /* MiniJuegos.swift */,
+				62796399BAD44EEEE09E1AFE /* OneSecond.entitlements */,
+				9960119E83D83B7F0D51C501 /* OneSecondApp.swift */,
+				4FA83CC66541EA2997CF6013 /* PokerView.swift */,
+				B87F4C485F4ED2AA4B18BFE7 /* Pruebas.swift */,
+				A1EBDB629E37CB1B9ED46143 /* PruebaView.swift */,
+				BB08703E96665A3C19E4FBB1 /* Puntos.swift */,
+				E97E41D8B55874F14DCA694A /* Push.swift */,
+				8FB9B9AFA027F3B7C7E5CE7D /* RallyView.swift */,
+				DA3385AA131BE4B10F5D0A91 /* Red.swift */,
+				D50CF126D58ED35221ECB753 /* SelectorView.swift */,
+				0BE515A46A00C50ED4852939 /* Telemetria.swift */,
+				783832F1D6B7191C63DA2499 /* TelemetriaView.swift */,
+				F066914B924534AE894D2196 /* TextosApps.swift */,
+				7E5DAD40B76006E803698149 /* Trafico.swift */,
+				57F122E5F429070B647A0C4F /* VincularView.swift */,
+				ECEF582064CA14F379EEFA66 /* Fuentes */,
+				4627BE115D3CF0D8F95991FB /* Navigator */,
+			);
+			path = OneSecond;
+			sourceTree = "<group>";
+		};
+		4627BE115D3CF0D8F95991FB /* Navigator */ = {
+			isa = PBXGroup;
+			children = (
+				1DB8529551CEC883CB4BD196 /* Gpx.swift */,
+				3BEAA154E15258A3E9CD5958 /* Navegacion.swift */,
+				D865D77C383BD38B794CA54F /* NavigatorView.swift */,
+				AD4672DAC25206A79BCC1F47 /* NavMapaView.swift */,
+				BB79605AB25BF61D6FE3AF86 /* Rutas.swift */,
+				0B12701AB7E5AA128FB285AF /* Teselas.swift */,
+				F9D6009C24D923029CB928A1 /* Web */,
+			);
+			path = Navigator;
+			sourceTree = "<group>";
+		};
+		A1815A22A18B95C126E760DF /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				699F104B3FC9D221217AB017 /* OneSecond.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		ECEF582064CA14F379EEFA66 /* Fuentes */ = {
+			isa = PBXGroup;
+			children = (
+				FD298320E78952D853DCFE0C /* GreatVibes-Regular.ttf */,
+				D748B6B44A4F82B72B8A3269 /* pagella_negrita.otf */,
+			);
+			path = Fuentes;
+			sourceTree = "<group>";
+		};
+		F9D6009C24D923029CB928A1 /* Web */ = {
+			isa = PBXGroup;
+			children = (
+				28973FA339A75A115659498F /* mapa.html */,
+				B6F31008F11D7EDBBC85541E /* maplibre-gl.css */,
+				6C26F1DEA54305656F3E3DF1 /* maplibre-gl.js */,
+			);
+			path = Web;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		41737E48DD3053A3544E75D2 /* OneSecond */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D342E296694CF604F6C20010 /* Build configuration list for PBXNativeTarget "OneSecond" */;
+			buildPhases = (
+				B44C3E0DF80E592D1A750015 /* Sources */,
+				08C7A92A882AEE1437C8818F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = OneSecond;
+			packageProductDependencies = (
+			);
+			productName = OneSecond;
+			productReference = 699F104B3FC9D221217AB017 /* OneSecond.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		5E9DB013A1E133DCACA5F2FE /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+				};
+			};
+			buildConfigurationList = F9ABBFAC6F5CC877AC1133D7 /* Build configuration list for PBXProject "OneSecond" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 237B7F6FE9744191BB1813F2;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = A1815A22A18B95C126E760DF /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				41737E48DD3053A3544E75D2 /* OneSecond */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		08C7A92A882AEE1437C8818F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				035ECA754DD5486DCD2E97CA /* Assets.xcassets in Resources */,
+				9BFA06A1D3E99DB0ED87213B /* GreatVibes-Regular.ttf in Resources */,
+				0BDCC5E0B46F9DA7DFAA173F /* mapa.html in Resources */,
+				47A0EB21E45722C16B8D5CE3 /* maplibre-gl.css in Resources */,
+				F0CF741C02CCDBDE7E018FAE /* maplibre-gl.js in Resources */,
+				2DE2867173EF6038F5B62AB2 /* pagella_negrita.otf in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		B44C3E0DF80E592D1A750015 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DCDAD1AE4027172B98E4D545 /* Avisos.swift in Sources */,
+				2D7DB43E5A76E56C8E113956 /* AvisosView.swift in Sources */,
+				5769F80DB7B92FE3E19FD1CC /* BingoAvisos.swift in Sources */,
+				9A74466233A389CF4A819625 /* Central.swift in Sources */,
+				824B26A40B4B8588BC5AE32D /* ChatView.swift in Sources */,
+				D23161B7D31AB2254F180224 /* Cola.swift in Sources */,
+				5824AA04019D89745DF8CA5C /* Cuenta.swift in Sources */,
+				1741185FD77D621FF266DF65 /* EntrarSocial.swift in Sources */,
+				CE525001CAA4CFD6A1F4E96B /* Fichas.swift in Sources */,
+				9D653018837F182FE2C44C96 /* Gpx.swift in Sources */,
+				3694EE9D216687BF9AABEB88 /* InfoTextos.swift in Sources */,
+				A2076E59AD69B54BB7B1638D /* Inscribir.swift in Sources */,
+				AA53B354CF91029F4175AC38 /* Mensajes.swift in Sources */,
+				B6AA004ECEE0825AD67E785F /* MiniJuegos.swift in Sources */,
+				ACE451F210A75CA708B43873 /* NavMapaView.swift in Sources */,
+				9D842F3395454875280C7519 /* Navegacion.swift in Sources */,
+				57AFE0981DA2B9D86023C955 /* NavigatorView.swift in Sources */,
+				655DCE93B55E968D00FB2BC9 /* OneSecondApp.swift in Sources */,
+				CDA56F297BF07B2127CCC056 /* PokerView.swift in Sources */,
+				B5687E00662958E0DD884A90 /* PruebaView.swift in Sources */,
+				3FADF54A059997B30A6D1A8A /* Pruebas.swift in Sources */,
+				50C139A1459E1B463A55C247 /* Puntos.swift in Sources */,
+				895298253575074B1431CF71 /* Push.swift in Sources */,
+				FC52573DBC147FEBBA646D9D /* RallyView.swift in Sources */,
+				799F5F49823F3626ABFD83D9 /* Red.swift in Sources */,
+				4A68AF58B72FE88D58E3C157 /* Rutas.swift in Sources */,
+				7AB2B97AB7ABEFC28D0AD14E /* SelectorView.swift in Sources */,
+				D64E9728EEA11E7A5EA07CB3 /* Telemetria.swift in Sources */,
+				E51B5BFA91F8CF2709AB28E8 /* TelemetriaView.swift in Sources */,
+				6EDF9FBAF822FC2BE3095791 /* Teselas.swift in Sources */,
+				4B3541DEE666AAB2B65F6B9E /* TextosApps.swift in Sources */,
+				4B7755783E4F351C5BAC0FC5 /* Trafico.swift in Sources */,
+				E3B21400E25581FFF2CF13F2 /* VincularView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		26AA2D6705DF1F7EADB05563 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.65;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		8D1B38B7F5926BD153653B69 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = OneSecond/OneSecond.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = OneSecond/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = es.onesecond.rallygps;
+				PRODUCT_NAME = "One Second";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		D6FA2A7EFE4E4B1C546DD22D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = OneSecond/OneSecond.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = OneSecond/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = es.onesecond.rallygps;
+				PRODUCT_NAME = "One Second";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		DF7B123D3525145088BD3869 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.65;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		D342E296694CF604F6C20010 /* Build configuration list for PBXNativeTarget "OneSecond" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D6FA2A7EFE4E4B1C546DD22D /* Debug */,
+				8D1B38B7F5926BD153653B69 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		F9ABBFAC6F5CC877AC1133D7 /* Build configuration list for PBXProject "OneSecond" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DF7B123D3525145088BD3869 /* Debug */,
+				26AA2D6705DF1F7EADB05563 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 5E9DB013A1E133DCACA5F2FE /* Project object */;
+}

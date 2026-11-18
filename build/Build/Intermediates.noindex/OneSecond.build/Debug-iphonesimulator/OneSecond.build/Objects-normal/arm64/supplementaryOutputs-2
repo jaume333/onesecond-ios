@@ -1,0 +1,79 @@
+{
+  "/Users/runner/work/onesecond-ios/onesecond-ios/OneSecond/Mensajes.swift" : {
+    "const-values" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/Mensajes.swiftconstvalues",
+    "dependencies" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/Mensajes.d",
+    "diagnostics" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/Mensajes.dia",
+    "object" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/Mensajes.o",
+    "swift-dependencies" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/Mensajes.swiftdeps"
+  },
+  "/Users/runner/work/onesecond-ios/onesecond-ios/OneSecond/MiniJuegos.swift" : {
+    "const-values" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/MiniJuegos.swiftconstvalues",
+    "dependencies" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/MiniJuegos.d",
+    "diagnostics" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/MiniJuegos.dia",
+    "object" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/MiniJuegos.o",
+    "swift-dependencies" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/MiniJuegos.swiftdeps"
+  },
+  "/Users/runner/work/onesecond-ios/onesecond-ios/OneSecond/Navigator/NavMapaView.swift" : {
+    "const-values" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/NavMapaView.swiftconstvalues",
+    "dependencies" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/NavMapaView.d",
+    "diagnostics" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/NavMapaView.dia",
+    "object" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/NavMapaView.o",
+    "swift-dependencies" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/NavMapaView.swiftdeps"
+  },
+  "/Users/runner/work/onesecond-ios/onesecond-ios/OneSecond/Navigator/Navegacion.swift" : {
+    "const-values" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/Navegacion.swiftconstvalues",
+    "dependencies" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/Navegacion.d",
+    "diagnostics" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/Navegacion.dia",
+    "object" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/Navegacion.o",
+    "swift-dependencies" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/Navegacion.swiftdeps"
+  },
+  "/Users/runner/work/onesecond-ios/onesecond-ios/OneSecond/Navigator/NavigatorView.swift" : {
+    "const-values" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/NavigatorView.swiftconstvalues",
+    "dependencies" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/NavigatorView.d",
+    "diagnostics" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/NavigatorView.dia",
+    "object" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/NavigatorView.o",
+    "swift-dependencies" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/NavigatorView.swiftdeps"
+  },
+  "/Users/runner/work/onesecond-ios/onesecond-ios/OneSecond/OneSecondApp.swift" : {
+    "const-values" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/OneSecondApp.swiftconstvalues",
+    "dependencies" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/OneSecondApp.d",
+    "diagnostics" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/OneSecondApp.dia",
+    "object" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/OneSecondApp.o",
+    "swift-dependencies" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/OneSecondApp.swiftdeps"
+  },
+  "/Users/runner/work/onesecond-ios/onesecond-ios/OneSecond/PokerView.swift" : {
+    "const-values" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/PokerView.swiftconstvalues",
+    "dependencies" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/PokerView.d",
+    "diagnostics" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/PokerView.dia",
+    "object" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/PokerView.o",
+    "swift-dependencies" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/PokerView.swiftdeps"
+  },
+  "/Users/runner/work/onesecond-ios/onesecond-ios/OneSecond/PruebaView.swift" : {
+    "const-values" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/PruebaView.swiftconstvalues",
+    "dependencies" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/PruebaView.d",
+    "diagnostics" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/PruebaView.dia",
+    "object" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/PruebaView.o",
+    "swift-dependencies" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/PruebaView.swiftdeps"
+  },
+  "/Users/runner/work/onesecond-ios/onesecond-ios/OneSecond/Pruebas.swift" : {
+    "const-values" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/Pruebas.swiftconstvalues",
+    "dependencies" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/Pruebas.d",
+    "diagnostics" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/Pruebas.dia",
+    "object" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/Pruebas.o",
+    "swift-dependencies" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/Pruebas.swiftdeps"
+  },
+  "/Users/runner/work/onesecond-ios/onesecond-ios/OneSecond/Puntos.swift" : {
+    "const-values" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/Puntos.swiftconstvalues",
+    "dependencies" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/Puntos.d",
+    "diagnostics" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/Puntos.dia",
+    "object" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/Puntos.o",
+    "swift-dependencies" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/Puntos.swiftdeps"
+  },
+  "/Users/runner/work/onesecond-ios/onesecond-ios/OneSecond/Push.swift" : {
+    "const-values" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/Push.swiftconstvalues",
+    "dependencies" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/Push.d",
+    "diagnostics" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/Push.dia",
+    "object" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/Push.o",
+    "swift-dependencies" : "/Users/runner/work/onesecond-ios/onesecond-ios/build/Build/Intermediates.noindex/OneSecond.build/Debug-iphonesimulator/OneSecond.build/Objects-normal/arm64/Push.swiftdeps"
+  }
+}
