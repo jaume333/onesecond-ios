@@ -134,14 +134,14 @@ struct RallyView: View {
     // 1.62: cabecera pequeña (logo al lado del nombre) para que Emitir / Parar queden a mano
     private var cabecera: some View {
         HStack(spacing: 12) {
-            Image("logo_rally_classics").resizable().scaledToFit().frame(width: 60, height: 60).clipShape(Circle())
+            Image("logo_rally_classics").resizable().scaledToFit().frame(width: 60, height: 60)   // 1.64: sin recortar en redondo (la cinta sale del círculo)
                 .shadow(color: .black.opacity(0.6), radius: 8, y: 4)
             VStack(alignment: .leading, spacing: 0) {
-                let n = Text("One Second Rally").font(.custom("TeXGyrePagella-Bold", size: 23))
+                let n = Text("One Second").font(.custom("TeXGyrePagella-Bold", size: 23))   // 1.64: «One Second» y debajo «Legends»
                 n.lineLimit(1).minimumScaleFactor(0.6).foregroundColor(.clear)
                     .overlay(LinearGradient(stops: zip(Self.cromado, [0, 0.4, 0.55, 0.75, 1.0]).map { .init(color: $0, location: $1) }, startPoint: .top, endPoint: .bottom)
                         .mask(n.lineLimit(1).minimumScaleFactor(0.6)))
-                Text("Classics").font(.custom("GreatVibes-Regular", size: 22)).foregroundColor(Color(hex: 0xE2BE70))
+                Text("Legends").font(.custom("GreatVibes-Regular", size: 22)).foregroundColor(Color(hex: 0xE2BE70))
                     .shadow(color: .black.opacity(0.8), radius: 3, y: 1).rotationEffect(.degrees(-5)).padding(.leading, 4)
             }
             Spacer(minLength: 0)
@@ -296,7 +296,7 @@ struct RallyView: View {
             if let j = clas {
                 let ev = j["event"] as? [String: Any]
                 HStack {
-                    Text(ev?.str("name") ?? "One Second Rally").font(.custom("TeXGyrePagella-Bold", size: 16)).foregroundColor(TC.texto).lineLimit(1)
+                    Text(ev?.str("name") ?? "One Second Legends").font(.custom("TeXGyrePagella-Bold", size: 16)).foregroundColor(TC.texto).lineLimit(1)
                     Spacer()
                     Text(j.bool("final") ? TxRally.t("clas_final") : "● " + TxRally.t("clas_directo")).font(.system(size: 11.5, weight: .bold))
                         .foregroundColor(j.bool("final") ? Self.oro : TC.verde)
@@ -363,7 +363,7 @@ struct RallyView: View {
     }
 
     /// 1.62: en Classics, «Ver la clasificación completa» abre onesecond.es/classics/resultados
-    private var webResultados: String { web == "/classics/" ? "/classics/resultados" : web }
+    private var webResultados: String { (web == "/classics/" || web == "/legends/") ? "/legends/resultados" : web }   // 1.64: /legends/
 
     private static var idVisita: String {
         if let v = UserDefaults.standard.string(forKey: "prueba_web_vid") { return v }
@@ -423,7 +423,7 @@ struct RallyView: View {
         if v == recV && u == recUrl && Rutas.buscar(viejo) != nil { return }
         guard let datos = try? await Rutas.bajar(base + "/recorrido.gpx"),
               let g = try? Rutas.guardar(datos, nombreArchivo: nombre.replacingOccurrences(of: "→", with: "-") + ".gpx",
-                                          origen: "One Second Rally Classics", carpetaSrv: "classics", remoto: "recorrido") else { return }
+                                          origen: "One Second Legends", carpetaSrv: "classics", remoto: "recorrido") else { return }
         if !viejo.isEmpty && viejo != g.archivo { Rutas.borrar(viejo) }
         let primera = viejo.isEmpty
         recArchivo = g.archivo; recNombre = nombre; recV = v; recUrl = u
@@ -450,7 +450,7 @@ struct RallyView: View {
         posJson = ["pos": 4, "pen": "0:07.4", "nombre": "Jaume Garcia", "estado": "En carrera",
                    "controles": [["t": 1], ["t": 1], ["t": 1], ["t": 0], ["t": 0]]]
         let nombres = ["Sergi Serra", "Cristina Torres", "Eva Navarro", "Jaume Garcia", "Oriol Puig", "Marta Vidal", "Pau Roca"]
-        clas = ["event": ["name": "One Second Rally · Simulación"], "final": false,
+        clas = ["event": ["name": "One Second Legends · Simulación"], "final": false,
                 "top": nombres.enumerated().map { i, n in ["pos": i + 1, "nombre": n, "dorsal": "\([25, 44, 35, 27, 41, 12, 8][i])",
                                                            "ultimo": "CH\(3 + (i % 2))", "pen": String(format: "0:%02d.%d", 2 + i, i * 3 % 10), "dif": i == 0 ? "Líder" : "+\(i).\(i * 2 % 10)"] }]
         central.aj(p).dorsal = "27"

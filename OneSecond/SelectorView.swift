@@ -194,9 +194,10 @@ struct SelectorView: View {
                     VStack(alignment: .leading, spacing: 2) {
                         // el nombre y, centrada debajo, la etiqueta «Classics» escrita a mano y en diagonal
                         VStack(alignment: .center, spacing: 0) {
-                        Text(p.nombre).font(.custom("TeXGyrePagella-Bold", size: 22)).foregroundColor(.white).shadow(color: .black.opacity(0.6), radius: 3, y: 1)
+                        Text("One Second").font(.custom("TeXGyrePagella-Bold", size: 22))   // 1.64: «One Second» y debajo «Legends»
+                        .foregroundColor(.white).shadow(color: .black.opacity(0.6), radius: 3, y: 1)
                             .lineLimit(1).fixedSize()
-                        Text("Classics").font(.custom("GreatVibes-Regular", size: 21)).foregroundColor(Color(hex: 0xFFF4DE))
+                        Text("Legends").font(.custom("GreatVibes-Regular", size: 21)).foregroundColor(Color(hex: 0xFFF4DE))
                             .shadow(color: Color(red: 40 / 255, green: 0, blue: 0).opacity(0.7), radius: 2, y: 1)
                             .padding(.horizontal, 12).padding(.bottom, 3)
                             .background(RoundedRectangle(cornerRadius: 7).fill(LinearGradient(colors: [Color(hex: 0x96191E), Color(hex: 0x600A0F)], startPoint: .top, endPoint: .bottom)))
@@ -230,7 +231,7 @@ struct SelectorView: View {
         .overlay(alignment: .top) {
             if let ev = etiquetaEvento {
                 let nom = ev.0, dia = ev.1
-                Button { hoja = .web("https://onesecond.es/classics/?lang=" + Idioma.codigo + "#proximos") } label: {
+                Button { hoja = .web("https://onesecond.es/legends/?lang=" + Idioma.codigo + "#proximos") } label: {
                     HStack(spacing: 10) {
                         PuntoLatido()
                         VStack(alignment: .leading, spacing: 2) {
@@ -336,9 +337,9 @@ struct SelectorView: View {
             }
             if l.isEmpty {
                 mensaje = (t("No hay inscripciones con app", "No hi ha inscripcions amb app", "No registrations with the app"),
-                           t("No tienes ninguna inscripción pagada de One Second Rally, Rally Poker o Ronda la Llana de hoy en adelante.",
-                             "No tens cap inscripció pagada de One Second Rally, Rally Poker o Ronda la Llana d'avui endavant.",
-                             "You have no paid One Second Rally, Rally Poker or Ronda la Llana registration from today onwards."))
+                           t("No tienes ninguna inscripción pagada de One Second Legends, Rally Poker o Ronda la Llana de hoy en adelante.",
+                             "No tens cap inscripció pagada de One Second Legends, Rally Poker o Ronda la Llana d'avui endavant.",
+                             "You have no paid One Second Legends, Rally Poker or Ronda la Llana registration from today onwards."))
             } else if l.count == 1 { vincular(l[0]) } else { elegir = l }
         }
     }

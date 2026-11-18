@@ -229,8 +229,8 @@ struct PokerView: View {
         if d.id == "rallypoker" {
             Etiqueta(t("EL DÍA DE LA PRUEBA", "EL DIA DE LA PROVA", "ON THE DAY")).padding(.top, 22)
             Caja {
-                Texto(t("Rally Poker se cronometra con One Second Rally: vincula y pulsa EMITIR allí.", "Rally Poker es cronometra amb One Second Rally: vincula i prem EMETRE allà.", "Rally Poker is timed with One Second Rally: link and tap START there."), 14, .texto)
-                BotonP("⏱  " + t("Abrir el GPS (One Second Rally)", "Obrir el GPS (One Second Rally)", "Open GPS (One Second Rally)"), true) { irGPS = true }.padding(.top, 12)
+                Texto(t("Rally Poker se cronometra con One Second Legends: vincula y pulsa EMITIR allí.", "Rally Poker es cronometra amb One Second Legends: vincula i prem EMETRE allà.", "Rally Poker is timed with One Second Legends: link and tap START there."), 14, .texto)
+                BotonP("⏱  " + t("Abrir el GPS (One Second Legends)", "Obrir el GPS (One Second Legends)", "Open GPS (One Second Legends)"), true) { irGPS = true }.padding(.top, 12)
             }.padding(.top, 8)
             Etiqueta(t("CLASIFICACIÓN POR TIEMPOS · LOS 25 PRIMEROS", "CLASSIFICACIÓ PER TEMPS · ELS 25 PRIMERS", "STANDINGS BY TIME · TOP 25")).padding(.top, 22)
             Caja { tiemposVista }.padding(.top, 8)

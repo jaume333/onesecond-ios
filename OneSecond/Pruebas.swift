@@ -47,7 +47,8 @@ struct Prueba: Identifiable, Hashable {
         return re.firstMatch(in: u, range: NSRange(u.startIndex..., in: u)) != nil
     }
 
-    static let rally = Prueba(id: "rally", nombre: "One Second Rally",
+    static let rally = Prueba(id: "rally", nombre: "One Second Legends",   // 1.64: Classics pasa a ser Legends
+       
         sub: ["Rally y Rally Poker", "Ral·li i Rally Poker", "Rally and Rally Poker"],
         metal: [0x4A3A10, 0xC9A646, 0x8A6D1F],
         patron: "https://(www\\.)?onesecond\\.es(?!/(rider1000|ronda)/)(/[A-Za-z0-9_.-]+)*/api/p/[A-Za-z2-7]{12}/?",

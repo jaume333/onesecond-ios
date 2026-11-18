@@ -18,7 +18,7 @@ enum Rutas {
         switch c {
         case "ronda": return "Ronda la Llana"
         case "rider1000": return "Rider 1000"
-        case "classics": return "One Second Rally Classics"   // 1.61
+        case "classics": return "One Second Legends"   // 1.61 (1.64: Legends)
         case "rally": return "One Second Rally"
         case "rallypoker": return "Rally Poker"
         case "pokerrun": return "Poker Run"
