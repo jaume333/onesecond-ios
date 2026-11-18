@@ -64,7 +64,7 @@ def arreglar01(v):
         a = sc["attributes"]; print("    CAP", a.get("fileName"), a.get("fileSize"), (a.get("assetDeliveryState") or {}).get("state"))
     return True
 
-def poner_capturas(v, rama="capturas-160", n=6):
+def poner_capturas(v, rama="capturas", n=6):   # 1.64: la rama «capturas» (la última que hace la ficha), no la de la 1.60
     """Cambia todas las capturas de iPhone (es-ES, 6,9") de la versión por 01..06_iphone.png de la rama indicada."""
     import hashlib
     loc = [l for l in pedir("GET", f"/appStoreVersions/{v['id']}/appStoreVersionLocalizations")["data"] if l["attributes"]["locale"] == "es-ES"][0]
