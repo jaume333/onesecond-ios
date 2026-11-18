@@ -10,6 +10,11 @@ HOW TO TEST (test rider created for App Review)
 5. AVISOS (Alerts) sends an incident alert with the position to the organisers; MENSAJES shows messages from the organisers.
 6. One Second Navigator (main screen): choose a route and tap EMPEZAR to follow it on the map with voice guidance, also with the screen off.
 
+SCREEN RECORDING OF PERSISTENT BACKGROUND LOCATION (physical iPhone)
+https://onesecond.es/revision/ubicacion_0860516a1142.mp4
+The rider (test rider no. 99) taps EMITIR, leaves the app and uses another app (Stocks) while the location arrow stays on in the status bar, then comes back: the last position is "0 s" ago and the positions recorded in the background are queued and sent ("Pendientes de enviar"), then taps PARAR (Stop).
+Note: the developer has only one iPhone and no TestFlight on it, so the recording was made with the version currently on the App Store (1.63), where this event was still called "One Second Rally Classics". In 1.65 it is called "One Second Legends"; the EMITIR / PARAR feature and the location behaviour are exactly the same.
+
 WHY PERSISTENT BACKGROUND LOCATION (Guideline 2.5.4)
 - A regularity rally is timed by the phone itself: the rider must pass hidden checkpoints at an exact average speed, and the app records the exact time (to a tenth of a second) when the GPS position crosses each checkpoint. Riders are on a motorcycle or in a classic car for several hours with the phone in a mount or in a pocket, usually with the screen locked. If location stopped in the background, the passages would be lost and the rider could not be classified.
 - Safety: during the event the organisers follow every rider on a private map and can locate a rider who reports a fall or an accident.

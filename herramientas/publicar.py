@@ -181,14 +181,22 @@ elif ACCION == "enviar":
     except SystemExit:
         print("Captura 01: no se ha podido cambiar (se envía igual)")
     poner_notas(v)
-    # 4) enviar a revisión
-    s = pedir("POST", "/reviewSubmissions", {"data": {"type": "reviewSubmissions", "attributes": {"platform": "IOS"},
-              "relationships": {"app": {"data": {"type": "apps", "id": APP}}}}})["data"]
-    pedir("POST", "/reviewSubmissionItems", {"data": {"type": "reviewSubmissionItems",
-          "relationships": {"reviewSubmission": {"data": {"type": "reviewSubmissions", "id": s["id"]}},
-                            "appStoreVersion": {"data": {"type": "appStoreVersions", "id": v["id"]}}}}})
+    # 4) enviar a revisión. 1.65 (24): si la versión fue rechazada, se reutiliza su envío (UNRESOLVED_ISSUES) en vez de crear otro
+    s = None
+    for rs in pedir("GET", f"/apps/{APP}/reviewSubmissions?filter[platform]=IOS&limit=10")["data"]:
+        print("Envío existente", rs["id"], rs["attributes"].get("state"))
+        if rs["attributes"].get("state") in ("UNRESOLVED_ISSUES", "READY_FOR_REVIEW") and s is None: s = rs
+    if s is None:
+        s = pedir("POST", "/reviewSubmissions", {"data": {"type": "reviewSubmissions", "attributes": {"platform": "IOS"},
+                  "relationships": {"app": {"data": {"type": "apps", "id": APP}}}}})["data"]
+    items = pedir("GET", f"/reviewSubmissions/{s['id']}/items?include=appStoreVersion")
+    tiene = any(((it.get("relationships") or {}).get("appStoreVersion") or {}).get("data", {}) and it["relationships"]["appStoreVersion"]["data"]["id"] == v["id"] for it in items.get("data", []))
+    if not tiene:
+        pedir("POST", "/reviewSubmissionItems", {"data": {"type": "reviewSubmissionItems",
+              "relationships": {"reviewSubmission": {"data": {"type": "reviewSubmissions", "id": s["id"]}},
+                                "appStoreVersion": {"data": {"type": "appStoreVersions", "id": v["id"]}}}}})
     pedir("PATCH", f"/reviewSubmissions/{s['id']}", {"data": {"type": "reviewSubmissions", "id": s["id"], "attributes": {"submitted": True}}})
-    print("ENVIADA A REVISION", VER)
+    print("ENVIADA A REVISION", VER, "envío", s["id"])
 elif ACCION == "recapturas":
     # Retira la versión de revisión (si está esperando), pone las capturas buenas y la vuelve a enviar.
     v = version()
