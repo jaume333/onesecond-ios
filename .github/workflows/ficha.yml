@@ -89,7 +89,7 @@ jobs:
           cp "$D"/*.png .
           git add *.png && git commit -qm "Capturas App Store ${{ github.run_number }}"
           git push -f origin HEAD:capturas
-          git checkout -q -f main
+          git checkout -q -f "$GITHUB_SHA"   # 1.64: vuelve al código lanzado (puede no ser main)
       - uses: actions/upload-artifact@v4
         with:
           name: capturas
