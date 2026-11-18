@@ -313,7 +313,7 @@ final class Central: NSObject, ObservableObject, CLLocationManagerDelegate {
         aj(p).url = p.id == "rider" ? "https://onesecond.es/rider1000/api/p/ABCDEFGH2345"
             : p.id == "rally" ? "https://onesecond.es/legends/api/p/ABCDEFGH2345" : "https://onesecond.es/ronda/api/p/ABCDEFGH2345"
         aj(p).telOrg = "+34 600 000 000"
-        aj(p).dorsal = "27"; aj(p).nombrePiloto = "Jaume Garcia"
+        aj(p).dorsal = "27"; aj(p).nombrePiloto = "Marta Vidal"   // demo: nombre ficticio
         if Demo.pantalla != 5 && Demo.pantalla != 12 { emitiendo = p.id }
         enviadas = 1287; ultimaPos = Date(); ultimaPrec = 4
         puntos(p).cargarDemo(); mensajes(p).cargarDemo(); avisos(p).cargarDemo()

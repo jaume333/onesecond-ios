@@ -449,9 +449,9 @@ struct RallyView: View {
     }
 
     private func cargarDemo() {
-        posJson = ["pos": 4, "pen": "0:07.4", "nombre": "Jaume Garcia", "estado": "En carrera",
+        posJson = ["pos": 4, "pen": "0:07.4", "nombre": "Marta Vidal", "estado": "En carrera",
                    "controles": [["t": 1], ["t": 1], ["t": 1], ["t": 0], ["t": 0]]]
-        let nombres = ["Sergi Serra", "Cristina Torres", "Eva Navarro", "Jaume Garcia", "Oriol Puig", "Marta Vidal", "Pau Roca"]
+        let nombres = ["Sergi Serra", "Cristina Torres", "Eva Navarro", "Marta Vidal", "Oriol Puig", "Laia Ferrer", "Pau Roca"]   // demo: nombres ficticios
         clas = ["event": ["name": "One Second Legends · Simulación"], "final": false,
                 "top": nombres.enumerated().map { i, n in ["pos": i + 1, "nombre": n, "dorsal": "\([25, 44, 35, 27, 41, 12, 8][i])",
                                                            "ultimo": "CH\(3 + (i % 2))", "pen": String(format: "0:%02d.%d", 2 + i, i * 3 % 10), "dif": i == 0 ? "Líder" : "+\(i).\(i * 2 % 10)"] }]
