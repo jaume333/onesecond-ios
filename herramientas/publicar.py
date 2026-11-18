@@ -210,6 +210,34 @@ elif ACCION == "reenviar":
         print("Aún no se puede (", r.status_code, "):", (r.json().get("errors") or [{}])[0].get("meta", {}).get("associatedErrors", r.text[:300]) if r.text else ""); time.sleep(60)
     else:
         print("ERROR no se ha podido enviar"); sys.exit(1)
+elif ACCION == "reenviar_nuevo":
+    # 1.65 (24): el envío rechazado (UNRESOLVED_ISSUES) no deja reenviar: se cancela y se hace un envío nuevo
+    v = version(); print("Estado", v["attributes"].get("appStoreState"))
+    for rs in pedir("GET", f"/apps/{APP}/reviewSubmissions?filter[platform]=IOS&limit=10")["data"]:
+        st = rs["attributes"].get("state")
+        if st in ("UNRESOLVED_ISSUES", "READY_FOR_REVIEW"):
+            its = pedir("GET", f"/reviewSubmissions/{rs['id']}/items")
+            for it in its.get("data", []): print("  item", it["id"], it["attributes"].get("state"))
+            r = requests.patch(API + f"/reviewSubmissions/{rs['id']}", headers=cab(), data=json.dumps({"data": {"type": "reviewSubmissions", "id": rs["id"], "attributes": {"canceled": True}}}))
+            print("Cancelar envío", rs["id"], st, r.status_code, r.text[:300])
+    time.sleep(20)
+    for k in range(15):
+        r = requests.post(API + "/reviewSubmissions", headers=cab(), data=json.dumps({"data": {"type": "reviewSubmissions", "attributes": {"platform": "IOS"},
+                          "relationships": {"app": {"data": {"type": "apps", "id": APP}}}}}))
+        if r.status_code in (200, 201): s = r.json()["data"]; break
+        print("Crear envío:", r.status_code, r.text[:300]); time.sleep(30)
+    else:
+        print("ERROR no se pudo crear el envío"); sys.exit(1)
+    r = requests.post(API + "/reviewSubmissionItems", headers=cab(), data=json.dumps({"data": {"type": "reviewSubmissionItems",
+          "relationships": {"reviewSubmission": {"data": {"type": "reviewSubmissions", "id": s["id"]}},
+                            "appStoreVersion": {"data": {"type": "appStoreVersions", "id": v["id"]}}}}}))
+    print("Item:", r.status_code, r.text[:500])
+    for k in range(10):
+        r = requests.patch(API + f"/reviewSubmissions/{s['id']}", headers=cab(), data=json.dumps({"data": {"type": "reviewSubmissions", "id": s["id"], "attributes": {"submitted": True}}}))
+        if r.status_code in (200, 201, 204): print("ENVIADA A REVISION", VER, "envío", s["id"]); break
+        print("Aún no se puede:", r.status_code, r.text[:600]); time.sleep(60)
+    else:
+        print("ERROR no se ha podido enviar"); sys.exit(1)
 elif ACCION == "recapturas":
     # Retira la versión de revisión (si está esperando), pone las capturas buenas y la vuelve a enviar.
     v = version()
