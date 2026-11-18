@@ -197,12 +197,11 @@ struct SelectorView: View {
                         Text("One Second").font(.custom("TeXGyrePagella-Bold", size: 22))   // 1.64: «One Second» y debajo «Legends»
                         .foregroundColor(.white).shadow(color: .black.opacity(0.6), radius: 3, y: 1)
                             .lineLimit(1).fixedSize()
-                        Text("Legends").font(.custom("GreatVibes-Regular", size: 21)).foregroundColor(Color(hex: 0xFFF4DE))
-                            .shadow(color: Color(red: 40 / 255, green: 0, blue: 0).opacity(0.7), radius: 2, y: 1)
-                            .padding(.horizontal, 12).padding(.bottom, 3)
-                            .background(RoundedRectangle(cornerRadius: 7).fill(LinearGradient(colors: [Color(hex: 0x96191E), Color(hex: 0x600A0F)], startPoint: .top, endPoint: .bottom)))
-                            .overlay(RoundedRectangle(cornerRadius: 7).stroke(Color(hex: 0xE2BA60), lineWidth: 1.5))
-                            .rotationEffect(.degrees(-8)).padding(.vertical, 5)
+                        // 1.65: sin caja: dorada, escrita a mano y con sombra marcada (desplazada)
+                        Text("Legends").font(.custom("GreatVibes-Regular", size: 30)).foregroundColor(Color(hex: 0xF3D58A))
+                            .shadow(color: Color(red: 20 / 255, green: 8 / 255, blue: 0).opacity(0.85), radius: 0.5, x: 2, y: 4)
+                            .shadow(color: .black.opacity(0.5), radius: 4, x: 3, y: 6)
+                            .rotationEffect(.degrees(-6)).padding(.top, -2).padding(.bottom, 2)
                         }
                         Text(cuenta.proxima(p.id) ?? t("No importa lo rápido que seas, importa lo exacto que seas", "No importa com de ràpid siguis, importa com d'exacte siguis", "It doesn't matter how fast you are, it matters how precise you are")).font(.system(size: 12.5)).foregroundColor(.white.opacity(225 / 255))
                     }

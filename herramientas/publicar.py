@@ -23,9 +23,9 @@ def version():
     return None
 
 NOVEDADES = {
-    "es": "One Second Rally Classics pasa a llamarse One Second Legends, con logo nuevo. La clasificación (los 25 primeros) aparece justo debajo de EMITIR y PARAR. Los enlaces llevan a la nueva web onesecond.es/legends. Pequeñas mejoras.",
-    "ca": "One Second Rally Classics passa a dir-se One Second Legends, amb logo nou. La classificació (els 25 primers) apareix just sota EMETRE i ATURAR. Els enllaços porten al nou web onesecond.es/legends. Petites millores.",
-    "en": "One Second Rally Classics is now One Second Legends, with a new logo. The standings (top 25) now appear right below START and STOP. Links take you to the new onesecond.es/legends site. Small improvements.",
+    "es": "One Second Rally Classics pasa a llamarse One Second Legends, con logo y etiqueta nuevos. La clasificación (los 25 primeros) aparece justo debajo de EMITIR y PARAR. Los enlaces llevan a la nueva web onesecond.es/legends. Pequeñas mejoras.",
+    "ca": "One Second Rally Classics passa a dir-se One Second Legends, amb logo i etiqueta nous. La classificació (els 25 primers) apareix just sota EMETRE i ATURAR. Els enllaços porten al nou web onesecond.es/legends. Petites millores.",
+    "en": "One Second Rally Classics is now One Second Legends, with a new logo and label. The standings (top 25) now appear right below START and STOP. Links take you to the new onesecond.es/legends site. Small improvements.",
 }
 
 def arreglar01(v):

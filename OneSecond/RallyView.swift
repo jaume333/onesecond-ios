@@ -141,8 +141,10 @@ struct RallyView: View {
                 n.lineLimit(1).minimumScaleFactor(0.6).foregroundColor(.clear)
                     .overlay(LinearGradient(stops: zip(Self.cromado, [0, 0.4, 0.55, 0.75, 1.0]).map { .init(color: $0, location: $1) }, startPoint: .top, endPoint: .bottom)
                         .mask(n.lineLimit(1).minimumScaleFactor(0.6)))
-                Text("Legends").font(.custom("GreatVibes-Regular", size: 22)).foregroundColor(Color(hex: 0xE2BE70))
-                    .shadow(color: .black.opacity(0.8), radius: 3, y: 1).rotationEffect(.degrees(-5)).padding(.leading, 4)
+                Text("Legends").font(.custom("GreatVibes-Regular", size: 26)).foregroundColor(Color(hex: 0xF3D58A))   // 1.65: sombra marcada
+                    .shadow(color: Color(red: 20 / 255, green: 8 / 255, blue: 0).opacity(0.85), radius: 0.5, x: 2, y: 4)
+                    .shadow(color: .black.opacity(0.5), radius: 4, x: 3, y: 6)
+                    .rotationEffect(.degrees(-5)).padding(.leading, 4)
             }
             Spacer(minLength: 0)
         }
