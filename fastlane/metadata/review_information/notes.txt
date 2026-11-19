@@ -13,6 +13,7 @@ HOW TO TEST (test rider created for App Review)
 SCREEN RECORDING OF PERSISTENT BACKGROUND LOCATION (physical iPhone, this version 1.67)
 https://onesecond.es/revision/ubicacion_167_6a805420d5.mp4
 Recorded with this version (1.67) on a physical iPhone 7: in "One Second Legends" the test rider no. 99 taps EMITIR (status "EMITIENDO"), leaves the app and uses other apps (Stocks, Safari) while the location arrow stays on in the status bar, then comes back: the last position is only a few seconds old ("hace 3 s"), because the position kept being recorded and sent in the background. Finally the rider taps PARAR (status "PARADO") and location stops.
+Note: the developer's only test iPhone is an iPhone 7 (iOS 15.8), where TestFlight cannot be installed, so this exact build 1.67 was installed on it as an Ad Hoc build (the device was registered by its UDID in our developer account). It is the same code as the build submitted for review.
 
 WHY PERSISTENT BACKGROUND LOCATION (Guideline 2.5.4)
 - A regularity rally is timed by the phone itself: the rider must pass hidden checkpoints at an exact average speed, and the app records the exact time (to a tenth of a second) when the GPS position crosses each checkpoint. Riders are on a motorcycle or in a classic car for several hours with the phone in a mount or in a pocket, usually with the screen locked. If location stopped in the background, the passages would be lost and the rider could not be classified.
