@@ -2,7 +2,7 @@
 import sys
 c, v, b, out = sys.argv[1:5]
 base = "https://onesecond.es/revision/" + c
-open(out + "/manifest.plist", "w").write(f"""<?xml version="1.0" encoding="UTF-8"?>
+open(out + "/manifest.xml", "w").write(f"""<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0"><dict><key>items</key><array><dict>
 <key>assets</key><array><dict><key>kind</key><string>software-package</string><key>url</key><string>{base}/OneSecond.ipa</string></dict></array>
@@ -21,7 +21,7 @@ a{{display:inline-block;background:#ffd257;color:#0c1a2b;font-weight:800;padding
 p{{color:#b8c4d3;line-height:1.5}}</style></head><body>
 <h1>One Second {v} ({b})</h1>
 <p>Instalación de prueba solo para el iPhone registrado.<br>Instal·lació de prova només per a l'iPhone registrat.<br>Test install for the registered iPhone only.</p>
-<p><a href="itms-services://?action=download-manifest&amp;url={base}/manifest.plist">Instalar / Instal·lar / Install</a></p>
+<p><a href="itms-services://?action=download-manifest&amp;url={base}/manifest.xml">Instalar / Instal·lar / Install</a></p>
 <p>Ábrelo con Safari · Obre-ho amb Safari · Open it in Safari</p>
 </body></html>
 """)
