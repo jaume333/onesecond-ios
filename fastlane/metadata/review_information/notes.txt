@@ -10,10 +10,9 @@ HOW TO TEST (test rider created for App Review)
 5. AVISOS (Alerts) sends an incident alert with the position to the organisers; MENSAJES shows messages from the organisers.
 6. One Second Navigator (main screen): choose a route and tap EMPEZAR to follow it on the map with voice guidance, also with the screen off.
 
-SCREEN RECORDING OF PERSISTENT BACKGROUND LOCATION (physical iPhone)
-https://onesecond.es/revision/ubicacion_0860516a1142.mp4
-The rider (test rider no. 99) taps EMITIR, leaves the app and uses another app (Stocks) while the location arrow stays on in the status bar, then comes back: the last position is "0 s" ago and the positions recorded in the background are queued and sent ("Pendientes de enviar"), then taps PARAR (Stop).
-Note: the developer has only one iPhone and no TestFlight on it, so the recording was made with the version currently on the App Store (1.63), where this event was still called "One Second Rally Classics". In 1.65 it is called "One Second Legends"; the EMITIR / PARAR feature and the location behaviour are exactly the same.
+SCREEN RECORDING OF PERSISTENT BACKGROUND LOCATION (physical iPhone, this version 1.67)
+https://onesecond.es/revision/ubicacion_167_6a805420d5.mp4
+Recorded with this version (1.67) on a physical iPhone 7: in "One Second Legends" the test rider no. 99 taps EMITIR (status "EMITIENDO"), leaves the app and uses other apps (Stocks, Safari) while the location arrow stays on in the status bar, then comes back: the last position is only a few seconds old ("hace 3 s"), because the position kept being recorded and sent in the background. Finally the rider taps PARAR (status "PARADO") and location stops.
 
 WHY PERSISTENT BACKGROUND LOCATION (Guideline 2.5.4)
 - A regularity rally is timed by the phone itself: the rider must pass hidden checkpoints at an exact average speed, and the app records the exact time (to a tenth of a second) when the GPS position crosses each checkpoint. Riders are on a motorcycle or in a classic car for several hours with the phone in a mount or in a pocket, usually with the screen locked. If location stopped in the background, the passages would be lost and the rider could not be classified.
@@ -23,7 +22,7 @@ WHY PERSISTENT BACKGROUND LOCATION (Guideline 2.5.4)
 - Location is only used between EMITIR and PARAR (or while navigating a route). The blue indicator is always shown (showsBackgroundLocationIndicator). Nothing is collected at any other time and it is never shared with third parties.
 
 OTHER PLATFORMS (Guideline 2.3.10)
-Build 24 removes every reference to other platforms from the app. The web pages of onesecond.es shown inside the app (event page, account) no longer mention them on iPhone and iPad.
+This version contains no reference to other platforms. The web pages of onesecond.es shown inside the app (event page, account) no longer mention them on iPhone and iPad.
 
 ACCOUNT (OPTIONAL)
 The app works without an account. Riders can optionally sign in with their onesecond.es account (email and password, Sign in with Apple or Google) to see their entries and results. Accounts can be deleted from "Mi cuenta".
