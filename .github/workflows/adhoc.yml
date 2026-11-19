@@ -1,0 +1,90 @@
+name: Instalación directa (Ad Hoc)
+# 1.67 (nov. 2026): para el iPhone 7 de pruebas (iOS 15, TestFlight no se puede instalar). Registra el iPhone en la cuenta,
+# compila firmado «Ad Hoc» y deja el .ipa y el manifest en la rama «adhoc» (se suben a onesecond.es/revision/ a mano).
+# No sube nada a App Store Connect ni a revisión.
+on:
+  push:
+    branches: [app-167]
+  workflow_dispatch:
+    inputs:
+      udid:
+        description: "UDID del iPhone"
+        default: "79597EAD500F4F3995D283E2F928D34DBB3715C7"
+      carpeta:
+        description: "Carpeta en onesecond.es/revision/"
+        default: "os167"
+permissions:
+  contents: write
+jobs:
+  adhoc:
+    runs-on: macos-15
+    env:
+      KEY_ID: LQFB8QADZB
+      ISSUER_ID: a406dc4b-3c03-421b-8bb2-e10b20505f94
+    steps:
+      - uses: actions/checkout@v4
+      - name: Usar Xcode 26
+        run: |
+          X=$(ls -d /Applications/Xcode_26*.app | sort -V | tail -1)
+          sudo xcode-select -s "$X"
+          xcodebuild -version
+      - name: Clave de App Store Connect
+        run: |
+          mkdir -p "$RUNNER_TEMP/keys"
+          echo "${{ secrets.APPSTORE_KEY_P8 }}" > "$RUNNER_TEMP/keys/AuthKey.p8"
+      - name: Registrar el iPhone en la cuenta
+        run: |
+          python3 -m pip install --quiet --break-system-packages pyjwt cryptography requests || python3 -m pip install --quiet pyjwt cryptography requests
+          python3 herramientas/registrar_iphone.py "$RUNNER_TEMP/keys/AuthKey.p8" "${{ inputs.udid || '79597EAD500F4F3995D283E2F928D34DBB3715C7' }}"
+      - name: Generar el proyecto
+        run: |
+          brew install xcodegen
+          xcodegen generate
+      - name: Archivar
+        run: |
+          set -o pipefail
+          xcodebuild -project OneSecond.xcodeproj -scheme OneSecond -sdk iphoneos -configuration Release \
+            -destination 'generic/platform=iOS' -archivePath build/OneSecond.xcarchive archive \
+            DEVELOPMENT_TEAM=HFR3795974 CODE_SIGN_STYLE=Automatic CURRENT_PROJECT_VERSION=${{ github.run_number }} \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" 2>&1 | tail -30
+      - name: Permisos de la app
+        run: |
+          APP=$(ls -d build/OneSecond.xcarchive/Products/Applications/*.app)
+          codesign -f -s - --entitlements OneSecond/OneSecond.entitlements "$APP"
+      - name: Exportar Ad Hoc
+        run: |
+          set -o pipefail
+          cat > build/adhoc.plist <<'P'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+            <key>method</key><string>release-testing</string>
+            <key>destination</key><string>export</string>
+            <key>teamID</key><string>HFR3795974</string>
+            <key>signingStyle</key><string>automatic</string>
+            <key>manageAppVersionAndBuildNumber</key><false/>
+            <key>thinning</key><string>&lt;none&gt;</string>
+          </dict></plist>
+          P
+          sed -i '' 's/^          //' build/adhoc.plist
+          xcodebuild -exportArchive -archivePath build/OneSecond.xcarchive -exportOptionsPlist build/adhoc.plist \
+            -exportPath build/export -allowProvisioningUpdates -authenticationKeyPath "$RUNNER_TEMP/keys/AuthKey.p8" \
+            -authenticationKeyID "$KEY_ID" -authenticationKeyIssuerID "$ISSUER_ID" 2>&1 | tail -40
+          ls -la build/export
+      - name: Comprobar que el iPhone está en el perfil
+        run: |
+          cd build/export && rm -rf Payload && unzip -oq *.ipa
+          security cms -D -i Payload/*.app/embedded.mobileprovision > perfil.plist
+          /usr/libexec/PlistBuddy -c "Print :ProvisionedDevices" perfil.plist
+          grep -qi "${{ inputs.udid || '79597EAD500F4F3995D283E2F928D34DBB3715C7' }}" perfil.plist && echo "iPhone incluido" || (echo "::error::El iPhone no está en el perfil"; exit 1)
+          codesign -d --entitlements - Payload/*.app
+      - name: Guardar en la rama adhoc
+        run: |
+          V=$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" build/export/Payload/*.app/Info.plist)
+          B=$(/usr/libexec/PlistBuddy -c "Print :CFBundleVersion" build/export/Payload/*.app/Info.plist)
+          C="${{ inputs.carpeta || 'os167' }}"
+          mkdir -p out/$C && cp build/export/*.ipa out/$C/OneSecond.ipa
+          python3 herramientas/manifest_adhoc.py "$C" "$V" "$B" out/$C
+          cd out && git init -q && git checkout -q -b adhoc && git add . \
+            && git -c user.name=github-actions -c user.email=actions@github.com commit -qm "Ad Hoc $V ($B) ${GITHUB_SHA}" \
+            && git push -qf "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" adhoc

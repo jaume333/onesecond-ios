@@ -44,6 +44,13 @@ struct RallyView: View {
                         if !aj.vinculada { vincularBloque.padding(.top, 14) }
                         else { tarjeta.padding(.top, 10) }
                         emitirBloque.padding(.top, 12)          // 1.62: justo debajo de la tarjeta
+                        // 1.67: la línea de estado («fa 0 s · precisió 3 m · Pendents d'enviar») justo debajo de EMITIR / PARAR
+                        let ex = extra()
+                        if !ex.0.isEmpty {
+                            Text(ex.0).font(.system(size: 12.5)).foregroundColor(ex.1 ? TC.naranja : TC.suave)
+                                .multilineTextAlignment(.center)
+                                .frame(maxWidth: .infinity, alignment: .center).padding(.horizontal, 4).padding(.top, 8)
+                        }
                         // 1.66: «Ver / navegar el recorrido» justo debajo de EMITIR / PARAR y antes de la clasificación
                         if aj.vinculada && !recArchivo.isEmpty && recUrl == aj.url.trimmingCharacters(in: .whitespaces) {
                             botonRecorrido.padding(.top, 12)
@@ -52,11 +59,6 @@ struct RallyView: View {
                         Text(TxRally.t("clas_t").uppercased()).font(.system(size: 11, weight: .bold)).tracking(2).foregroundColor(TC.suave)
                             .frame(maxWidth: .infinity, alignment: .leading).padding(.top, 18)
                         clasificacion.padding(.top, 8)
-                        let ex = extra()
-                        if !ex.0.isEmpty {
-                            Text(ex.0).font(.system(size: 12.5)).foregroundColor(ex.1 ? TC.naranja : TC.suave)
-                                .frame(maxWidth: .infinity, alignment: .leading).padding(.horizontal, 4).padding(.top, 8)
-                        }
                         if aj.vinculada {
                             MensajesCaja(p: p, tx: TxRally.t, acento: Self.oro, boton: TC.azul, botonTexto: .white,
                                          burbuja: Color(hex: 0x1D3550), burbujaB: Color(hex: 0x2C5A86)) { hoja = .chat }.padding(.top, 14)
