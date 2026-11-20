@@ -313,6 +313,12 @@ final class Avisador: NSObject, UNUserNotificationCenterDelegate {
             let p = app == "classics" ? "rally" : app
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { NotificationCenter.default.post(name: .abrirPruebaDe, object: p) }
         }
+        // 1.68: «Fulano te reta» (Remolcadores a pique): se abre el juego en el reto
+        if (i["tipo"] as? String) == "reto" {
+            var u = i["url"] as? String ?? ""
+            if !u.hasPrefix("https://onesecond.es/remolcadores") { u = MiniJuego.remolcadores.direccion + "?sala=1" }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { NotificationCenter.default.post(name: .abrirMiniJuego, object: ["remolcadores", u]) }
+        }
         if let j = i["minijuego"] as? String {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { NotificationCenter.default.post(name: .abrirMiniJuego, object: [j, BingoAvisos.web]) }
         }

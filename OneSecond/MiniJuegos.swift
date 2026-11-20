@@ -22,7 +22,11 @@ struct MiniJuego: Identifiable {
     static let bingo = MiniJuego(id: "bingo", nombre: "Bingo Motero",
         sub: ["Cartones con QR · Avisos de línea y bingo", "Cartrons amb QR · Avisos de línia i bingo", "QR bingo cards · Line and bingo alerts"],
         icono: "ic_bingo", metal: [0x22180E, 0xB08440, 0x563C1C], direccion: BingoAvisos.web)
-    static let todos = [cazatopo, ruta66, bingo]
+    /// 1.68: hundir la flota contra la máquina o retando a otra cuenta de One Second (sin QR).
+    static let remolcadores = MiniJuego(id: "remolcadores", nombre: "Remolcadores a pique",
+        sub: ["Hundir la flota · Reta a otros", "Enfonsar la flota · Repta a altres", "Battleship · Challenge others"],
+        icono: "ic_remolcadores", metal: [0x0E1E38, 0x4A90E2, 0x1A3A6B], direccion: "https://onesecond.es/remolcadores/")
+    static let todos = [cazatopo, ruta66, remolcadores, bingo]
     /// El aviso de la II Motoweekend (13-15 nov. 2026) sale hasta el 16 de noviembre de 2026 a las 00:00 (hora de Madrid).
     static let finAviso: Date = {
         var c = DateComponents(); c.year = 2026; c.month = 11; c.day = 16; c.timeZone = TimeZone(identifier: "Europe/Madrid")
@@ -52,6 +56,7 @@ struct MiniJuego: Identifiable {
         if u.path.hasPrefix("/cazatopo") { return cazatopo }
         if u.path.hasPrefix("/ruta66") { return ruta66 }
         if u.path.hasPrefix("/bingo") { return bingo }
+        if u.path.hasPrefix("/remolcadores") { return remolcadores }
         return nil
     }
 }
@@ -78,6 +83,7 @@ struct MiniJuegoView: View {
                 Text(juego.nombre).font(.custom("TeXGyrePagella-Bold", size: estrecho ? 16 : 19)).foregroundColor(.texto)
                     .lineLimit(1).minimumScaleFactor(0.6).layoutPriority(-1)
                 Spacer(minLength: 4)
+                if juego.id != "remolcadores" {
                 Button { escaneando = true } label: {
                     Text("▣ " + (estrecho ? "QR" : t("Escanear QR", "Escanejar QR", "Scan QR"))).font(.system(size: 14, weight: .bold)).foregroundColor(.white)
                         .lineLimit(1).fixedSize().padding(.horizontal, estrecho ? 10 : 12).padding(.vertical, 8).background(RoundedRectangle(cornerRadius: 10).fill(Color.azul))
@@ -86,6 +92,7 @@ struct MiniJuegoView: View {
                     Text("⌨︎" + (estrecho ? "" : " " + t("Código", "Codi", "Code"))).font(.system(size: 14, weight: .bold)).foregroundColor(.texto)
                         .lineLimit(1).fixedSize().padding(.horizontal, 10).padding(.vertical, 8)
                         .background(RoundedRectangle(cornerRadius: 10).stroke(Color.borde, lineWidth: 1.5))
+                }
                 }
                 Button { cerrar() } label: { Image(systemName: "xmark").font(.system(size: 15, weight: .bold)).foregroundColor(.suave).padding(4) }
             }
@@ -182,7 +189,18 @@ final class WebJuego: NSObject, ObservableObject, WKNavigationDelegate, WKUIDele
         obs = web.observe(\.estimatedProgress) { [weak self] v, _ in DispatchQueue.main.async { self?.cargando = v.estimatedProgress } }
     }
 
-    func abrir(_ s: String) { if let u = URL(string: s) { web.load(URLRequest(url: u)) } }
+    /// 1.68: antes de abrir, la sesión de la cuenta One Second (cookie «os_sesion», como en Android) para que las webs
+    /// sepan quién juega (Remolcadores a pique la necesita para retar a otros).
+    func abrir(_ s: String) {
+        guard let u = URL(string: s) else { return }
+        let tk = UserDefaults.standard.string(forKey: "cuenta_token") ?? ""
+        if !tk.isEmpty, let ck = HTTPCookie(properties: [.domain: "onesecond.es", .path: "/", .name: Cuenta.cookie, .value: tk,
+                                                         .secure: "TRUE", .expires: Date().addingTimeInterval(30 * 24 * 3600)]) {
+            web.configuration.websiteDataStore.httpCookieStore.setCookie(ck) { [weak self] in self?.web.load(URLRequest(url: u)) }
+        } else {
+            web.load(URLRequest(url: u))
+        }
+    }
 
     /// Fuera de onesecond.es (patrocinadores, WhatsApp...) se abre fuera de la app.
     func webView(_ v: WKWebView, decidePolicyFor a: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
