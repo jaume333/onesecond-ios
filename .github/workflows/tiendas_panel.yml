@@ -1,5 +1,6 @@
 name: Estado de Apple para el panel del agente
 # Solo MIRA el estado de la app en App Store Connect (no cambia nada) y lo manda al panel «Agente One Second».
+# Solo pregunta si hay una versión pendiente (lo dice el panel); lanzado a mano, pregunta siempre.
 # El envío va firmado con la misma clave de Apple; el servidor solo guarda la parte pública para comprobar la firma.
 on:
   schedule:
@@ -14,7 +15,14 @@ jobs:
       APP: "6832263265"
       DESTINO: https://onesecond.es/06872587a556e16fe69d3a83/juegos/tiendas
     steps:
+      - name: ¿Hay algo pendiente en Apple?
+        id: pend
+        run: |
+          P=$(curl -s -m 20 "https://onesecond.es/06872587a556e16fe69d3a83/apple_pendiente.txt" || echo si)
+          echo "Pendiente según el panel: $P"
+          if [ "${{ github.event_name }}" = "schedule" ] && [ "$(echo $P | tr -d '[:space:]')" = "no" ]; then echo "seguir=no" >> $GITHUB_OUTPUT; else echo "seguir=si" >> $GITHUB_OUTPUT; fi
       - name: Mirar y enviar
+        if: steps.pend.outputs.seguir == 'si'
         env:
           P8: ${{ secrets.APPSTORE_KEY_P8 }}
         run: |
