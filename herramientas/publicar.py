@@ -24,8 +24,8 @@ def version():
 
 NOVEDADES = {
     "es": "Nuevo minijuego: One Second: Remolcadores a pique. Hunde la flota de remolcadores contra la máquina o reta a otro participante; te llegará un aviso cuando alguien te rete. Pequeñas mejoras.",
-    "ca": "Nou minijoc: One Second: Remolcadors a pic. Enfonsa la flota de remolcadors contra la màquina o repta un altre participant; et arribarà un avís quan algú et repti. Petites millores.",
-    "en": "New mini game: One Second: Tugboats Down. Sink the tugboat fleet against the computer or challenge another participant; you'll get a notification when someone challenges you. Small improvements.",
+    "ca": "Nou minijoc: One Second: Remolcadores a pique. Enfonsa la flota de remolcadors contra la màquina o repta un altre participant; et arribarà un avís quan algú et repti. Petites millores.",
+    "en": "New mini game: One Second: Remolcadores a pique. Sink the tugboat fleet against the computer or challenge another participant; you'll get a notification when someone challenges you. Small improvements.",
 }
 
 def arreglar01(v):
