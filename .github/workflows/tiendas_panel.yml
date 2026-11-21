@@ -1,10 +1,10 @@
 name: Estado de Apple para el panel del agente
 # Solo MIRA el estado de la app en App Store Connect (no cambia nada) y lo manda al panel «Agente One Second».
-# Pregunta siempre, cada hora (21 nov 2026: antes solo si el panel decía que había algo pendiente y no veía los envíos nuevos).
+# Pregunta siempre, cada 2 horas (21 nov 2026: antes solo si el panel decía que había algo pendiente y no veía los envíos nuevos).
 # El envío va firmado con la misma clave de Apple; el servidor solo guarda la parte pública para comprobar la firma.
 on:
   schedule:
-    - cron: "17 * * * *"
+    - cron: "17 */2 * * *"
   workflow_dispatch:
 jobs:
   estado:
