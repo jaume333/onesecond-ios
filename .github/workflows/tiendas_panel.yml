@@ -1,0 +1,52 @@
+name: Estado de Apple para el panel del agente
+# Solo MIRA el estado de la app en App Store Connect (no cambia nada) y lo manda al panel «Agente One Second».
+# El envío va firmado con la misma clave de Apple; el servidor solo guarda la parte pública para comprobar la firma.
+on:
+  schedule:
+    - cron: "17 */2 * * *"
+  workflow_dispatch:
+jobs:
+  estado:
+    runs-on: ubuntu-latest
+    env:
+      KEY_ID: LQFB8QADZB
+      ISSUER_ID: a406dc4b-3c03-421b-8bb2-e10b20505f94
+      APP: "6832263265"
+      DESTINO: https://onesecond.es/06872587a556e16fe69d3a83/juegos/tiendas
+    steps:
+      - name: Mirar y enviar
+        env:
+          P8: ${{ secrets.APPSTORE_KEY_P8 }}
+        run: |
+          pip install -q pyjwt cryptography requests
+          python3 - <<'PY'
+          import os, time, json, hashlib, jwt, requests
+          from cryptography.hazmat.primitives import serialization
+          p8 = os.environ["P8"]
+          pub = serialization.load_pem_private_key(p8.encode(), None).public_key().public_bytes(serialization.Encoding.PEM, serialization.PublicFormat.SubjectPublicKeyInfo).decode()
+          print("CLAVE_PUBLICA_INICIO"); print(pub); print("CLAVE_PUBLICA_FIN")
+          tok = jwt.encode({"iss": os.environ["ISSUER_ID"], "iat": int(time.time()), "exp": int(time.time()) + 600, "aud": "appstoreconnect-v1"},
+                           p8, algorithm="ES256", headers={"kid": os.environ["KEY_ID"], "typ": "JWT"})
+          h = {"Authorization": "Bearer " + tok}
+          app = os.environ["APP"]
+          vs = []
+          r = requests.get(f"https://api.appstoreconnect.apple.com/v1/apps/{app}/appStoreVersions?filter[platform]=IOS&limit=5", headers=h, timeout=30).json()
+          for v in r.get("data", []):
+              a = v["attributes"]
+              vs.append({"v": a.get("versionString"), "estado": a.get("appStoreState") or a.get("appVersionState"), "creada": (a.get("createdDate") or "")[:10]})
+          tienda = None
+          try:
+              l = requests.get(f"https://itunes.apple.com/lookup?id={app}&country=es", timeout=20).json()
+              if l.get("results"): tienda = {"v": l["results"][0].get("version"), "fecha": (l["results"][0].get("currentVersionReleaseDate") or "")[:10]}
+          except Exception as e:
+              print("lookup", e)
+          datos = {"apple": vs, "tienda_apple": tienda, "hora": int(time.time())}
+          cuerpo = json.dumps(datos, ensure_ascii=False)
+          print(cuerpo)
+          firma = jwt.encode({"sha256": hashlib.sha256(cuerpo.encode()).hexdigest(), "iat": int(time.time()), "exp": int(time.time()) + 300}, p8, algorithm="ES256")
+          try:
+              rr = requests.post(os.environ["DESTINO"], data=cuerpo.encode(), headers={"Content-Type": "application/json", "X-Firma": firma}, timeout=30)
+              print("ENVIO", rr.status_code, rr.text[:200])
+          except Exception as e:
+              print("ENVIO fallo", e)
+          PY
