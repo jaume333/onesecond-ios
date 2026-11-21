@@ -23,9 +23,9 @@ def version():
     return None
 
 NOVEDADES = {
-    "es": "One Second Rally Classics pasa a llamarse One Second Legends, con logo nuevo. En la pantalla de la prueba: EMITIR y PARAR, la línea de estado, Ver / navegar el recorrido y la clasificación, en este orden. Ahora la app también se puede usar en horizontal. Pequeñas mejoras.",
-    "ca": "One Second Rally Classics passa a dir-se One Second Legends, amb logo nou. A la pantalla de la prova: EMETRE i ATURAR, la línia d'estat, Veure / navegar el recorregut i la classificació, en aquest ordre. Ara l'app també es pot fer servir en horitzontal. Petites millores.",
-    "en": "One Second Rally Classics is now One Second Legends, with a new logo. On the event screen: START and STOP, the status line, View / navigate the route and the standings, in this order. The app can now also be used in landscape. Small improvements.",
+    "es": "Nuevo minijuego: One Second: Remolcadores a pique. Hunde la flota de remolcadores contra la máquina o reta a otro participante; te llegará un aviso cuando alguien te rete. Pequeñas mejoras.",
+    "ca": "Nou minijoc: One Second: Remolcadors a pic. Enfonsa la flota de remolcadors contra la màquina o repta un altre participant; et arribarà un avís quan algú et repti. Petites millores.",
+    "en": "New mini game: One Second: Tugboats Down. Sink the tugboat fleet against the computer or challenge another participant; you'll get a notification when someone challenges you. Small improvements.",
 }
 
 def arreglar01(v):
