@@ -11,6 +11,9 @@ on:
       version:
         description: "Versión (p. ej. 1.58)"
         required: true
+permissions:
+  contents: read
+  actions: write
 jobs:
   publicar:
     runs-on: ubuntu-latest
@@ -28,3 +31,8 @@ jobs:
         run: |
           pip install -q pyjwt cryptography requests
           python3 herramientas/publicar.py
+      - name: Avisar al panel del agente (que mire Apple ahora)
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run tiendas_panel.yml -R "${{ github.repository }}" --ref main || echo "no se ha podido avisar al panel"
